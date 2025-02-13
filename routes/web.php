@@ -1,8 +1,8 @@
 <?php
 
-use App\Models\User;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserSide\UserController;
+
 
 Route::get('/', function () {
     return view('UserSide.Auth.Register');
