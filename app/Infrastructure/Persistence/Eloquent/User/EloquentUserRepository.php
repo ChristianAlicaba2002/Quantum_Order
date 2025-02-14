@@ -13,6 +13,7 @@ class EloquentUserRepository implements UserRepository
         $UserModel->userId = $user->getUserId();
         $UserModel->firstName = $user->getFirstName();
         $UserModel->lastName = $user->getLastName();
+        $UserModel->gender = $user->getGender();
         $UserModel->address = $user->getAddress();
         $UserModel->contactNumber = $user->getContactNumber();
         $UserModel->username = $user->getUsername();
@@ -30,6 +31,7 @@ class EloquentUserRepository implements UserRepository
             $UserModel->userId,
             $UserModel->firstName,
             $UserModel->lastName,
+            $UserModel->gender,
             $UserModel->address,
             $UserModel->contactNumber,
             $UserModel->username,

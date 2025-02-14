@@ -8,6 +8,7 @@ class User
         private string $userId,
         private string $firstName,
         private string $lastName,
+        private string $gender,
         private string $address,
         private string $contactNumber,
         private string $username,
@@ -35,6 +36,10 @@ class User
     public function getLastName(): string
     {
         return $this->lastName;
+    }
+    public function getGender(): string
+    {
+        return $this->gender;
     }
 
     public function getAddress(): string

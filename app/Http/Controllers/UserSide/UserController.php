@@ -4,9 +4,10 @@ namespace App\Http\Controllers\UserSide;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
 use App\Application\User\RegisterUser;
+use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
@@ -19,14 +20,22 @@ class UserController extends Controller
 
     public function UserRegister(Request $request)
     {
-        Validator::make($request->all(), [    
+        $validator = Validator::make($request->all(), [    
             'firstName' => 'required',
             'lastName' => 'required',
+            'gender' => 'required',
             'address' => 'required',
             'contactNumber' => 'required',
             'username' => 'required',
             'password' => 'required',
+            'confirmPassword' => 'required|same:password',
         ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput();
+        }
 
         $id = $this->getGenerateUserID();
 
@@ -34,11 +43,13 @@ class UserController extends Controller
             $id,
             $request->firstName,
             $request->lastName,
+            $request->gender,
             $request->address,
             $request->contactNumber,
             $request->username,
             Hash::make($request->password)
         );        
+        return redirect('/');
     }
 
     private function getGenerateUserID(): string
@@ -56,5 +67,29 @@ class UserController extends Controller
         $result = substr(bin2hex(random_bytes(ceil($length / 2))), 0, $length);
 
         return $result;
+    }
+
+    public function userLogin(Request $request)
+    {
+        $validator = Validator::make($request->all(), [    
+            'username' => 'required|string',
+            'password' => 'required|string',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect('/')
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+                
+        if (Auth::guard('register')->attempt(['username' => $request->username, 'password' => $request->password])) {
+            $request->session()->regenerate();
+            return redirect('/')->with('success', 'Login successful');
+        }
+
+        return redirect('/')
+            ->withInput($request->only('username'))
+            ->with('error', 'Username or Password is incorrect');
     }
 }

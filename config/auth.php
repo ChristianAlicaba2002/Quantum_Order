@@ -40,9 +40,9 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
-        'RegisterUser' => [
+        'register' => [
             'driver' => 'session',
-            'provider' => 'RegisterUser',
+            'provider' => 'register',
         ],
     ],
 
@@ -69,9 +69,9 @@ return [
             'model' => env('AUTH_MODEL', App\Models\User::class),
         ],
 
-        'RegisterUser' => [
+        'register' => [
             'driver' => 'eloquent',
-            'model' => App\Models\RegisterUser::class,
+            'model' => env('AUTH_MODEL',App\Models\RegisterUser::class),
         ],
 
         // 'users' => [
