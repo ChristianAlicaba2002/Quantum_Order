@@ -69,7 +69,7 @@ class UserController extends Controller
         return $result;
     }
 
-    public function userLogin(Request $request)
+    public function UserLogin(Request $request)
     {
         $validator = Validator::make($request->all(), [    
             'username' => 'required|string',
@@ -82,14 +82,22 @@ class UserController extends Controller
                 ->withInput();
         }
 
-                
-        if (Auth::guard('register')->attempt(['username' => $request->username, 'password' => $request->password])) {
+        if (Auth::guard('register_user')->attempt($request->only('username', 'password'))) {
             $request->session()->regenerate();
+            Auth::User();
             return redirect('/')->with('success', 'Login successful');
         }
 
         return redirect('/')
             ->withInput($request->only('username'))
             ->with('error', 'Username or Password is incorrect');
+    }
+
+    public function UserLogout(Request $request)
+    {
+        Auth::guard('register')->logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+        return redirect('/');
     }
 }

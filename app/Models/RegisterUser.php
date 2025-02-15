@@ -12,9 +12,9 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 class RegisterUser extends Authenticatable
 {
     use HasFactory , Notifiable ,HasApiTokens;
-    
 
     protected $table = 'register_user';
+    protected $guard = 'register_user';
 
     protected $fillable = [
         'userId',
@@ -27,6 +27,10 @@ class RegisterUser extends Authenticatable
         'password'
     ];
 
-    protected $guard = 'register';
+    protected $hidden = [
+        'password',
+        'remember_token',
+    ];
+
 
 }

@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('contactNumber');
             $table->string('username')->unique();
             $table->string('password');
+            $table->rememberToken();
             $table->timestamps();
         });
     }
@@ -31,5 +32,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('register_user');
+        Schema::dropIfExists('password_reset_tokens');
+        Schema::dropIfExists('sessions');
     }
 };
