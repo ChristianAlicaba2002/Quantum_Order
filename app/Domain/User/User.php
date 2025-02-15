@@ -10,7 +10,7 @@ class User
         private string $lastName,
         private string $gender,
         private string $address,
-        private string $contactNumber,
+        private string $PhoneNumber,
         private string $username,
         private string $password
     ) {
@@ -18,7 +18,7 @@ class User
         $this->firstName = $firstName;
         $this->lastName = $lastName;
         $this->address = $address;
-        $this->contactNumber = $contactNumber;
+        $this->PhoneNumber = $PhoneNumber;
         $this->username = $username;
         $this->password = $password;
     }
@@ -47,9 +47,9 @@ class User
         return $this->address;
     }
 
-    public function getContactNumber(): string
+    public function getPhoneNumber(): string
     {
-        return $this->contactNumber;
+        return $this->PhoneNumber;
     }
 
     public function getUsername(): string
@@ -69,7 +69,7 @@ class User
             'firstName' => $this->firstName,
             'lastName' => $this->lastName,
             'address' => $this->address,
-            'contactNumber' => $this->contactNumber,
+            'PhoneNumber' => $this->PhoneNumber,
             'username' => $this->username,
             'password' => $this->password,
         ];

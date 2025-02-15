@@ -24,7 +24,7 @@ class AdminController extends Controller
             return redirect('/QuantumOrder');
         }
 
-        return redirect()->with('error', 'Invalid credentials');
+        return redirect('/QuantumOrder')->with('error', 'Invalid credentials');
     }
 
 

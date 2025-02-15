@@ -30,6 +30,11 @@
         @include('AdminSide.Pages.Dashboard')
         @yield('Dashboard')
     @else
+
+        @if (session('error'))
+            <script>alert("{{session('error')}}")</script>
+        @endif
+
         <div>
             <h1>Admin</h1>
             <p>Welcome</p>

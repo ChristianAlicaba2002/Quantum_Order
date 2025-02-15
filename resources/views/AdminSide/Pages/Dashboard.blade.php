@@ -8,61 +8,358 @@
     <title>Quantum Order</title>
 </head>
 
+<style>
+    .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+    }
+
+    .modal.show {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .modal-dialog {
+        background: white;
+        border-radius: 8px;
+        width: 100%;
+        max-width: 800px;
+        margin: 20px;
+    }
+
+    .modal-content {
+        position: relative;
+    }
+
+    .modal-header {
+        padding: 1rem;
+        border-bottom: 1px solid #dee2e6;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .modal-body {
+        padding: 1rem;
+    }
+
+    .modal-footer {
+        padding: 1rem;
+        border-top: 1px solid #dee2e6;
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+    }
+
+    .btn-close {
+        border: none;
+        background: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+    }
+
+    .form-label {
+        display: block;
+        margin-bottom: 0.5rem;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 0.375rem 0.75rem;
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+        margin-bottom: 1rem;
+    }
+
+    .btn {
+        padding: 0.375rem 0.75rem;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    .btn-secondary {
+        background-color: #6c757d;
+        color: white;
+        border: none;
+    }
+
+    .btn-primary {
+        background-color: #0d6efd;
+        color: white;
+        border: none;
+    }
+
+    #addProductModal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+    }
+
+    #addProductModal.show {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    #addProductModal > div {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        width: 90%;
+        max-width: 400px; /* Smaller width */
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    #addProductModal h5 {
+        margin: 0 0 20px 0;
+    }
+
+    #addProductModal form div {
+        margin-bottom: 15px;
+    }
+
+    #addProductModal label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+    }
+
+    #addProductModal input,
+    #addProductModal textarea {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        box-sizing: border-box;
+    }
+
+    #addProductModal button {
+        padding: 8px 15px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    #addProductModal button[type="submit"] {
+        background-color: #4CAF50;
+        color: white;
+        margin-left: 10px;
+    }
+
+    #addProductModal button[data-bs-dismiss="modal"] {
+        background-color: #f1f1f1;
+    }
+
+</style>
+
 <body>
     @section('Dashboard')
         <h1>Dashboard</h1>
         <p>Welcome to the admin dashboard</p>
+        <button type="button" data-bs-toggle="modal" data-bs-target="#addProductModal">Add Product</button>
 
         <form action="{{ route('auth.adminlogout') }}" method="post">
             @csrf
             <button type="submit">Logout</button>
         </form>
 
+        <div>
+            <h3>Total Products</h3>
+            <p>{{ $products->count() }}</p>
+            @if($products->count() == 0)
+                <p class="text-danger">No products available. Please add some products.</p>
+            @elseif($products->count() < 5)
+                <p class="text-warning">Low product count. Consider adding more products.</p>
+            @else
+                <p class="text-success">Good product!</p>
+            @endif
+        </div>
+
+
         <div class="container downloads">
+            <a href="{{ route('UserManagement') }}">User Management</a>
             <button type="submit">Export to Excel</button>
             <button type="submit">Export to PDF</button>
         </div>
 
+        @if (!$products->isEmpty())
+            <nav>
+                <ul class="d-flex justify-content-center gap-4 list-unstyled">
+                    <li>
+                        <button class="btn active" onclick="filterProducts('all', event)">
+                            All
+                        </button>
+                    </li>
+                    @php
+                        $categories = $products->pluck('category')->unique();
+                    @endphp
+                    @foreach ($categories as $category)
+                        <li>
+                            <button class="btn" onclick="filterProducts('{{ $category }}',event)">
+                                {{ $category }}
+                            </button>
+                        </li>
+                    @endforeach
+                </ul>
+            </nav>
+        @endif
 
-
-        <table>
-            <tr>
-                <th>First Name</th>
-                <th>Last Name</th>
-                <th>Gender</th>
-                <th>Address</th>
-                <th>Phone</th>
-                <th>Username</th>
-                <th>Created At</th>
-                <th>Updated At</th>
-                <th>Action</th>
-            </tr>
-            @if (count($users) == 0)
-                <tr>
-                    <td colspan="9">No users found</td>
-                </tr>
+        <div>
+            <h1 id="categoryTitle">All Products</h1>
+            <table id="productTable">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Image</th>
+                        <th>Name</th>
+                        <th>Category</th>
+                        <th>Price</th>
+                        <th>Stock</th>
+                        <th>Description</th>
+                        <th>Created At</th>
+                        </tr>
+                </thead>
+                <tbody>
+                    @foreach($products->sortBy('price') as $product)
+                        <tr>
+                            <td>{{ $product->productId }}</td>
+                            <td>
+                                <img src="{{ asset('/images/' . $product->image) }}" alt="{{ $product->name }}"
+                                    style="width: 50px; height: 50px; object-fit: cover;">
+                            </td>
+                            <td>{{ $product->productName }}</td>
+                            <td>{{ $product->category }}</td>
+                            <td>{{ $product->price }}</td>
+                            <td>{{ $product->stock }}</td>
+                            <td>{{ $product->description }}</td>
+                            <td>{{ $product->created_at}}</td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+            @if($products->isEmpty())
+                <p>No products found</p>
             @endif
-            @foreach ($users as $user)
-                <tr>
-                    <td>{{ $user->firstName }}</td>
-                    <td>{{ $user->lastName }}</td>
-                    <td>{{ $user->gender }}</td>
-                    <td>{{ $user->address }}</td>
-                    <td>{{ $user->contactNumber }}</td>
-                    <td>{{ $user->username }}</td>
-                    <td>{{ $user->created_at }}</td>
-                    <td>{{ $user->updated_at }}</td>
-                    <td>
-                        <button type="submit">Edit</button>
-                        <form action="" method="post">
+
+           
+        </div>
+
+        <!-- Add Product Modal -->
+        <div id="addProductModal">
+            <div>
+                <div>
+                    <div>
+                        <h5>Add New Product</h5>
+                       
+                    </div>
+                    <form action="{{ route('create.product') }}" method="POST" enctype="multipart/form-data">
+                        <div>
                             @csrf
-                            <button type="submit">Delete</button>
-                        </form>
-                    </td>
-                </tr>
-            @endforeach
-        </table>
+                            <div>
+                                <label for="productName">Product Name</label>
+                                <input type="text" id="productName" name="productName" required>
+                            </div>
+                            <div>
+                                <label for="category">Category</label>
+                                <input type="text" id="category" name="category" required>
+                            </div>
+                            <div>
+                                <label for="price">Price</label>
+                                <input type="number" id="price" name="price" step="0.01" required>
+                            </div>
+                            <div>
+                                <label for="stock">Stock</label>
+                                <input type="number" id="stock" name="stock" required>
+                            </div>
+                            <div>
+                                <label for="description">Description</label>
+                                <textarea id="description" name="description" rows="3" required></textarea>
+                            </div>
+                            <div>
+                                <label for="image">Product Image</label>
+                                <input type="file" id="image" name="image" accept="image/*" required>
+                                <img id="previewImage" src="" alt="" srcset="">
+                            </div>
+                        </div>
+                        <div>
+                            <button type="button" data-bs-dismiss="modal">Close</button>
+                            <button type="submit">Save Product</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
     @endsection
+
+   
+
+    <script>
+
+        //Open modal for adding products
+        document.addEventListener('DOMContentLoaded', function() {
+            const modal = document.getElementById('addProductModal');
+            const openModalBtn = document.querySelector('[data-bs-target="#addProductModal"]');
+            const closeModalBtn = document.querySelector('[data-bs-dismiss="modal"]');
+
+            openModalBtn.addEventListener('click', function() {
+                modal.classList.add('show');
+            });
+
+            closeModalBtn.addEventListener('click', function() {
+                modal.classList.remove('show');
+            });
+
+            // Close modal when clicking outside
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    modal.classList.remove('show');
+                }
+            });
+        });
+
+    
+
+        //Filtered Products in navigation Bar
+        function filterProducts(category, event) {
+            document.querySelectorAll('nav .btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            event.target.classList.add('active');
+
+            // Update the heading
+            const categoryTitle = document.getElementById('categoryTitle');
+            categoryTitle.textContent = category === 'all' ? 'All Products' : category;
+
+            let table = document.getElementById('productTable');
+            let tr = table.getElementsByTagName('tr');
+
+            for (let i = 1; i < tr.length; i++) {
+                let categoryCell = tr[i].getElementsByTagName('td')[3];
+                if (categoryCell) {
+                    let categoryValue = categoryCell.textContent || categoryCell.innerText;
+
+                    if (category === 'all' || categoryValue.trim() === category) {
+                        tr[i].style.display = '';
+                    } else {
+                        tr[i].style.display = 'none';
+                    }
+                }
+            }
+        }
+    </script>
 </body>
 
 </html>

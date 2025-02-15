@@ -18,7 +18,7 @@ class RegisterUser
         string $lastName,
         string $gender,
         string $address,
-        string $contactNumber,
+        string $PhoneNumber,
         string $username,
         string $password
     ): void {
@@ -28,7 +28,7 @@ class RegisterUser
             $lastName,
             $gender,
             $address,
-            $contactNumber,
+            $PhoneNumber,
             $username,
             $password
         );

@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use Laravel\Sanctum\HasApiTokens;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -11,10 +10,11 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class RegisterUser extends Authenticatable
 {
-    use HasFactory , Notifiable ,HasApiTokens;
+    use HasFactory , Notifiable , HasApiTokens;
+
+    protected $guard = 'register_user';
 
     protected $table = 'register_user';
-    protected $guard = 'register_user';
 
     protected $fillable = [
         'userId',
@@ -22,7 +22,7 @@ class RegisterUser extends Authenticatable
         'lastName',
         'gender',
         'address',
-        'contactNumber',
+        'PhoneNumber',
         'username',
         'password'
     ];
@@ -31,6 +31,14 @@ class RegisterUser extends Authenticatable
         'password',
         'remember_token',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'email_verified_at' => 'datetime',
+            'password' => 'hashed',
+        ];
+    }
 
 
 }

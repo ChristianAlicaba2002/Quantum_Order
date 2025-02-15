@@ -1,9 +1,13 @@
 <?php
 
+use App\Models\products;
+use App\Models\RegisterUser;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserSide\UserController;
 use App\Http\Controllers\AdminSide\AdminController;
-use App\Models\RegisterUser;
+use App\Http\Controllers\ProductSide\ProductController;
+
+
 
 Route::get('/', function () {
     return view('UserSide.Auth.Login');
@@ -15,14 +19,23 @@ Route::get('/Register', function () {
 
 Route::get('/QuantumOrder', function () {
     $users = RegisterUser::all();
-    return view('AdminSide.Auth.Login', compact('users'));
+    $products = products::all();
+    return view('AdminSide.Auth.Login', compact('users', 'products'));
 })->name('QuantumOrder');
 
+Route::get('/UserManagement', function () {
+    $users = RegisterUser::all();
+    return view('AdminSide.Pages.UserManagement', compact('users'));
+})->name('UserManagement');
 
-Route::post('/auth/register',[UserController::class,'UserRegister'])->name('auth.register');
-Route::post('/auth/login',[UserController::class,'UserLogin'])->name('auth.login');
-Route::post('/auth/logout',[UserController::class,'UserLogout'])->name('auth.logout');
+
+Route::post('/auth/register',[UserController::class, 'UserRegister'])->name('auth.register');
+Route::post('/auth/login',[UserController::class, 'UserLogin'])->name('auth.login');
+Route::post('/auth/logout',[UserController::class, 'UserLogout'])->name('auth.logout');
 
 
 Route::post('/auth/adminlogin',[AdminController::class,'AdminLogin'])->name('auth.adminlogin');  
 Route::post('/auth/adminlogout',[AdminController::class,'AdminLogout'])->name('auth.adminlogout');
+
+
+Route::post('/product',[ProductController::class, 'addProduct'])->name('create.product');
