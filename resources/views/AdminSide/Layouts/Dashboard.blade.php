@@ -152,9 +152,9 @@
     }
 
     #addProductModal button[type="submit"] {
-        background-color: #4CAF50;
+        background-color: orange;
         color: white;
-        margin-left: 10px;
+        float: right;
     }
 
     #addProductModal button[data-bs-dismiss="modal"] {
@@ -174,16 +174,19 @@
             <button type="submit">Logout</button>
         </form>
 
-        <div>
-            <h3>Total Products</h3>
-            <p>{{ $products->count() }}</p>
-            @if($products->count() == 0)
-                <p class="text-danger">No products available. Please add some products.</p>
-            @elseif($products->count() < 5)
-                <p class="text-warning">Low product count. Consider adding more products.</p>
-            @else
-                <p class="text-success">Good product!</p>
-            @endif
+        @include('AdminSide.Pages.Badges')
+        @yield('BadgesContent')
+
+
+        <div class="MenuHamburger">
+           <ul>
+            <li>
+                <a href="{{route('ArchiveProducts')}}">Archive</a>
+            </li>
+            <li>
+                <a href="">Orders</a>
+            </li>
+           </ul>
         </div>
 
 
@@ -228,6 +231,7 @@
                         <th>Stock</th>
                         <th>Description</th>
                         <th>Created At</th>
+                        <th>Action</th>
                         </tr>
                 </thead>
                 <tbody>
@@ -235,7 +239,7 @@
                         <tr>
                             <td>{{ $product->productId }}</td>
                             <td>
-                                <img src="{{ asset('/images/' . $product->image) }}" alt="{{ $product->name }}"
+                                <img src="{{ asset('/images/' . $product->image) }}" alt="{{ $product->productName }}"
                                     style="width: 50px; height: 50px; object-fit: cover;">
                             </td>
                             <td>{{ $product->productName }}</td>
@@ -244,6 +248,13 @@
                             <td>{{ $product->stock }}</td>
                             <td>{{ $product->description }}</td>
                             <td>{{ $product->created_at}}</td>
+                            <td>
+                                <a href="" onclick="EditProducts('{{$product->id}}','{{$product->productName}}','{{$product->category}}','{{$product->price}}','{{$product->stock}}','{{$product->stock}}','{{$product->description}}','{{$product->image}}')">Edit</a>
+                                <form action="" method="post">
+                                    @csrf
+                                    <button type="submit">Delete</button>
+                                </form>
+                            </td>
                         </tr>
                     @endforeach
                 </tbody>
@@ -300,6 +311,9 @@
                 </div>
             </div>
         </div>
+
+
+
 
     @endsection
 
@@ -359,6 +373,22 @@
                 }
             }
         }
+
+
+        function EditProducts(id,productName,category,price,stock,description,image){
+            document.getElementById('EditForm').action = `/UpdateEachProduct${id}`;
+            document.getElementById('editID').value = id;
+            document.getElementById('editProductName').value = productName;
+            document.getElementById('editCategory').value = category;
+            document.getElementById('editPrice').value = price;
+            document.getElementById('editStock').value = stock;
+            document.getElementById('editDescription').value = description;
+            document.getElementById('editImage').value = image;
+        }
+
+
+
+
     </script>
 </body>
 

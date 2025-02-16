@@ -27,7 +27,7 @@
 <body>
 
     @auth
-        @include('AdminSide.Pages.Dashboard')
+        @include('AdminSide.Layouts.Dashboard')
         @yield('Dashboard')
     @else
 

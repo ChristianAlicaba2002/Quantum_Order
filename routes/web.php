@@ -2,6 +2,7 @@
 
 use App\Models\products;
 use App\Models\RegisterUser;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserSide\UserController;
 use App\Http\Controllers\AdminSide\AdminController;
@@ -27,6 +28,14 @@ Route::get('/UserManagement', function () {
     $users = RegisterUser::all();
     return view('AdminSide.Pages.UserManagement', compact('users'));
 })->name('UserManagement');
+
+Route::get('/Archive',function(){
+    $ArchiveProducts = DB::table('archive_products')->get();
+    return view('AdminSide.Pages.ArchiveProductts',compact('ArchiveProducts'));
+})->name('ArchiveProducts');
+
+
+
 
 
 Route::post('/auth/register',[UserController::class, 'UserRegister'])->name('auth.register');
