@@ -118,25 +118,24 @@ class ProductController extends Controller
     {
         $product = DB::table('products')->where('id', $id)->first();
         if (! $product) {
-            return redirect('/')->with('error', 'Product not found');
+            return redirect('/QuantumOrder')->with('error', 'Product not found');
         }
 
         DB::table('products')->where('id', $id)->delete();
 
         DB::table('archive_products')->insert([
-            'id' => $product->id,
+            'productId' => $product->productId,
             'productName' => $product->productName,
-            'description' => $product->description,
+            'category' => $product->category,
             'price' => $product->price,
             'stock' => $product->stock,
+            'description' => $product->description,
             'image' => $product->image,
-            'UserLoginID' => $product->UserLoginID,
-            'UserLoginName' => $product->UserLoginName,
             'created_at' => $product->created_at,
             'updated_at' => Carbon::now()->toDateTimeLocalString(),
         ]);
 
-        return redirect('/AllSpecialProducts')->with('success', 'Product archive successfully');
+        return redirect('/QuantumOrder')->with('success', 'Product archive successfully');
     }
 
     public function RestoringSpecialProduct($id)

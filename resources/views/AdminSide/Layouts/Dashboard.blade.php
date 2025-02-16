@@ -189,11 +189,21 @@
            </ul>
         </div>
 
+        @if (session('failedToExport'))
+            <script>alert("{{session('failedToExport')}}")</script>
+        @endif
+
 
         <div class="container downloads">
             <a href="{{ route('UserManagement') }}">User Management</a>
-            <button type="submit">Export to Excel</button>
-            <button type="submit">Export to PDF</button>
+            <button  onclick="window.location.href='{{ route('products.excel') }}'">
+                Export to Excel
+            </button>
+
+            <button  onclick="window.location.href='{{ route('products.pdf') }}'">
+                Export to PDF
+            </button>
+
         </div>
 
         @if (!$products->isEmpty())
@@ -250,9 +260,9 @@
                             <td>{{ $product->created_at}}</td>
                             <td>
                                 <a href="" onclick="EditProducts('{{$product->id}}','{{$product->productName}}','{{$product->category}}','{{$product->price}}','{{$product->stock}}','{{$product->stock}}','{{$product->description}}','{{$product->image}}')">Edit</a>
-                                <form action="" method="post">
+                                <form action="/archive/{{$product->id}}" method="post">
                                     @csrf
-                                    <button type="submit">Delete</button>
+                                    <button type="submit" >Delete</button>
                                 </form>
                             </td>
                         </tr>

@@ -6,7 +6,9 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserSide\UserController;
 use App\Http\Controllers\AdminSide\AdminController;
+use App\Http\Controllers\ProductSide\ExportToExcel;
 use App\Http\Controllers\ProductSide\ProductController;
+use App\Http\Controllers\ProductSide\ExportToPDFProducts;
 
 
 
@@ -35,6 +37,14 @@ Route::get('/Archive',function(){
 })->name('ArchiveProducts');
 
 
+// Route::get('/ExportToPDF',function(){
+//     $products = DB::table('products')->get();
+//     return view('AdminSide.Pages.ExportToPDF',compact('products'));
+// })->name('ExportToPDF');
+
+
+Route::get('/products-pdf', [ExportToPDFProducts::class, 'exportPDF'])->name('products.pdf');
+Route::get('/products.excel',[ExportToExcel::class,'UserexportToExcel'])->name('products.excel');
 
 
 
@@ -48,3 +58,4 @@ Route::post('/auth/adminlogout',[AdminController::class,'AdminLogout'])->name('a
 
 
 Route::post('/product',[ProductController::class, 'addProduct'])->name('create.product');
+Route::post('/archive/{id}',[ProductController::class, 'archiveEachProduct'])->name('archive.product');

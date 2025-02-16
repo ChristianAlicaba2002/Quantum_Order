@@ -31,7 +31,7 @@
                 <tr>
                     <td>{{ $ArchiveProduct->productId }}</td>
                     <td>
-                        <img src="{{ asset('/images/' . $ArchiveProduct->image) }}" alt="{{ $ArchiveProduct->name }}"
+                        <img src="{{ asset('/images/' . $ArchiveProduct->image) }}" alt="{{ $ArchiveProduct->productName }}"
                             style="width: 50px; height: 50px; object-fit: cover;">
                     </td>
                     <td>{{ $ArchiveProduct->productName }}</td>
