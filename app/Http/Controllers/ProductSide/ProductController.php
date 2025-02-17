@@ -143,25 +143,24 @@ class ProductController extends Controller
         $product = DB::table('archive_products')->where('id', $id)->first();
 
         if (! $product) {
-            return redirect('/')->with('error', 'Product not found');
+            return redirect('/Archive')->with('error', 'Product not found');
         }
 
         DB::table('archive_products')->where('id', $id)->delete();
 
         DB::table('products')->insert([
-            'id' => $product->id,
+           'productId' => $product->productId,
             'productName' => $product->productName,
-            'description' => $product->description,
+            'category' => $product->category,
             'price' => $product->price,
             'stock' => $product->stock,
+            'description' => $product->description,
             'image' => $product->image,
-            'UserLoginID' => $product->UserLoginID,
-            'UserLoginName' => $product->UserLoginName,
             'created_at' => $product->created_at,
             'updated_at' => Carbon::now()->toDateTimeLocalString(),
         ]);
 
-        return redirect('/')->with('success', 'Product restore successfully');
+        return redirect('/Archive')->with('success', 'Product restore successfully');
     }
 
     public function GetTheGenerateProductId(): string

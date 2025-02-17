@@ -254,7 +254,7 @@
                             </td>
                             <td>{{ $product->productName }}</td>
                             <td>{{ $product->category }}</td>
-                            <td>{{ $product->price }}</td>
+                            <td>&#8369;{{ number_format($product->price)}}</td>
                             <td>{{ $product->stock }}</td>
                             <td>{{ $product->description }}</td>
                             <td>{{ $product->created_at}}</td>
@@ -262,7 +262,7 @@
                                 <a href="" onclick="EditProducts('{{$product->id}}','{{$product->productName}}','{{$product->category}}','{{$product->price}}','{{$product->stock}}','{{$product->stock}}','{{$product->description}}','{{$product->image}}')">Edit</a>
                                 <form action="/archive/{{$product->id}}" method="post">
                                     @csrf
-                                    <button type="submit" >Delete</button>
+                                    <button type="submit" >Archive</button>
                                 </form>
                             </td>
                         </tr>

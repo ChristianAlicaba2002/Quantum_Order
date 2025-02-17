@@ -21,6 +21,7 @@
                 <th>Stock</th>
                 <th>Description</th>
                 <th>Updated At</th>
+                <th>Action</th>
             </tr>
             @if (count($ArchiveProducts) == 0)
                 <tr>
@@ -36,10 +37,20 @@
                     </td>
                     <td>{{ $ArchiveProduct->productName }}</td>
                     <td>{{ $ArchiveProduct->category }}</td>
-                    <td>{{ $ArchiveProduct->price }}</td>
+                    <td>&#8369;{{ number_format($ArchiveProduct->price) }}</td>
                     <td>{{ $ArchiveProduct->stock }}</td>
                     <td>{{ $ArchiveProduct->description }}</td>
                     <td>{{ $ArchiveProduct->updated_at}}</td>
+                    <td>
+                        <form action="/retore/{{$ArchiveProduct->id}}" method="post">
+                            @csrf
+                            <button type="submit">Restore</button>
+                        </form>
+                        <form action="" method="post">
+                            @csrf
+                            <button type="submit">Delete</button>
+                        </form>
+                    </td>
                 </tr>
             @endforeach
         </table>

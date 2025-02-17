@@ -59,3 +59,4 @@ Route::post('/auth/adminlogout',[AdminController::class,'AdminLogout'])->name('a
 
 Route::post('/product',[ProductController::class, 'addProduct'])->name('create.product');
 Route::post('/archive/{id}',[ProductController::class, 'archiveEachProduct'])->name('archive.product');
+Route::post('/retore/{id}',[ProductController::class , 'RestoringSpecialProduct'])->name('restore.product');
