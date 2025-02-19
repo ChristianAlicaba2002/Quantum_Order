@@ -8,9 +8,9 @@
 </head>
 <body>
     
-    <a href="{{ route('QuantumOrder') }}">Back to Dashboard</a>
+    <a href="{{ route('AdminLogin') }}">Back to Dashboard</a>
     <h1>Archive Products</h1>
-    <p>This are all products you temporary remove it</p>
+    <p>These are all products you temporary remove</p>
     <table>
             <tr>
                 <th>ID</th>

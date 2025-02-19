@@ -16,6 +16,7 @@
                 <img style="width:2rem" src="./assets/house-door.svg" alt="" srcset="">
                 <div>
                     <input type="search" name="" id="SearchItem" placeholder="Search your item">
+                    <button type="submit">Search</button>
                 </div>
                 <img style="width:2rem" src="./assets/person.svg" alt="" srcset="">
                 <img style="width:2rem" src="./assets/cart.svg" alt="" srcset="">
