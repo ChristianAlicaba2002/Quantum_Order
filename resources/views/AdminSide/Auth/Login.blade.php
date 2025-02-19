@@ -25,12 +25,10 @@
 </style>
 
 <body>
-
-    @auth
+    @auth('admin')
         @include('AdminSide.Layouts.Dashboard')
         @yield('Dashboard')
     @else
-
         @if (session('error'))
             <script>alert("{{session('error')}}")</script>
         @endif
@@ -51,10 +49,8 @@
                 <a href="/">Switch to User</a>
             </form>
         </div>
-    </body>
-
-@endauth
-
+    @endauth
+</body>
 
 <script>
     function togglePassword() {
@@ -72,6 +68,5 @@
         }
     }
 </script>
-
 
 </html>

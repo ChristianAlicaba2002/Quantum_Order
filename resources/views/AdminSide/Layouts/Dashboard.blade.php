@@ -166,7 +166,7 @@
 <body>
     @section('Dashboard')
         <h1>Dashboard</h1>
-        <p>Welcome to the admin dashboard</p>
+        <p>Welcome to the admin Quantum Order dashboard</p>
         <button type="button" data-bs-toggle="modal" data-bs-target="#addProductModal">Add Product</button>
 
         <form action="{{ route('auth.adminlogout') }}" method="post">
@@ -205,28 +205,33 @@
             </button>
 
         </div>
+        @php
+            $products = DB::table('products')->get();
+            $displayProducts = $products;
+        @endphp
 
-        @if (!$products->isEmpty())
-            <nav>
-                <ul class="d-flex justify-content-center gap-4 list-unstyled">
-                    <li>
-                        <button class="btn active" onclick="filterProducts('all', event)">
-                            All
-                        </button>
-                    </li>
-                    @php
-                        $categories = $products->pluck('category')->unique();
-                    @endphp
-                    @foreach ($categories as $category)
+            @if (!$displayProducts->isEmpty())
+                <nav>
+                    <ul class="d-flex justify-content-center gap-4 list-unstyled">
                         <li>
-                            <button class="btn" onclick="filterProducts('{{ $category }}',event)">
-                                {{ $category }}
+                            <button class="btn active" onclick="filterProducts('all', event)">
+                                All
                             </button>
                         </li>
-                    @endforeach
-                </ul>
-            </nav>
-        @endif
+                        @php
+                            $categories = $products->pluck('category')->unique();
+                        @endphp
+                        @foreach ($categories as $category)
+                            <li>
+                                <button class="btn" onclick="filterProducts('{{ $category }}',event)">
+                                    {{ $category }}
+                                </button>
+                            </li>
+                        @endforeach
+                    </ul>
+                </nav>
+            @endif
+
 
         <div>
             <h1 id="categoryTitle">All Products</h1>
@@ -272,6 +277,8 @@
             @if($products->isEmpty())
                 <p>No products found</p>
             @endif
+
+
 
            
         </div>

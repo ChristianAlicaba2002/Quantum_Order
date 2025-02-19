@@ -6,7 +6,7 @@
     <title>User Management</title>
 </head>
 <body>
-    <a href="{{ route('QuantumOrder') }}">Back to Dashboard</a>
+    <a href="{{ route('AdminLogin') }}">Back to Dashboard</a>
     <div class="container downloads">
         <button type="submit">Export to Excel</button>
         <button type="submit">Export to PDF</button>

@@ -3,13 +3,14 @@
 namespace App\Infrastructure\Persistence\Eloquent\User;
 use App\Domain\User\User;
 use App\Domain\User\UserRepository;
-use App\Models\RegisterUser as RegisterUserModel;
+// use App\Models\RegisterUser as RegisterUserModel;
+use App\Models\User as ModelsUser;
 
 class EloquentUserRepository implements UserRepository
 {
     public function create(User $user): void
     {
-        $UserModel = RegisterUserModel::find($user->getUserId()) ?? new RegisterUserModel();
+        $UserModel = ModelsUser::find($user->getUserId()) ?? new ModelsUser();
         $UserModel->userId = $user->getUserId();
         $UserModel->firstName = $user->getFirstName();
         $UserModel->lastName = $user->getLastName();
@@ -23,7 +24,7 @@ class EloquentUserRepository implements UserRepository
 
     public function findById(string $userId): ?User
     {
-        $UserModel = RegisterUserModel::find($userId);
+        $UserModel = ModelsUser::find($userId);
         if ($UserModel === null) {
             return null;
         }

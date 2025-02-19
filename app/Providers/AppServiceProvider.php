@@ -2,11 +2,12 @@
 
 namespace App\Providers;
 
-use App\Domain\Product\ProductRepository;
+use App\Models\Admin;
 use App\Domain\User\UserRepository;
-use App\Infrastructure\Persistence\Eloquent\Product\EloquentProductRepository;
 use Illuminate\Support\ServiceProvider;
+use App\Domain\Product\ProductRepository;
 use App\Infrastructure\Persistence\Eloquent\User\EloquentUserRepository;
+use App\Infrastructure\Persistence\Eloquent\Product\EloquentProductRepository;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -24,6 +25,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+       
     }
 }

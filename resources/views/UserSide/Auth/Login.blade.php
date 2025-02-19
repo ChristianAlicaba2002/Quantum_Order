@@ -25,13 +25,10 @@
 
 <body>
     @auth
-        <div>
-            <h1>Hello World</h1>
-            <form action="{{ route('auth.logout') }}" method="post">
-                @csrf
-                <button type="submit">Logout</button>
-            </form>
-        </div>
+
+        @include('UserSide.Layouts.MainPage')
+        @yield('MainPage')
+        
     @else
         @if (session('error'))
             <script>
@@ -59,7 +56,7 @@
             </div>
 
             <div>
-                <a href="{{ route('QuantumOrder') }}">Switch to Admin</a>
+                <a href="{{ route('AdminLogin') }}">Switch to Admin</a>
             </div>
         </form>
     @endauth

@@ -5,34 +5,34 @@ namespace App\Http\Controllers\AdminSide;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
-use App\Models\RegisterUser;
+use App\Models\Admin;
+
 class AdminController extends Controller
 {
 
-
     public function AdminLogin(Request $request)
     {
-       Validator::make($request->all(), [
-            'email' => 'required|email',
-            'password' => 'required',
-        ])->validate();
-
-        $credentials = $request->only('email', 'password');
-
-        if (Auth::attempt($credentials)) {
-            return redirect('/QuantumOrder');
+        $credentials = $request->validate([
+            'email' => ['required', 'email'],
+            'password' => ['required'],
+        ]);
+    
+        if (Auth::guard('admin')->attempt($credentials)) {
+            $request->session()->regenerate();
+            return redirect()->route('AdminLogin');
         }
-
-        return redirect('/QuantumOrder')->with('error', 'Invalid credentials');
+    
+        return back()->with('error', 'The provided credentials do not match our records.');
     }
-
-
     public function AdminLogout(Request $request)
     {
-        Auth::logout();
+        Auth::guard('admin')->logout();
+        
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-        return redirect('/QuantumOrder');
+        
+        return redirect('/AdminLogin');
     }
 }

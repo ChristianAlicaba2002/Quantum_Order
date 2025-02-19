@@ -63,16 +63,15 @@ class ProductController extends Controller
             $data['image'],
         );
 
-        return redirect('/QuantumOrder')->with('success', 'Product added successfully');
+        return redirect('/AdminLogin')->with('success', 'Product added successfully');
 
     }
-
     public function UpdateProduct(Request $request, $id)
     {
         $product = DB::table('products')->where('id', $id)->first();
 
         if (!$product) {
-            return redirect('/')->with('error', 'Product not found');
+            return redirect('/AdminLogin')->with('error', 'Product not found');
         }
 
         Validator::make(
@@ -111,14 +110,14 @@ class ProductController extends Controller
             $imageName
         );
 
-        return redirect('/')->with('success', 'Product updated successfully');
+        return redirect('/AdminLogin')->with('success', 'Product updated successfully');
     }
 
     public function archiveEachProduct($id)
     {
         $product = DB::table('products')->where('id', $id)->first();
         if (! $product) {
-            return redirect('/QuantumOrder')->with('error', 'Product not found');
+            return redirect('/AdminLogin')->with('error', 'Product not found');
         }
 
         DB::table('products')->where('id', $id)->delete();
@@ -135,7 +134,7 @@ class ProductController extends Controller
             'updated_at' => Carbon::now()->toDateTimeLocalString(),
         ]);
 
-        return redirect('/QuantumOrder')->with('success', 'Product archive successfully');
+        return redirect('/AdminLogin')->with('success', 'Product archive successfully');
     }
 
     public function RestoringSpecialProduct($id)

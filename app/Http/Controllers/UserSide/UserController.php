@@ -55,11 +55,11 @@ class UserController extends Controller
     private function getGenerateUserID(): string
     {
         do {
-            $id = $this->generateRandomUserID(6);
-            $exists = $this->registerUser->findById('userId', $id);
+            $userId = $this->generateRandomUserID(6);
+            $exists = $this->registerUser->findById( $userId);
         } while ($exists);
 
-        return $id;
+        return $userId;
     }
 
     private function generateRandomUserID(int $length = 10): string
@@ -82,7 +82,8 @@ class UserController extends Controller
                 ->withInput();
         }
 
-        if (Auth::guard('register_user')->attempt($request->only('username', 'password'))) {
+        if (Auth::attempt($request->only(['username', 'password']))) {
+            $request->session()->regenerate();
             return redirect('/')->with('success', 'Login successful');
         }
 
@@ -93,7 +94,7 @@ class UserController extends Controller
 
     public function UserLogout(Request $request)
     {
-        Auth::guard('register_user')->logout();
+        Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
         return redirect('/');
