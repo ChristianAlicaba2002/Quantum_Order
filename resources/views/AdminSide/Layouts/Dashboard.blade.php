@@ -9,6 +9,9 @@
 </head>
 
 <style>
+    *{
+        font-family: Arial, Helvetica, sans-serif;
+    }
     .modal {
         display: none;
         position: fixed;
@@ -160,6 +163,10 @@
     #addProductModal button[data-bs-dismiss="modal"] {
         background-color: #f1f1f1;
     }
+    #productTable img{
+        border-radius: 50%;
+        border: 1px solid rgba(0, 0, 0, 0.122);
+    }
 
 </style>
 
@@ -205,12 +212,12 @@
             </button>
 
         </div>
-        @php
+        {{-- @php
             $products = DB::table('products')->get();
             $displayProducts = $products;
-        @endphp
+        @endphp --}}
 
-            @if (!$displayProducts->isEmpty())
+            @if (!$products->isEmpty())
                 <nav>
                     <ul class="d-flex justify-content-center gap-4 list-unstyled">
                         <li>
@@ -224,7 +231,7 @@
                         @foreach ($categories as $category)
                             <li>
                                 <button class="btn" onclick="filterProducts('{{ $category }}',event)">
-                                    {{ $category }}
+                                    {{ $category }}'s
                                 </button>
                             </li>
                         @endforeach
@@ -260,13 +267,15 @@
                             <td>{{ $product->productName }}</td>
                             <td>{{ $product->category }}</td>
                             <td>&#8369;{{ number_format($product->price)}}</td>
-                            <td>{{ $product->stock }}</td>
+                            <td style="color: {{$product->stock <= 20 ? 'red' : 'black' }}">{{$product->stock}}</td>
                             <td>{{ $product->description }}</td>
                             <td>{{ $product->created_at}}</td>
                             <td>
-                                <a href="" onclick="EditProducts('{{$product->id}}','{{$product->productName}}','{{$product->category}}','{{$product->price}}','{{$product->stock}}','{{$product->stock}}','{{$product->description}}','{{$product->image}}')">Edit</a>
+                                <button type="submit" onclick="EditProducts('{{$product->id}}','{{$product->productName}}','{{$product->category}}','{{$product->price}}'
+                                ,'{{$product->stock}}','{{$product->description}}','{{$product->image}}')">Edit</button>
                                 <form action="/archive/{{$product->id}}" method="post">
                                     @csrf
+                                    @method('DELETE')
                                     <button type="submit" >Archive</button>
                                 </form>
                             </td>
@@ -322,7 +331,7 @@
                         </div>
                         <div>
                             <button type="button" data-bs-dismiss="modal">Close</button>
-                            <button type="submit">Save Product</button>
+                            <button type="submit">Add Product</button>
                         </div>
                     </form>
                 </div>
@@ -330,8 +339,58 @@
         </div>
 
 
+        @if (session('success'))
+            <script>alert("{{session('success')}}")</script>
+        @endif
 
 
+        <div class="updateProductModal">
+            <div>
+                <div>
+                    <div>
+                        <h5>Update Product</h5>
+                       
+                    </div>
+                  
+                    <form id="EditForm" action="" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        @method('PUT')
+                        <div>
+                            <input type="hidden" id="ProductId" name="productId">
+                            <div>
+                                <label for="productName">Product Name</label>
+                                <input type="text" id="EditProductName" name="productName" required>
+                            </div>
+                            <div>
+                                <label for="category">Category</label>
+                                <input type="text" id="EditCategory" name="category" readonly>
+                            </div>
+                            <div>
+                                <label for="price">Price</label>
+                                <input type="number" id="EditPrice" name="price" step="0.01" required>
+                            </div>
+                            <div>
+                                <label for="stock">Stock</label>
+                                <input type="number" id="EditStock" name="stock" required>
+                            </div>
+                            <div>
+                                <label for="description">Description</label>
+                                <textarea id="EditDescription" name="description" rows="3" required></textarea>
+                            </div>
+                            <div>
+                                <label for="image">Image</label>
+                                <input type="file" id="EditImage" name="image" accept="image/*">
+                                <img id="previewImage" src="" alt="" srcset="">
+                            </div>
+                        </div>
+                        <div>
+                            <button type="button" data-bs-dismiss="modal">Close</button>
+                            <button type="submit">Save</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     @endsection
 
    
@@ -360,7 +419,17 @@
             });
         });
 
-    
+        //Open modal Update Products
+        function EditProducts(id,productName,category,price,stock,description,image){
+            document.getElementById('EditForm').action = `/updateProduct/${id}`;
+            document.getElementById('ProductId').value = id;
+            document.getElementById('EditProductName').value = productName;
+            document.getElementById('EditCategory').value = category;
+            document.getElementById('EditPrice').value = price;
+            document.getElementById('EditStock').value = stock;
+            document.getElementById('EditDescription').value = description;
+            document.getElementById('EditImage').src = image;
+        }
 
         //Filtered Products in navigation Bar
         function filterProducts(category, event) {
@@ -391,17 +460,7 @@
             }
         }
 
-
-        function EditProducts(id,productName,category,price,stock,description,image){
-            document.getElementById('EditForm').action = `/UpdateEachProduct${id}`;
-            document.getElementById('editID').value = id;
-            document.getElementById('editProductName').value = productName;
-            document.getElementById('editCategory').value = category;
-            document.getElementById('editPrice').value = price;
-            document.getElementById('editStock').value = stock;
-            document.getElementById('editDescription').value = description;
-            document.getElementById('editImage').value = image;
-        }
+  
 
 
 

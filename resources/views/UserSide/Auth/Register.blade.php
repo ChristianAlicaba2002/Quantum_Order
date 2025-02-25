@@ -9,10 +9,13 @@
 </head>
 
 <body>
+    @if (session('error'))
+        <script>alert("{{session('error')}}")</script>
+    @endif
     <h1>Sign Up</h1>
     <p>Please fill in this form to create an account</p>
     <hr>
-    <form action="{{ route('auth.register') }}" method="post">
+    <form action="{{ route('auth.register') }}" method="post" enctype="multipart/form-data">
         @csrf
         <div>
             <input type="text" name="firstName" placeholder="Enter firstName" required><br>
@@ -97,7 +100,7 @@
         </div>
 
         <div>
-            <input type="tel" name="contactNumber" placeholder="Mobile Number" required><br>
+            <input type="tel" name="phoneNumber" placeholder="Mobile Number" maxlength="11" required><br>
         </div>
 
         <div>
@@ -111,6 +114,8 @@
         <div>
             <input type="password" name="confirmPassword" placeholder="Confirm Password" required><br>
         </div>
+
+        <input type="file" name="image" hidden id="image">
 
         <div>
             <a href="/"> Already have an account ?</a>

@@ -8,23 +8,12 @@
     <title>Quantum Order</title>
 </head>
 
+<style>
+
+</style>
 
 <body>
-    @section('MainPage')
-            <header>
-                <h1>Quantum Order</h1>
-                <img style="width:2rem" src="./assets/house-door.svg" alt="" srcset="">
-                <div>
-                    <input type="search" name="" id="SearchItem" placeholder="Search your item">
-                    <button type="submit">Search</button>
-                </div>
-                <img style="width:2rem" src="./assets/person.svg" alt="" srcset="">
-                <img style="width:2rem" src="./assets/cart.svg" alt="" srcset="">
-            </header>
-            <form action="{{ route('auth.logout') }}" method="post">
-                @csrf
-                <button type="submit">Logout</button>
-            </form>
+        @include('UserSide.Pages.HeaderPage')           
 
         <div>
             <nav>
@@ -48,24 +37,29 @@
                 
             </nav>
 
-            
+        
             <div class="products">
-                @foreach ($products->sortBy('price') as $product)
-                    <div>
-                        <img src="{{ asset('/images/' . $product->image) }}" alt="{{ $product->productName }}"
-                            style="width: 50px; height: 50px; object-fit: cover;">
-                        <h1>{{$product->productName}}</h1>
-                        <h5>{{$product->category}}</h5>
-                        <p>{{number_format( $product->price)}}</p>
+                @if ($products->isEmpty())
+                    <h3>No available products</h3>
+                @else
+                    @foreach ($products->sortBy('price') as $product)
                         <div>
-                            <button type="submit">Add to cart</button>
-                        </div>
-                    </div>    
-                @endforeach
+                            <img src="{{ asset('/images/' . $product->image) }}" alt="{{ $product->productName }}"
+                                style="width: 50px; height: 50px; object-fit: cover;">
+                            <h1>{{$product->productName}}</h1>
+                            <h4>{{$product->category}}</h4>
+                            <h5>{{$product->description}}</h5>
+                            <p>{{number_format( $product->price)}}</p>
+                            <div>
+                                <button type="submit">Add to cart</button>
+                            </div>
+                        </div>    
+                    @endforeach
+                @endif
+               
             </div>
 
         </div>
-    @endsection
 
 
     <script>
@@ -79,15 +73,17 @@
             const products = document.querySelectorAll('.products > div');
 
             products.forEach(product => {
-                const productCategory = product.querySelector('h5').textContent;
+                const productCategory = product.querySelector('h4').textContent;
                 
                 if (category === 'all' || productCategory === category) {
                     product.style.display = ''; 
                 } else {
-                    product.style.display = 'none'; 
+                    product.style.display = 'none';
                 }
             });
         }
+
+
     </script>
 
 </body>

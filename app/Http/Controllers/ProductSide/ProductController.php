@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use App\Application\Product\ProductRegister;
 
@@ -14,6 +15,7 @@ class ProductController extends Controller
 {
 
     protected ProductRegister $productRegister;
+
     public function __construct(ProductRegister $productRegister)
     {
         $this->productRegister = $productRegister;
@@ -22,12 +24,12 @@ class ProductController extends Controller
     public function addProduct(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'productName' => 'required',
-            'category' => 'required',
+            'productName' => 'required|string',
+            'category' => 'required|string',
             'price' => 'required|numeric',
             'stock' => 'required|numeric',
-            'description' => 'required',
-            'image' => 'required|nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'description' => 'required|string',
+            'image' => 'required|nullable',
         ]);
 
         if ($validator->fails()) {
@@ -50,8 +52,7 @@ class ProductController extends Controller
         $price = floatval($request->price);
         $stock = intval($request->stock);
 
-        $id = $this->GetTheGenerateProductId();
-        
+        $id = $this->GetTheGenerateProductId();        
 
         $this->productRegister->create(
             $id,
@@ -66,25 +67,22 @@ class ProductController extends Controller
         return redirect('/AdminLogin')->with('success', 'Product added successfully');
 
     }
-    public function UpdateProduct(Request $request, $id)
-    {
-        $product = DB::table('products')->where('id', $id)->first();
 
-        if (!$product) {
-            return redirect('/AdminLogin')->with('error', 'Product not found');
+    public function updateProduct(Request $request, $id)
+    {
+        $product = DB::table('products')->where('userId', $id)->first();
+        if (! $product) {
+            return redirect('/AdminLogin')->with('error', 'product not found');
         }
 
-        Validator::make(
-            $request->all(),
-            [
-                'productName' => 'required|string',
-                'category' => 'required|string',
-                'description' => 'required|string',
-                'price' => 'required|numeric',
-                'stock' => 'required|numeric',
-                'image ' => 'required|nullable',
-            ]
-        );
+        Validator::make($request->all(), [
+            'productName' => 'required|string',
+            'category' => 'required|string',
+            'price' => 'required|numeric',
+            'stock' => 'required|numeric',
+            'description' => 'required|string',
+            'image' => 'required|nullable',
+        ]);
 
         $data = [];
 
@@ -97,20 +95,24 @@ class ProductController extends Controller
             $data['image'] = $imageName; // Store the image name in the data array
         } else {
             $data['image'] = $product->image ?? 'default.jpg';
-            $imageName = $data['image'];
+            $imageName = $data['image']; // Ensure $imageName is defined
         }
+
+        $price = floatval($request->price);
+        $stock = intval($request->stock);
+
 
         $this->productRegister->update(
             $product->productId,
             $request->productName,
             $request->category,
+            $price,
+            $stock,
             $request->description,
-            $request->price,
-            $request->stock,
-            $imageName
+            $imageName,
         );
 
-        return redirect('/AdminLogin')->with('success', 'Product updated successfully');
+        return redirect('/AdminLogin')->with('success', 'Product update successfully');
     }
 
     public function archiveEachProduct($id)
@@ -179,4 +181,6 @@ class ProductController extends Controller
 
         return $result;
     }
+
+   
 }

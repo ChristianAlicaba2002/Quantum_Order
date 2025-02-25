@@ -2,7 +2,6 @@
 
 namespace App\Providers;
 
-use App\Models\Admin;
 use App\Domain\User\UserRepository;
 use Illuminate\Support\ServiceProvider;
 use App\Domain\Product\ProductRepository;

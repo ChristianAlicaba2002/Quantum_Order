@@ -27,7 +27,7 @@ class EloquentProductRepository implements ProductRepository
         $productModel->category = $product->getCategory();
         $productModel->price = $product->getPrice();
         $productModel->stock = $product->getStock();
-        $productModel->description = $product->getDescription();
+        $productModel->description = $product->getDescription(); 
         $productModel->image = $product->getImage();
         $productModel->save();
     }

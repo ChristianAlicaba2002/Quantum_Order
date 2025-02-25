@@ -24,7 +24,7 @@ class AdminController extends Controller
             return redirect()->route('AdminLogin');
         }
     
-        return back()->with('error', 'The provided credentials do not match our records.');
+        return back()->with('error', 'Account not found.');
     }
     public function AdminLogout(Request $request)
     {

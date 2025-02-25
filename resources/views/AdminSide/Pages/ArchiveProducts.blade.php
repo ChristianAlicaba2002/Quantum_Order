@@ -9,7 +9,7 @@
 <body>
     
     <a href="{{ route('AdminLogin') }}">Back to Dashboard</a>
-    <h1>Archive Products</h1>
+    <h1>Archived Products</h1>
     <p>These are all products you temporary remove</p>
     <table>
             <tr>
@@ -44,6 +44,7 @@
                     <td>
                         <form action="/retore/{{$ArchiveProduct->id}}" method="post">
                             @csrf
+                            @method('DELETE')
                             <button type="submit">Restore</button>
                         </form>
                         <form action="" method="post">

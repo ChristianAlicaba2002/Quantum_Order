@@ -18,5 +18,7 @@ class OrderUsers extends Model
         'image',
         'userIdLogin',
         'userNameLogin',
+        'userAddress',
+        'userPhoneNumber'
     ];
 }

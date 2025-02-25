@@ -1,8 +1,6 @@
 <?php
 
 use App\Models\User;
-use App\Models\Admin;
-use App\Models\products;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -24,10 +22,9 @@ Route::get('/Register', function () {
 
 // Admin login route (public)
 Route::get('/AdminLogin', function () {
-    return view('AdminSide.Auth.Login');
+    $products = DB::table('products')->get();
+    return view('AdminSide.Auth.Login',compact('products'));
 })->name('AdminLogin');
-
-// // Protected admin routes
 
 // Route::middleware('auth:admin')->group(function () {   
 //     Route::get('/QuantumOrder', function () {
@@ -47,6 +44,7 @@ Route::get('/AdminLogin', function () {
 //     })->name('ArchiveProducts');
 // });
 
+
 Route::get('/UserManagement', function () {
     $users = User::all();
     return view('AdminSide.Pages.UserManagement', compact('users'));
@@ -56,6 +54,29 @@ Route::get('/Archive', function () {
     $ArchiveProducts = DB::table('archive_products')->get();
     return view('AdminSide.Pages.ArchiveProducts', compact('ArchiveProducts'));
 })->name('ArchiveProducts');
+
+Route::get('/UserInformationPage',function(){
+    $users = DB::table('users')->where('userId',Auth::user()->userId)->get();
+    return view('UserSide.Pages.UserInformationPage', compact('users'));
+})->name('UserInformationPage');
+
+
+//PurchaseHistory
+Route::get('/CancelledPage',function () {
+    return view('UserSide.Pages.PurchaseHistory.Cancelled'); 
+})->name('CancelledPage');
+
+Route::get('/ReceivedPage',function () {
+    return view('UserSide.Pages.PurchaseHistory.Received'); 
+})->name('ReceivedPage');
+
+Route::get('/ToPayPage',function () {
+    return view('UserSide.Pages.PurchaseHistory.ToPay'); 
+})->name('ToPayPage');
+//End of Purchase History Route
+
+
+
 
 // Export routes
 Route::get('/products-pdf', [ExportToPDFProducts::class, 'exportPDF'])->name('products.pdf');
@@ -71,5 +92,9 @@ Route::post('/auth/adminlogout', [AdminController::class, 'AdminLogout'])->name(
 
 // Product routes
 Route::post('/product', [ProductController::class, 'addProduct'])->name('create.product');
-Route::post('/archive/{id}', [ProductController::class, 'archiveEachProduct'])->name('archive.product');
-Route::post('/retore/{id}', [ProductController::class, 'RestoringSpecialProduct'])->name('restore.product');
+Route::put('/updateProduct/{id}',[ProductController::class, 'updateProduct'])->name('update.product');
+Route::delete('/archive/{id}', [ProductController::class, 'archiveEachProduct'])->name('archive.product');
+Route::delete('/retore/{id}', [ProductController::class, 'RestoringSpecialProduct'])->name('restore.product');
+
+
+Route::put('/UpdateInformationUser/{id}',[UserController::class,'UpdateInformationUser'])->name('UpdateInformationUser');

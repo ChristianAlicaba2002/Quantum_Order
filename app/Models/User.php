@@ -34,7 +34,8 @@ class User extends Authenticatable
         'address',
         'PhoneNumber',
         'username',
-        'password'
+        'password',
+        'image'
     ];
 
 

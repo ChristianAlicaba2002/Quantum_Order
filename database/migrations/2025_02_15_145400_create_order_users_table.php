@@ -23,6 +23,8 @@ return new class extends Migration
             $table->string('image');
             $table->string('userIdLogin')->constrained('register_user');
             $table->string('userNameLogin')->constrained('register_user');
+            $table->string('userAddress')->constrained('register_user');
+            $table->string('userPhoneNumber')->constrained('register_user');
             $table->timestamps();
         });
     }

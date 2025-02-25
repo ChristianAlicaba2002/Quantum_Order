@@ -27,7 +27,7 @@
     @auth
 
         @include('UserSide.Layouts.MainPage')
-        @yield('MainPage')
+        {{-- @yield('MainPage') --}}
         
     @else
         @if (session('error'))

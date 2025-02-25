@@ -12,7 +12,8 @@ class User
         private string $address,
         private string $PhoneNumber,
         private string $username,
-        private string $password
+        private string $password,
+        private string $image
     ) {
         $this->userId = $userId;
         $this->firstName = $firstName;
@@ -21,6 +22,7 @@ class User
         $this->PhoneNumber = $PhoneNumber;
         $this->username = $username;
         $this->password = $password;
+        $this->image = $image;
     }
 
     public function getUserId(): string
@@ -62,6 +64,11 @@ class User
         return $this->password;
     }
 
+    public function getImage(): string
+    {
+        return $this->image;
+    }
+
     public function toArray(): array
     {
         return [
@@ -72,6 +79,7 @@ class User
             'PhoneNumber' => $this->PhoneNumber,
             'username' => $this->username,
             'password' => $this->password,
+            'image' => $this->image,
         ];
     }
    
