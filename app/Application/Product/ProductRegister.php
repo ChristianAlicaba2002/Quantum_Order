@@ -24,9 +24,9 @@ class ProductRegister
         string $image
     )
     {
-        $product = new Product($productId,$name,$category,$price,$stock,$description,$image);
+        $addProduct = new Product($productId,$name,$category,$price,$stock,$description,$image);
 
-        return $this->productRepository->create($product);
+        return $this->productRepository->create($addProduct);
     }
 
     public function update(
@@ -37,14 +37,11 @@ class ProductRegister
         float $stock,
         string $description,    
         string $image
-        )
-        {
-            $price = is_null($price) ? null : (float) $price;
-            $newProduct = new Product($productId,$name,$category,$price,$stock,$description,$image);
-            return $this->productRepository->update($newProduct);
-        }
-
-
+    )
+    {
+        $updateProduct = new Product($productId, $name, $category, $price, $stock, $description, $image);
+        return $this->productRepository->update($updateProduct);
+    }
 
     public function findById(string $productId): ?Product
     {

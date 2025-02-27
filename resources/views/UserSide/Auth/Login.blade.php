@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="shortcut icon" href="assets/logo.jpg" type="image/x-icon">
     <title>Quantum Order</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
@@ -27,28 +28,33 @@
     @auth
 
         @include('UserSide.Layouts.MainPage')
-        {{-- @yield('MainPage') --}}
         
     @else
-        @if (session('error'))
-            <script>
-                alert("{{ session('error') }}")
-            </script>
-        @endif
-
         <h1>Quantum Order</h1>
         <p>Log into Quantum Order</p>
+        @if (session('error'))
+            <label style="color: red" for="">{{session('error')}}</label>
+        @endif
+        @if(session('isEmpty'))
+            <label style="color: red" for="">{{session('isEmpty')}}</label>
+        @endif
         <form action="{{ route('auth.login') }}" method="post">
             @csrf
 
             <div>
-                <input type="text" name="username" placeholder="Username or Phone number" required><br>
+                <input type="text" name="username" placeholder="Username or Phone number"><br>
+                @if (session('isUsernameEmpty'))
+                    <label style="color: red" for="">{{session('isUsernameEmpty')}}</label>
+                @endif
             </div>
 
             <div class="password-container">
-                <input type="password" name="password" id="password" placeholder="Enter password" required>
+                <input type="password" name="password" id="password" placeholder="Enter password">
                 <i class="toggle-password fas fa-eye-slash" onclick="togglePassword()"></i>
             </div><br>
+            @if (session('isPasswordEmpty'))
+                <label style="color: red" for="">{{session('isPasswordEmpty')}}</label>
+            @endif
 
             <a href="/Register">Create new account</a>
             <div>

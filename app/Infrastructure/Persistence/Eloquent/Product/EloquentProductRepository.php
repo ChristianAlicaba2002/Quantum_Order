@@ -1,9 +1,11 @@
 <?php
 
 namespace App\Infrastructure\Persistence\Eloquent\Product;
-use App\Domain\Product\Product;
-use App\Domain\Product\ProductRepository;
 use App\Models\Products;
+use App\Domain\Product\Product;
+use Illuminate\Support\Facades\DB;
+use App\Domain\Product\ProductRepository;
+
 class EloquentProductRepository implements ProductRepository
 {
     public function create(Product $product): void
@@ -22,6 +24,11 @@ class EloquentProductRepository implements ProductRepository
     public function update(Product $product): void
     {
         $productModel = Products::find($product->getProductId()) ?? new Products();
+
+        if ($productModel === null) {
+            throw new \RuntimeException('Product not found');
+        }
+
         $productModel->productId = $product->getProductId();
         $productModel->productName = $product->getName();
         $productModel->category = $product->getCategory();

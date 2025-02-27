@@ -55,11 +55,16 @@ Route::get('/Archive', function () {
     return view('AdminSide.Pages.ArchiveProducts', compact('ArchiveProducts'));
 })->name('ArchiveProducts');
 
+Route::get('/OrderHistory', function () {
+    $UserOrders = DB::table('order_users')->get();
+    return view('AdminSide.Pages.OrderPage',compact('UserOrders'));
+})->name('OrderHistory');
+
+
 Route::get('/UserInformationPage',function(){
     $users = DB::table('users')->where('userId',Auth::user()->userId)->get();
     return view('UserSide.Pages.UserInformationPage', compact('users'));
 })->name('UserInformationPage');
-
 
 //PurchaseHistory
 Route::get('/CancelledPage',function () {
@@ -75,6 +80,9 @@ Route::get('/ToPayPage',function () {
 })->name('ToPayPage');
 //End of Purchase History Route
 
+Route::get('/MainPage',function(){
+    return view('UserSide.Layouts.MainPage');
+})->name('MainPage');
 
 
 
@@ -92,9 +100,10 @@ Route::post('/auth/adminlogout', [AdminController::class, 'AdminLogout'])->name(
 
 // Product routes
 Route::post('/product', [ProductController::class, 'addProduct'])->name('create.product');
-Route::put('/updateProduct/{id}',[ProductController::class, 'updateProduct'])->name('update.product');
+Route::put('/updateProduct/{id}', [ProductController::class, 'updateProduct'])->name('update.product');
 Route::delete('/archive/{id}', [ProductController::class, 'archiveEachProduct'])->name('archive.product');
 Route::delete('/retore/{id}', [ProductController::class, 'RestoringSpecialProduct'])->name('restore.product');
-
-
-Route::put('/UpdateInformationUser/{id}',[UserController::class,'UpdateInformationUser'])->name('UpdateInformationUser');
+Route::post('/addtocart/{id}',[UserController::class, 'UserAddToCart'])->name('addtocart');
+Route::post('/removefromcart/{id}',[UserController::class, 'UserRemoveItemFromAddtoCart'])->name('removefromcart'); 
+ Route::put('/UpdateInformationUser/{id}',[UserController::class,'UpdateInformationUser'])->name('UpdateInformationUser');
+Route::post('/checkout/{id}', [UserController::class, 'checkout'])->name('checkout');

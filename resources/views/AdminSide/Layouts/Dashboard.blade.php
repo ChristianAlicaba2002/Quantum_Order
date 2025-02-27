@@ -168,10 +168,84 @@
         border: 1px solid rgba(0, 0, 0, 0.122);
     }
 
+    #editProductModal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+    }
+
+    #editProductModal.show {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    #editProductModal > div {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        width: 90%;
+        max-width: 500px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    #editProductModal h5 {
+        margin: 0 0 20px 0;
+        font-size: 1.5rem;
+        color: #333;
+    }
+
+    #editProductModal form div {
+        margin-bottom: 15px;
+    }
+
+    #editProductModal label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+        color: #555;
+    }
+
+    #editProductModal input,
+    #editProductModal textarea {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        box-sizing: border-box;
+    }
+
+    #editProductModal button {
+        padding: 8px 15px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    #editProductModal button[type="submit"] {
+        background-color: #fd7d0d;
+        color: white;
+        float: right;
+    }
+
+    #editProductModal button[data-bs-dismiss="modal"] {
+        background-color: #f1f1f1;
+    }
+
+    #editProductModal img {
+        margin-top: 10px;
+        border-radius: 4px;
+        border: 1px solid #ddd;
+    }
+
 </style>
 
 <body>
-    @section('Dashboard')
         <h1>Dashboard</h1>
         <p>Welcome to the admin Quantum Order dashboard</p>
         <button type="button" data-bs-toggle="modal" data-bs-target="#addProductModal">Add Product</button>
@@ -191,7 +265,7 @@
                 <a href="{{route('ArchiveProducts')}}">Archive</a>
             </li>
             <li>
-                <a href="">Orders</a>
+                <a href="{{route('OrderHistory')}}">Orders</a>
             </li>
            </ul>
         </div>
@@ -212,10 +286,6 @@
             </button>
 
         </div>
-        {{-- @php
-            $products = DB::table('products')->get();
-            $displayProducts = $products;
-        @endphp --}}
 
             @if (!$products->isEmpty())
                 <nav>
@@ -271,8 +341,7 @@
                             <td>{{ $product->description }}</td>
                             <td>{{ $product->created_at}}</td>
                             <td>
-                                <button type="submit" onclick="EditProducts('{{$product->id}}','{{$product->productName}}','{{$product->category}}','{{$product->price}}'
-                                ,'{{$product->stock}}','{{$product->description}}','{{$product->image}}')">Edit</button>
+                                <button type="button" onclick="EditProducts('{{$product->id}}','{{$product->productName}}','{{$product->category}}','{{$product->price}}','{{$product->stock}}','{{$product->description}}','{{$product->image}}')">Edit</button>
                                 <form action="/archive/{{$product->id}}" method="post">
                                     @csrf
                                     @method('DELETE')
@@ -286,10 +355,6 @@
             @if($products->isEmpty())
                 <p>No products found</p>
             @endif
-
-
-
-           
         </div>
 
         <!-- Add Product Modal -->
@@ -338,62 +403,62 @@
             </div>
         </div>
 
-
         @if (session('success'))
             <script>alert("{{session('success')}}")</script>
         @endif
 
+        @if (session('error'))
+        <script>alert("{{session('error')}}")</script>
+    @endif
 
-        <div class="updateProductModal">
+        <div id="editProductModal" class="modal">
             <div>
                 <div>
                     <div>
-                        <h5>Update Product</h5>
-                       
+                        <h5>Edit Product</h5>
                     </div>
-                  
                     <form id="EditForm" action="" method="POST" enctype="multipart/form-data">
                         @csrf
                         @method('PUT')
+                        <input type="hidden" id="EditProductId" name="productId">
                         <div>
-                            <input type="hidden" id="ProductId" name="productId">
                             <div>
-                                <label for="productName">Product Name</label>
+                                <label for="EditProductName">Product Name</label>
                                 <input type="text" id="EditProductName" name="productName" required>
                             </div>
                             <div>
-                                <label for="category">Category</label>
-                                <input type="text" id="EditCategory" name="category" readonly>
+                                <label for="EditCategory">Category</label>
+                                <input type="text" id="EditCategory" name="category" required>
                             </div>
                             <div>
-                                <label for="price">Price</label>
+                                <label for="EditPrice">Price</label>
                                 <input type="number" id="EditPrice" name="price" step="0.01" required>
                             </div>
                             <div>
-                                <label for="stock">Stock</label>
+                                <label for="EditStock">Stock</label>
                                 <input type="number" id="EditStock" name="stock" required>
                             </div>
                             <div>
-                                <label for="description">Description</label>
+                                <label for="EditDescription">Description</label>
                                 <textarea id="EditDescription" name="description" rows="3" required></textarea>
                             </div>
                             <div>
-                                <label for="image">Image</label>
+                                <label for="EditImage">Product Image</label>
                                 <input type="file" id="EditImage" name="image" accept="image/*">
-                                <img id="previewImage" src="" alt="" srcset="">
+                                <img id="EditPreviewImage" src="" alt="" style="width: 50px; height: 50px; object-fit: cover;">
                             </div>
                         </div>
                         <div>
                             <button type="button" data-bs-dismiss="modal">Close</button>
-                            <button type="submit">Save</button>
+                            <button type="submit">Save Changes</button>
                         </div>
                     </form>
                 </div>
             </div>
         </div>
-    @endsection
 
-   
+       
+
 
     <script>
 
@@ -420,16 +485,26 @@
         });
 
         //Open modal Update Products
-        function EditProducts(id,productName,category,price,stock,description,image){
+        function EditProducts(id, productName, category, price, stock, description, image) {
+            const modal = document.getElementById('editProductModal');
             document.getElementById('EditForm').action = `/updateProduct/${id}`;
-            document.getElementById('ProductId').value = id;
+            document.getElementById('EditProductId').value = id;
             document.getElementById('EditProductName').value = productName;
             document.getElementById('EditCategory').value = category;
             document.getElementById('EditPrice').value = price;
             document.getElementById('EditStock').value = stock;
             document.getElementById('EditDescription').value = description;
-            document.getElementById('EditImage').src = image;
+            document.getElementById('EditPreviewImage').src = '/images/' + image;
+
+            modal.classList.add('show');
         }
+
+        // Close modal when clicking outside
+        document.getElementById('editProductModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                this.classList.remove('show');
+            }
+        });
 
         //Filtered Products in navigation Bar
         function filterProducts(category, event) {
@@ -466,6 +541,8 @@
 
 
     </script>
+
+ 
 </body>
 
 </html>

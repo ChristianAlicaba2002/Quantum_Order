@@ -68,51 +68,55 @@ class ProductController extends Controller
 
     }
 
-    public function updateProduct(Request $request, $id)
+    public function updateProduct(Request $request, $product_id)
     {
-        $product = DB::table('products')->where('userId', $id)->first();
+        $product = DB::table('products')->where('id', $product_id)->first();
         if (! $product) {
             return redirect('/AdminLogin')->with('error', 'product not found');
         }
 
-        Validator::make($request->all(), [
+        $validator = Validator::make($request->all(), [
             'productName' => 'required|string',
             'category' => 'required|string',
             'price' => 'required|numeric',
             'stock' => 'required|numeric',
             'description' => 'required|string',
-            'image' => 'required|nullable',
+            'image' => 'nullable|image',
         ]);
 
-        $data = [];
-
-        if ($request->file(key: 'image')) {
-            $image = $request->file(key: 'image');
-            $destinationPath = 'images';
-
-            $imageName = time() . '.' . $image->getClientOriginalExtension();
-            $image->move($destinationPath, $imageName);
-            $data['image'] = $imageName; // Store the image name in the data array
-        } else {
-            $data['image'] = $product->image ?? 'default.jpg';
-            $imageName = $data['image']; // Ensure $imageName is defined
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
         }
 
-        $price = floatval($request->price);
-        $stock = intval($request->stock);
+        $data = [
+            'productName' => $request->productName,
+            'category' => $request->category,
+            'price' => floatval($request->price),
+            'stock' => intval($request->stock),
+            'description' => $request->description,
+        ];
 
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $destinationPath = 'images';
+            $imageName = time() . '.' . $image->getClientOriginalExtension();
+            $image->move($destinationPath, $imageName);
+            $data['image'] = $imageName;
+        } else {
+            $data['image'] = $product->image ?? 'default.jpg';
+        }
 
         $this->productRegister->update(
-            $product->productId,
-            $request->productName,
-            $request->category,
-            $price,
-            $stock,
-            $request->description,
-            $imageName,
+            $product->id,
+            $data['productName'],
+            $data['category'],
+            $data['price'],
+            $data['stock'],
+            $data['description'],
+            $data['image']
         );
 
-        return redirect('/AdminLogin')->with('success', 'Product update successfully');
+        return redirect('/AdminLogin')->with('success', 'Product updated successfully');
     }
 
     public function archiveEachProduct($id)

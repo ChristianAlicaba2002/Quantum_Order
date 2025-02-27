@@ -38,8 +38,8 @@
                 <h3>Low Stock Items</h3>
                 <p>Stocks: {{ $products->where('stock', '<', 20)->count() }}</p>
                 <div>
-                    <i class="fas fa-exclamation-triangle"></i>
-                    <small class="text-muted">Needs attention</small>
+                    <i class="fas fa-exclamation-triangle" style="color: red"></i>
+                    <small class="text-muted" style="color: red">Needs attention</small>
                 </div>
             </div>
         </div>

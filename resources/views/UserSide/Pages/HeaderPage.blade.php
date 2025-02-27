@@ -65,6 +65,24 @@
     position: absolute;
     display: none;
 }
+.cartNumber{
+   width: 20%;
+}
+.cartGroup{
+    width: .79rem;
+    height: .80rem;
+    background-color: red;
+    text-align: center;
+    border-radius: 50%;
+    padding: .15rem;
+    font-size: smaller;
+    position: relative;
+    margin-top: -2.6rem;
+    margin-left: 1.3rem;
+}.cartGroup label{
+    color: rgb(255, 255, 255);
+    position: relative;
+}
 </style>
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -74,7 +92,7 @@
     <img style="width:2rem" src="./assets/house-door.svg" alt="" srcset="">
     <div>
         <div>
-            <input type="search" placeholder="Search  your favorite brand" onkeyup="searchProducts(this.value)">
+            <input type="search" placeholder="Search your item" onkeyup="searchProducts(this.value)">
         </div>
     </div>
     <div class="userinformation dropdown">
@@ -98,7 +116,17 @@
             </form>
         </div>
     </div>
-    <img style="width:2rem" src="./assets/cart.svg" alt="" srcset="">
+    <div class="cartNumber">
+    <img id="cartIcon" style="width:2rem" src="./assets/cart.svg" alt="" srcset="">
+        <div class="cartGroup">
+            <?php  
+                $product = DB::table('add_to_cart')->where('userId',Auth::user()->userId)->get(); 
+                $productCount = $product;
+            ?>
+        <label for="">{{$productCount->count()}}</label>
+        </div>
+       
+    </div>
 </header>
 
 
@@ -121,4 +149,15 @@
                 });
         
         }
+
+        document.getElementById('cartIcon').addEventListener('click', function() {
+        const addToCartDivision = document.getElementById('AddToCartDivision');
+        if (addToCartDivision) {
+            if (addToCartDivision.style.display === 'none' || addToCartDivision.style.display === '') {
+                addToCartDivision.style.display = 'block';
+            } else {
+                addToCartDivision.style.display = 'none';
+            }
+        }
+    });
 </script>

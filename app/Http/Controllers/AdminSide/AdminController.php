@@ -26,6 +26,7 @@ class AdminController extends Controller
     
         return back()->with('error', 'Account not found.');
     }
+    
     public function AdminLogout(Request $request)
     {
         Auth::guard('admin')->logout();
