@@ -88,6 +88,7 @@
                     <th>Order Date</th>
                     <th>Action</th>
                 </tr>
+                
             </thead>
             <tbody>
                 @foreach($deliveryOrders as $order)

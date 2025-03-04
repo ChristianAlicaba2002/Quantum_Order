@@ -121,10 +121,11 @@ Route::post('/checkout', [UserController::class, 'checkoutItems'])->name('checko
 Route::get('/pending-orders', [AdminController::class, 'viewPendingOrders'])->name('admin.pending-orders');
 Route::get('/order/{orderId}', [AdminController::class, 'viewOrderDetails'])->name('admin.order-details');
 Route::post('/order/{orderId}/update-status', [AdminController::class, 'updateOrderStatus'])->name('admin.update-order-status');
+Route::post('/cancel.order/{orderId}', [UserController::class, 'cancelOrder'])->name('cancel.order');
+
 
 Route::post('/checkout/preview', [UserController::class, 'checkoutPreview'])->name('checkout.preview');
 Route::post('/checkout/process', [UserController::class, 'checkoutProcess'])->name('checkout.process');
 Route::post('deliveredItems/{id}',[UserController::class , 'MoveToRecieved'])->name('deliveredItems.process');
 // Add this route for the order receipt
 Route::get('/order/receipt/{orderId}', [UserController::class, 'showOrderReceipt'])->name('user.order.receipt');
-

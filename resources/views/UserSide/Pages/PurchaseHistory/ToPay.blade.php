@@ -106,9 +106,9 @@
                         <td>{{$order->address}}</td>
                         <td>{{ date('M d, Y h:i A', strtotime($order->created_at)) }}</td>
                         <td>
-                            <form action="" method="post">
+                            <form action="{{ route('cancel.order', $order->orderId) }}" method="post">
                                 @csrf
-                                <button>Cancel</button>
+                                <button type="submit" class="btn btn-danger">Cancel</button>
                             </form>
                         </td>
                     </tr>

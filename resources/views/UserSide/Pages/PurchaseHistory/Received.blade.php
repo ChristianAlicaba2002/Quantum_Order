@@ -76,22 +76,30 @@
             <thead>
                 <tr>
                     <th>Order ID</th>
+                    <th>Product ID</th>
                     <th>Image</th>
                     <th>Product Name</th>
                     <th>Category</th>
                     <th>Quantity</th>
                     <th>Price</th>
-                    <th>Total Amount</th>
-                    <th>Payment</th>
                     <th>Status</th>
-                    <th>Address</th>
                     <th>Order Date</th>
                 </tr>
             </thead>
+
+            {{-- orderId
+                productId
+                productName
+                category
+                quantity
+                price
+                image
+                orderStatus --}}
             <tbody>
                 @foreach($receivedOrders as $order)
                     <tr>
                         <td>{{ $order->orderId }}</td>
+                        <td>{{ $order->productId }}</td>
                         <td>
                             <img src="{{ asset('/images/' . $order->image) }}" alt="{{ $order->productName }}" style="width:50px;">
                         </td>
@@ -99,9 +107,7 @@
                         <td>{{ $order->category }}</td>
                         <td>{{ $order->quantity }}</td>
                         <td>₱{{ number_format($order->price, 2) }}</td>
-                        <td>₱{{ number_format($order->totalAmount, 2) }}</td>
-                        <td>{{$order->paymentMethod}}</td>
-                        <td>{{$order->orderStatus}}</td>
+                        <td style="color: green">{{$order->orderStatus}}</td>
                         <td>{{ date('M d, Y h:i A', strtotime($order->created_at)) }}</td>
                     </tr>
                 @endforeach

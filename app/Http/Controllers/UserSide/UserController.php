@@ -357,26 +357,50 @@ class UserController extends Controller
 
     public function MoveToRecieved(Request $request, $id)
     {
-        $orders = DB::table('orders')->where('orderId', $id)->first();
-        if(!$orders)
-        {
-            return view('UserSide.Pages.PurchaseHistory.Delivery')->with('error','Product not found');
+        // First get the order
+        $order = DB::table('orders')->where('orderId', $id)->first();
+        if(!$order) {
+            return redirect()->back()->with('error', 'Order not found');
         }
 
-        $receivedOrders = DB::table('delivered_items')->insert([
-            'orderId' => $orders->orderId,
-            'productId' => $orders->productId,
-            'productName' => $orders->productName,
-            'category' => $orders->category,
-            'quantity' => $orders->quantity,
-            'price' => $orders->price,
-            'image' => $orders->image,
-            'orderStatus' => 'Delivered',
-            'created_at' => now(),
-            'updated_at' => now()
-        ]);
+        // Get the order details which contain product information
+        $orderDetails = DB::table('order_details')
+            ->where('orderId', $id)
+            ->first();
+        
+        if(!$orderDetails) {
+            return redirect()->back()->with('error', 'Order details not found');
+        }
 
-        return view('UserSide.Pages.Recieved',compact('receivedOrders'));
+        try {
+            $receivedOrder = DB::table('delivered_items')->insert([
+                'orderId' => $order->orderId,
+                'productId' => $orderDetails->productId,
+                'productName' => $orderDetails->productName,
+                'category' => $orderDetails->category,
+                'quantity' => $orderDetails->quantity,
+                'price' => $orderDetails->price,
+                'image' => $orderDetails->image,
+                'orderStatus' => 'Delivered',
+                'created_at' => now(),
+                'updated_at' => now()
+            ]);
+
+            // Update the status in orders table
+            DB::table('orders')
+                ->where('orderId', $id)
+                ->update([
+                    'orderStatus' => 'Delivered',
+                    'updated_at' => now()
+                ]);
+
+            return view('UserSide.Pages.PurchaseHistory.Received', compact('receivedOrders'))->with('success', 'Order marked as received successfully');
+
+        } catch (\Exception $e) {
+            Log::error('Error moving order to received: ' . $e->getMessage());
+            return redirect()->back()
+                ->with('error', 'Failed to mark order as received. Please try again.');
+        }
     }
 
     public function receivedHistory()
@@ -403,6 +427,25 @@ class UserController extends Controller
             ->get();
 
         return view('UserSide.Pages.PurchaseHistory.Cancelled', compact('cancelledOrders'));
+    }
+
+    public function cancelOrder(Request $request, $orderId)
+    {
+        $order = DB::table('orders')->where('orderId', $orderId)->first();
+        if(!$order) {
+            return redirect()->back()->with('error', 'Order not found');
+        }
+
+        try {
+            DB::table('orders')->where('orderId', $orderId)->update([
+                'orderStatus' => 'Declined',
+                'updated_at' => now()
+            ]);
+
+            return redirect()->back()->with('success', 'Order cancelled successfully');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Failed to cancel order: ' . $e->getMessage());
+        }
     }
 
     public function checkoutPreview(Request $request)
