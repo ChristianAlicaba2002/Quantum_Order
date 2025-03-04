@@ -36,6 +36,11 @@ class ProductController extends Controller
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
+        if(DB::table('products')->where('productName', $request->productName)->exists())
+        {
+            return redirect()->back()->with('error', 'Product already exists');
+        }
+
         $data = [];
 
         if ($request->file('image')) {

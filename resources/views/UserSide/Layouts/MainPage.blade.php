@@ -4,130 +4,64 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="assets/logo.jpg" type="image/x-icon">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <title>Quantum Order</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
 </head>
 
 <style>
+    *{
+        font-family: Arial, Helvetica, sans-serif;
+    }
      body {
         font-size: 12px;
-        font-family: 'Arial', sans-serif;
         margin: 0;
         padding: 0;
-        background-color: #f9f9f9;
+        background-color: #ffffff;
         color: #333;
+        width: 100%;
     }
 
     nav {
-        background-color: #ff9100;
-        margin: 0;
-        padding: 10px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
+       background-color: #ff9100;
+       margin: 0;
+       padding: 10px;
+       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+   }
 
-    nav ul {
-        list-style-type: none;
-        padding: 0;
-        display: flex;
-        justify-content: center;
-    }
+   nav ul {
+       list-style-type: none;
+       padding: 0;
+       display: flex;
+       justify-content: center;
+   }
 
-    nav ul li {
-        margin: 0 10px;
-    }
+   nav ul li {
+       margin: 0 10px;
+   }
 
-    nav ul li button {
-        background-color: transparent;
-        color: #fff;
-        border: none;
-        padding: 5px 10px;
-        cursor: pointer;
-        font-size: 14px;
-        transition: background-color 0.3s, color 0.3s;
-        border-radius: 10px;
-    }
+   nav ul li button {
+       background-color: transparent;
+       color: #fff;
+       border: none;
+       padding: 5px 10px;
+       cursor: pointer;
+       font-size: 14px;
+       transition: background-color 0.3s, color 0.3s;
+       border-radius: 5px;
+   }
 
-    nav ul li button.active,
-    nav ul li button:hover {
-        background-color: #fff;
-        color: #ff9100;
-    }
+   nav ul li button.active {
+       background-color: #fff;
+       color: #ff9100;
+   }
+   nav ul li button:hover{
+    color: #000000;
+    background-color: #ffffff8d;
+   }
 
-    .cart-item {
-        display: flex;
-        align-items: center;
-        padding: 10px;
-        border-bottom: 1px solid #eee;
-        background-color: #fff;
-        margin: 5px;
-        border-radius: 10px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-
-    .cart-item-image img {
-        border-radius: 10px;
-        width: 60px;
-        height: 60px;
-        object-fit: cover;
-    }
-
-    .cart-item-details {
-        margin-left: 10px;
-        flex-grow: 1;
-    }
-
-    .cart-item-details h3,
-    .cart-item-details h4 {
-        font-size: 14px;
-        margin: 5px 0;
-    }
-
-    .cart-item-details button {
-        background-color: #ff9100;
-        color: #fff;
-        border: none;
-        padding: 3px 10px;
-        cursor: pointer;
-        border-radius: 5px;
-        transition: background-color 0.3s;
-        font-size: 12px;
-    }
-
-    .cart-item-details button:hover {
-        background-color: #e07b00;
-    }
-
-    .products {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: space-between;
-    }
-
-    .products > div {
-        background-color: #fff;
-        border: 1px solid #eee;
-        border-radius: 10px;
-        margin: 10px;
-        padding: 10px;
-        width: calc(25% - 20px);
-        text-align: center;
-        transition: box-shadow 0.3s;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-
-    .products > div:hover {
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    }
-
-    .products img {
-        width: 100%;
-        height: auto;
-        object-fit: cover;
-        border-radius: 10px;
-    }
-
-    .add-to-cart-btn {
+    /* .add-to-cart-btn {
         background-color: #ff9100;
         color: white;
         border: none;
@@ -136,7 +70,7 @@
         border-radius: 5px;
         transition: background-color 0.3s;
         font-size: 12px;
-    }
+    } */
 
     .add-to-cart-btn:hover {
         background-color: #e07b00;
@@ -152,6 +86,29 @@
         margin-right: 5px;
     }
 
+    .products {
+        display: flex;
+        flex: 2;
+        flex-wrap: wrap;
+        margin-left: 1.4rem;
+        gap: 1.5%;
+    }
+
+    .products > div {
+        background-color: #fff;
+        border: 1px solid #eee;
+        border-radius: 10px;
+        margin: 10px;
+        padding: 10px;
+        max-width: 15%;
+        transition: box-shadow 0.3s;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .products > div:hover {
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
     .product-card {
         background-color: #fff;
         border: 1px solid #eee;
@@ -163,15 +120,13 @@
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         position: relative;
     }
-
     .product-image {
         position: relative;
     }
-
     .product-image img {
-        width: 100%;
-        height: auto;
         border-radius: 10px;
+        width: 100%;
+        height: 25vh;
     }
 
     .view-more-btn {
@@ -182,9 +137,12 @@
         background-color: rgba(0, 0, 0, 0.5);
         color: #fff;
         border: none;
-        padding: 5px 10px;
+        border-radius: 5px;
+        padding: 10px 10px;
         cursor: pointer;
         display: none;
+        text-decoration: none;
+        transition: 1s ease-in-out linear;
     }
 
     .product-card:hover .view-more-btn {
@@ -192,33 +150,37 @@
     }
 
     .product-info {
-        margin-top: 10px;
+        margin-top: 5px;
     }
 
     .product-name {
+        text-align: left;
         font-size: 16px;
         margin: 5px 0;
     }
 
     .product-category {
         font-size: 14px;
+        text-align: left;
         color: #666;
     }
 
     .product-price {
-        font-size: 18px;
-        color: #ff9100;
-        margin: 10px 0;
+        text-align: left;
+        font-size: small;
+        color: #ff0000;
+        /* margin: 10px 0; */
     }
 
     .add-to-cart-btn {
         background-color: #ff9100;
         color: white;
         border: none;
-        padding: 5px 15px;
+        padding: 8px 10px;
         cursor: pointer;
         border-radius: 5px;
         transition: background-color 0.3s;
+        float: right;
     }
 
     .add-to-cart-btn:hover {
@@ -227,92 +189,42 @@
 
     .category-name h2 {
         font-size: 24px;
-        margin: 20px 0;
+        margin: 20px 2%;
+        font-family: Arial, Helvetica, sans-serif;
     }
 </style>
 
 <body>
-        @include('UserSide.Pages.HeaderPage')           
-
-        <div>
-            <nav>
-                <ul>
+        @include('UserSide.Pages.HeaderPage')
+        <nav>
+            <ul>
+                <li>
+                    <button class="btn active" onclick="filterProducts('All', event)">
+                        All
+                    </button>
+                </li>
+                @php
+                    $categories = DB::table('products')->pluck('category')->unique();
+                @endphp
+                @foreach ($categories as $category)
                     <li>
-                        <button class="btn active" onclick="filterProducts('all', event)">
-                            All
+                        <button class="btn" onclick="filterProducts('{{ $category }}',event)">
+                            {{ $category }}
                         </button>
                     </li>
-                    @php
-                        $categories = $products->pluck('category')->unique();
-                    @endphp
-                    @foreach ($categories as $category)
-                        <li>
-                            <button class="btn" onclick="filterProducts('{{ $category }}',event)">
-                                {{ $category }}
-                            </button>
-                        </li>
-                    @endforeach
-                </ul>
-                
-            </nav>
-       
-
-            <div class="AddToCartDivision" id="AddToCartDivision" style="background-color:#ff9100; display:none">
-                <h1>Shopping Cart</h1>
-                <?php
-                    $product = DB::table('add_to_cart')->where('userId',Auth::user()->userId)->get(); 
-                    $AddToCartItem = $product;
-                ?>
-                @foreach ($AddToCartItem as $item)
-                    <div class="cart-item">
-                        <input class="" type="checkbox" name="" id="" onclick="calculateTotal()">
-                        <div class="cart-item-image">
-                            <img src="{{ asset('images/'. $item->image)}}" alt="Product Image" width="70">
-                        </div>
-                        <div class="cart-item-details">
-                            <h3>{{ $item->productName }}</h3>
-                            <h4>{{ $item->category }}</h4>
-                            <h4>x{{$item->quantity}}</h4>
-                            <label>{{ $item->description }}</label>
-                            <p>Price:&#8369;<span class="item-price">{{ $item->price }}</span></p>
-                            <div>
-                               <button type="button" onclick="updateQuantity(this, -1, {{ $item->stock }})">-</button>
-                               <input type="number" name="quantity" value="1" min="1" max="{{$item->stock}}" readonly>
-                               <button type="button" onclick="updateQuantity(this, 1, {{ $item->stock }})">+</button>
-                            </div>
-                            <form action="/removefromcart/{{$item->productId}}" method="post">
-                                @csrf
-                                <button class="btn btn-danger">Remove</button>
-                            </form>
-                        </div>
-                    </div>
                 @endforeach
+            </ul>
+            
+        </nav>
 
-                @if(count($AddToCartItem) > 0)
-                    <input type="checkbox" name="" id="checkAll" onclick="toggleCheckAll(this)">
-                    <label style="cursor: pointer" for="checkAll">All</label> 
-                @endif
-                <div>
-                    <label for="">Total :</label>
-                    <span style="color: red" id="totalPrice">&#8369; 0.00</span>
-                    <form action="/checkout/{{$item->productId}}" method="post">
-                        @csrf
-                        <input type="hidden" name="productId" value="{{$item->productId}}">
-                        <input type="hidden" name="productName" value="{{$item->productName}}">
-                        <input type="hidden" name="category" value="{{$item->category}}">
-                        <input type="hidden" name="userId" value="{{ Auth::user()->userId }}">
-                        <input type="hidden" name="firstName" value="{{ Auth::user()->firstName }}">
-                        <input type="hidden" name="address" value="{{ Auth::user()->address }}">
-                        <input type="hidden" name="phoneNumber" value="{{ Auth::user()->phoneNumber }}">
-                        <input type="hidden" name="totalPrice" id="totalPriceValue">
-                        <input type="hidden" name="stock" value="{{$item->stock}}">
-                        <button type="submit">Checkout</button>
-                        <button type="submit">Check out</button>
-                    </form>
-                </div>
-                
-                
-            </div>
+        <div>
+            @if(session('success'))
+                <script>alert("{{ session('success') }}")</script>
+            @endif
+
+            @if(session('error'))
+                <script>alert("{{ session('error') }}")</script>
+            @endif
 
         
             <div class="category-name">
@@ -320,6 +232,9 @@
             </div>
 
             <div class="products">
+                @php
+                    $products = DB::table('products')->get();
+                @endphp
                 @if ($products->isEmpty())
                     <h3>No available products</h3>
                 @else
@@ -327,89 +242,98 @@
                         <div class="product-card">
                             <div class="product-image">
                                 <img src="{{ asset('/images/' . $product->image) }}" alt="{{ $product->productName }}">
-                                <button class="view-more-btn">View more</button>
+                                <a class="view-more-btn" 
+                                href="/ProductDetails/{{$product->productId}}/{{$product->productName}}/{{$product->category}}/{{$product->price}}/{{$product->stock}}/{{$product->description}}/{{$product->image}}">View more</a>
                             </div>
                             <div class="product-info">
                                 <h3 class="product-name">{{ $product->productName }}</h3>
                                 <p class="product-category">{{ $product->category }}</p>
+                                <p class="product-category">{{ $product->description }}</p>
                                 <p class="product-price">&#8369;{{ number_format($product->price) }}</p>
-                                <button class="add-to-cart-btn">Add to cart</button>
+                                <form action="{{ route('addtocart', ['id' => $product->productId]) }}" method="POST" class="add-to-cart-form">
+                                    @csrf
+                                    <input type="hidden" name="productId" value="{{ $product->productId }}">
+                                    <input type="hidden" name="productName" value="{{ $product->productName }}">
+                                    <input type="hidden" name="category" value="{{ $product->category }}">
+                                    <input type="hidden" name="price" value="{{ $product->price }}">
+                                    <input type="hidden" name="stock" value="{{ $product->stock }}">
+                                    <input type="hidden" name="quantity" value="1">
+                                    <input type="hidden" name="description" value="{{ $product->description }}">
+                                    <input type="hidden" name="image" value="{{ $product->image }}">
+                                    <input type="hidden" name="userId" value="{{ Auth::user()->userId }}">
+                                    <input type="hidden" name="username" value="{{ Auth::user()->username }}">
+                                    <button type="submit" class="add-to-cart-btn">Add to cart</button>
+                                </form>
                             </div>
                         </div>    
                     @endforeach
                 @endif
-               
             </div>
+
+
 
         </div>
 
-
     <script>
-        function filterProducts(category, event) {
-            document.querySelectorAll('nav .btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
+          function filterProducts(category, event) {
+               document.querySelectorAll('nav .btn').forEach(btn => {
+                   btn.classList.remove('active');
+               });
+   
+               event.target.classList.add('active');
+   
+               const products = document.querySelectorAll('.products > div');
+               document.getElementById('categoryName').textContent = category;
+   
+               products.forEach(product => {
+                   const productCategory = product.querySelector('p').textContent;
+                   
+                   if (category === 'All' || productCategory === category) {
+                       product.style.display = ''; 
+                   } else {
+                       product.style.display = 'none';
+                   }
+               });
+           }
 
-            event.target.classList.add('active');
+        
 
-            const products = document.querySelectorAll('.products > div');
-            document.getElementById('categoryName').textContent = category;
+        document.addEventListener('DOMContentLoaded', function() {
+            @if(session('info') && session('confirm'))
+                if (confirm("{{ session('info') }}")) {
+                    let lastFormData = @json(session('lastFormData') ?? null);
+                    if (lastFormData) {
+                        let form = document.createElement('form');
+                        form.method = 'POST';
+                        form.action = lastFormData.action;
+                        
+                        let csrfToken = document.createElement('input');
+                        csrfToken.type = 'hidden';
+                        csrfToken.name = '_token';
+                        csrfToken.value = '{{ csrf_token() }}';
+                        form.appendChild(csrfToken);
 
-            products.forEach(product => {
-                const productCategory = product.querySelector('h4').textContent;
-                
-                if (category === 'all' || productCategory === category) {
-                    product.style.display = ''; 
-                } else {
-                    product.style.display = 'none';
+                        let confirmInput = document.createElement('input');
+                        confirmInput.type = 'hidden';
+                        confirmInput.name = 'confirm';
+                        confirmInput.value = 'yes';
+                        form.appendChild(confirmInput);
+
+                        // Add all the form fields
+                        for (let key in lastFormData.fields) {
+                            let input = document.createElement('input');
+                            input.type = 'hidden';
+                            input.name = key;
+                            input.value = lastFormData.fields[key];
+                            form.appendChild(input);
+                        }
+
+                        document.body.appendChild(form);
+                        form.submit();
+                    }
                 }
-            });
-        }
-
-        function toggleCheckAll(checkbox) {
-            const checkboxes = document.querySelectorAll('.cart-item input[type="checkbox"]');
-            checkboxes.forEach(cb => {
-                cb.checked = checkbox.checked;
-            });
-        }
-
-        function toggleCheckAll(checkbox) {
-            const checkboxes = document.querySelectorAll('.cart-item input[type="checkbox"]');
-            checkboxes.forEach(cb => {
-                cb.checked = checkbox.checked;
-            });
-            calculateTotal();
-        }
-
-        function updateQuantity(button, change, maxStock) {
-            const quantityInput = button.parentElement.querySelector('input[name="quantity"]');
-            let currentQuantity = parseInt(quantityInput.value);
-            currentQuantity += change;
-
-            if (currentQuantity < 1) {
-                currentQuantity = 1;
-            } else if (currentQuantity > maxStock) {
-                currentQuantity = maxStock;
-            }
-
-            quantityInput.value = currentQuantity;
-            calculateTotal();
-        }
-
-        function calculateTotal() {
-            let total = 0;
-            const cartItems = document.querySelectorAll('.cart-item');
-            cartItems.forEach(cartItem => {
-                const checkbox = cartItem.querySelector('input[type="checkbox"]');
-                if (checkbox.checked) {
-                    const priceText = cartItem.querySelector('.item-price').textContent;
-                    const price = parseFloat(priceText);
-                    const quantity = parseInt(cartItem.querySelector('input[name="quantity"]').value);
-                    total += price * quantity;
-                }
-            });
-            document.getElementById('totalPrice').textContent = `₱ ${total.toFixed(2)}`;
-        }
+            @endif
+        });
     </script>
 
 </body>
