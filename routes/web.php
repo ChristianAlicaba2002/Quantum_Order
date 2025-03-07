@@ -16,6 +16,9 @@ Route::get('/', function () {
     return view('UserSide.Auth.Login' , compact('products'));
 })->name('login');
 
+
+
+
 Route::get('/Register', function () {
     return view('UserSide.Auth.Register');
 })->name('register');
