@@ -10,9 +10,10 @@
 </head>
 
 <style>
-    *{
+    * {
         font-family: Arial, Helvetica, sans-serif;
     }
+
     .modal {
         display: none;
         position: fixed;
@@ -116,12 +117,13 @@
         align-items: center;
     }
 
-    #addProductModal > div {
+    #addProductModal>div {
         background: white;
         padding: 20px;
         border-radius: 8px;
         width: 90%;
-        max-width: 400px; /* Smaller width */
+        max-width: 400px;
+        /* Smaller width */
         box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     }
 
@@ -164,7 +166,8 @@
     #addProductModal button[data-bs-dismiss="modal"] {
         background-color: #f1f1f1;
     }
-    #productTable img{
+
+    #productTable img {
         border-radius: 50%;
         border: 1px solid rgba(0, 0, 0, 0.122);
     }
@@ -186,7 +189,7 @@
         align-items: center;
     }
 
-    #editProductModal > div {
+    #editProductModal>div {
         background: white;
         padding: 20px;
         border-radius: 8px;
@@ -244,229 +247,276 @@
         border: 1px solid #ddd;
     }
 
+    .pending-orders-link {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+
+    .order-counter {
+        background-color: #ff9100;
+        color: white;
+        border-radius: 50%;
+        padding: 2px 6px;
+        font-size: 12px;
+        position: relative;
+        margin-left: 8px;
+        display: none;
+        /* Hidden by default */
+        animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+        0% {
+            transform: scale(1);
+        }
+
+        50% {
+            transform: scale(1.1);
+        }
+
+        100% {
+            transform: scale(1);
+        }
+    }
+
+    /* When counter has notifications */
+    .order-counter.has-notifications {
+        display: inline-block;
+    }
 </style>
 
 <body>
-        <h1>Dashboard</h1>
-        <p>Welcome to the admin Quantum Order dashboard</p>
-        <button type="button" data-bs-toggle="modal" data-bs-target="#addProductModal">Add Product</button>
+    <h1>Dashboard</h1>
+    <p>Welcome to the admin Quantum Order dashboard</p>
+    <button type="button" data-bs-toggle="modal" data-bs-target="#addProductModal">Add Product</button>
 
-        <form action="{{ route('auth.adminlogout') }}" method="post">
-            @csrf
-            <button type="submit">Logout</button>
-        </form>
+    <form action="{{ route('auth.adminlogout') }}" method="post">
+        @csrf
+        <button type="submit">Logout</button>
+    </form>
 
-        @include('AdminSide.Pages.Badges')
-        @yield('BadgesContent')
+    @include('AdminSide.Pages.Badges')
+    @yield('BadgesContent')
 
 
-        <div class="MenuHamburger">
-           <ul>
+    <div class="MenuHamburger">
+        <ul>
             <li>
-                <a href="{{route('ArchiveProducts')}}">Archive</a>
+                <a href="{{ route('ArchiveProducts') }}">Archive</a>
             </li>
             <li>
-                <a href="{{route('OrderHistory')}}">Orders</a>
+                <a href="{{ route('OrderHistory') }}">Orders</a>
             </li>
 
             <li>
-                <a href="/pending-orders">Pending Orders</a>
+                <a href="/pending-orders" class="pending-orders-link">
+                    Pending Orders
+                    <span class="order-counter" id="orderCounter"></span>
+                </a>
             </li>
-           </ul>
-        </div>
+        </ul>
+    </div>
 
-        @if(session('failedToExport'))
-            <script>alert("{{session('failedToExport')}}")</script>
-        @endif
-
-
-        <div class="container downloads">
-            <a href="{{ route('UserManagement') }}">User Management</a>
-            <button  onclick="window.location.href='{{ route('products.excel') }}'">
-                Export to Excel
-            </button>
-
-            <button  onclick="window.location.href='{{ route('products.pdf') }}'">
-                Export to PDF
-            </button>
-
-        </div>
-
-            @if (!$products->isEmpty())
-                <nav>
-                    <ul class="d-flex justify-content-center gap-4 list-unstyled">
-                        <li>
-                            <button class="btn active" onclick="filterProducts('all', event)">
-                                All
-                            </button>
-                        </li>
-                        @php
-                            $categories = $products->pluck('category')->unique();
-                        @endphp
-                        @foreach ($categories as $category)
-                            <li>
-                                <button class="btn" onclick="filterProducts('{{ $category }}',event)">
-                                    {{ $category }}'s
-                                </button>
-                            </li>
-                        @endforeach
-                    </ul>
-                </nav>
-            @endif
-
-
-        <div>
-            <h1 id="categoryTitle">All Products</h1>
-            <table id="productTable">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Image</th>
-                        <th>Name</th>
-                        <th>Category</th>
-                        <th>Price</th>
-                        <th>Stock</th>
-                        <th>Description</th>
-                        <th>Created At</th>
-                        <th>Action</th>
-                        </tr>
-                </thead>
-                <tbody>
-                    @foreach($products->sortBy('price') as $product)
-                        <tr>
-                            <td>{{ $product->productId }}</td>
-                            <td>
-                                <img src="{{ asset('/images/' . $product->image) }}" alt="{{ $product->productName }}"
-                                    style="width: 50px; height: 50px; object-fit: cover;">
-                            </td>
-                            <td>{{ $product->productName }}</td>
-                            <td>{{ $product->category }}</td>
-                            <td>&#8369;{{ number_format($product->price)}}</td>
-                            <td style="color: {{$product->stock <= 20 ? 'red' : 'black' }}">{{$product->stock}}</td>
-                            <td>{{ $product->description }}</td>
-                            <td>{{ $product->created_at}}</td>
-                            <td>
-                                <button type="button" onclick="EditProducts('{{$product->id}}','{{$product->productName}}','{{$product->category}}','{{$product->price}}','{{$product->stock}}','{{$product->description}}','{{$product->image}}')">Edit</button>
-                                <form action="/archive/{{$product->id}}" method="post">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" >Archive</button>
-                                </form>
-                            </td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
-            @if($products->isEmpty())
-                <p>Don't have any products added</p>
-            @endif
-        </div>
-
-        <!-- Add Product Modal -->
-        <div id="addProductModal">
-            <div>
-                <div>
-                    <div>
-                        <h5>Add New Product</h5>
-                       
-                    </div>
-                    <form action="{{ route('create.product') }}" method="POST" enctype="multipart/form-data">
-                        <div>
-                            @csrf
-                            <div>
-                                <label for="productName">Product Name</label>
-                                <input type="text" id="productName" name="productName" required>
-                            </div>
-                            <div>
-                                <label for="category">Category</label>
-                                <input type="text" id="category" name="category" required>
-                            </div>
-                            <div>
-                                <label for="price">Price</label>
-                                <input type="number" id="price" name="price" step="0.01" required>
-                            </div>
-                            <div>
-                                <label for="stock">Stock</label>
-                                <input type="number" id="stock" name="stock" required>
-                            </div>
-                            <div>
-                                <label for="description">Description</label>
-                                <textarea id="description" name="description" rows="3" required></textarea>
-                            </div>
-                            <div>
-                                <label for="image">Product Image</label>
-                                <input type="file" id="image" name="image" accept="image/*" required>
-                                <img id="previewImage" src="" alt="" srcset="">
-                            </div>
-                        </div>
-                        <div>
-                            <button type="button" data-bs-dismiss="modal">Close</button>
-                            <button type="submit">Add Product</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-
-        @if (session('success'))
-            <script>alert("{{session('success')}}")</script>
-        @endif
-
-        @if (session('error'))
-        <script>alert("{{session('error')}}")</script>
+    @if (session('failedToExport'))
+        <script>
+            alert("{{ session('failedToExport') }}")
+        </script>
     @endif
 
-        <div id="editProductModal" class="modal">
+
+    <div class="container downloads">
+        <a href="{{ route('UserManagement') }}">User Management</a>
+        <button onclick="window.location.href='{{ route('products.excel') }}'">
+            Export to Excel
+        </button>
+
+        <button onclick="window.location.href='{{ route('products.pdf') }}'">
+            Export to PDF
+        </button>
+
+    </div>
+
+    @if (!$products->isEmpty())
+        <nav>
+            <ul class="d-flex justify-content-center gap-4 list-unstyled">
+                <li>
+                    <button class="btn active" onclick="filterProducts('all', event)">
+                        All
+                    </button>
+                </li>
+                @php
+                    $categories = $products->pluck('category')->unique();
+                @endphp
+                @foreach ($categories as $category)
+                    <li>
+                        <button class="btn" onclick="filterProducts('{{ $category }}',event)">
+                            {{ $category }}'s
+                        </button>
+                    </li>
+                @endforeach
+            </ul>
+        </nav>
+    @endif
+
+
+    <div>
+        <h1 id="categoryTitle">All Products</h1>
+        <table id="productTable">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Image</th>
+                    <th>Name</th>
+                    <th>Category</th>
+                    <th>Price</th>
+                    <th>Stock</th>
+                    <th>Description</th>
+                    <th>Created At</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach ($products->sortBy('price') as $product)
+                    <tr>
+                        <td>{{ $product->productId }}</td>
+                        <td>
+                            <img src="{{ asset('/images/' . $product->image) }}" alt="{{ $product->productName }}"
+                                style="width: 50px; height: 50px; object-fit: cover;">
+                        </td>
+                        <td>{{ $product->productName }}</td>
+                        <td>{{ $product->category }}</td>
+                        <td>&#8369;{{ number_format($product->price) }}</td>
+                        <td style="color: {{ $product->stock <= 20 ? 'red' : 'black' }}">{{ $product->stock }}</td>
+                        <td>{{ $product->description }}</td>
+                        <td>{{ $product->created_at }}</td>
+                        <td>
+                            <button type="button"
+                                onclick="EditProducts('{{ $product->id }}','{{ $product->productName }}','{{ $product->category }}','{{ $product->price }}','{{ $product->stock }}','{{ $product->description }}','{{ $product->image }}')">Edit</button>
+                            <form action="/archive/{{ $product->id }}" method="post">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit">Archive</button>
+                            </form>
+                        </td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+        @if ($products->isEmpty())
+            <p>Don't have any products added</p>
+        @endif
+    </div>
+
+    <!-- Add Product Modal -->
+    <div id="addProductModal">
+        <div>
             <div>
                 <div>
-                    <div>
-                        <h5>Edit Product</h5>
-                    </div>
-                    <form id="EditForm" action="" method="POST" enctype="multipart/form-data">
-                        @csrf
-                        @method('PUT')
-                        <input type="hidden" id="EditProductId" name="productId">
-                        <div>
-                            <div>
-                                <label for="EditProductName">Product Name</label>
-                                <input type="text" id="EditProductName" name="productName" required>
-                            </div>
-                            <div>
-                                <label for="EditCategory">Category</label>
-                                <input type="text" id="EditCategory" name="category" required>
-                            </div>
-                            <div>
-                                <label for="EditPrice">Price</label>
-                                <input type="number" id="EditPrice" name="price" step="0.01" required>
-                            </div>
-                            <div>
-                                <label for="EditStock">Stock</label>
-                                <input type="number" id="EditStock" name="stock" required>
-                            </div>
-                            <div>
-                                <label for="EditDescription">Description</label>
-                                <textarea id="EditDescription" name="description" rows="3" required></textarea>
-                            </div>
-                            <div>
-                                <label for="EditImage">Product Image</label>
-                                <input type="file" id="EditImage" name="image" accept="image/*">
-                                <img id="EditPreviewImage" src="" alt="" style="width: 50px; height: 50px; object-fit: cover;">
-                            </div>
-                        </div>
-                        <div>
-                            <button type="button" data-bs-dismiss="modal">Close</button>
-                            <button type="submit">Save Changes</button>
-                        </div>
-                    </form>
+                    <h5>Add New Product</h5>
+
                 </div>
+                <form action="{{ route('create.product') }}" method="POST" enctype="multipart/form-data">
+                    <div>
+                        @csrf
+                        <div>
+                            <label for="productName">Product Name</label>
+                            <input type="text" id="productName" name="productName" required>
+                        </div>
+                        <div>
+                            <label for="category">Category</label>
+                            <input type="text" id="category" name="category" required>
+                        </div>
+                        <div>
+                            <label for="price">Price</label>
+                            <input type="number" id="price" name="price" step="0.01" required>
+                        </div>
+                        <div>
+                            <label for="stock">Stock</label>
+                            <input type="number" id="stock" name="stock" required>
+                        </div>
+                        <div>
+                            <label for="description">Description</label>
+                            <textarea id="description" name="description" rows="3" required></textarea>
+                        </div>
+                        <div>
+                            <label for="image">Product Image</label>
+                            <input type="file" id="image" name="image" accept="image/*" required>
+                            <img id="previewImage" src="" alt="" srcset="">
+                        </div>
+                    </div>
+                    <div>
+                        <button type="button" data-bs-dismiss="modal">Close</button>
+                        <button type="submit">Add Product</button>
+                    </div>
+                </form>
             </div>
         </div>
+    </div>
 
-       
+    @if (session('success'))
+        <script>
+            alert("{{ session('success') }}")
+        </script>
+    @endif
+
+    @if (session('error'))
+        <script>
+            alert("{{ session('error') }}")
+        </script>
+    @endif
+
+    <div id="editProductModal" class="modal">
+        <div>
+            <div>
+                <div>
+                    <h5>Edit Product</h5>
+                </div>
+                <form id="EditForm" action="" method="POST" enctype="multipart/form-data">
+                    @csrf
+                    @method('PUT')
+                    <input type="hidden" id="EditProductId" name="productId">
+                    <div>
+                        <div>
+                            <label for="EditProductName">Product Name</label>
+                            <input type="text" id="EditProductName" name="productName" required>
+                        </div>
+                        <div>
+                            <label for="EditCategory">Category</label>
+                            <input type="text" id="EditCategory" name="category" required>
+                        </div>
+                        <div>
+                            <label for="EditPrice">Price</label>
+                            <input type="number" id="EditPrice" name="price" step="0.01" required>
+                        </div>
+                        <div>
+                            <label for="EditStock">Stock</label>
+                            <input type="number" id="EditStock" name="stock" required>
+                        </div>
+                        <div>
+                            <label for="EditDescription">Description</label>
+                            <textarea id="EditDescription" name="description" rows="3" required></textarea>
+                        </div>
+                        <div>
+                            <label for="EditImage">Product Image</label>
+                            <input type="file" id="EditImage" name="image" accept="image/*">
+                            <img id="EditPreviewImage" src="" alt=""
+                                style="width: 50px; height: 50px; object-fit: cover;">
+                        </div>
+                    </div>
+                    <div>
+                        <button type="button" data-bs-dismiss="modal">Close</button>
+                        <button type="submit">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
 
 
     <script>
-
         //Open modal for adding products
         document.addEventListener('DOMContentLoaded', function() {
             const modal = document.getElementById('addProductModal');
@@ -539,15 +589,50 @@
                 }
             }
         }
-
-  
-
-
-
-
     </script>
 
- 
+    <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
+    <script>
+        // Function to update the counter
+        function updateOrderCounter() {
+            fetch('/api/pending-orders-count')
+                .then(response => response.json())
+                .then(data => {
+                    const counter = document.getElementById('orderCounter');
+                    if (data.count > 0) {
+                        counter.textContent = data.count;
+                        counter.classList.add('has-notifications');
+                    } else {
+                        counter.textContent = '';
+                        counter.classList.remove('has-notifications');
+                    }
+                });
+        }
+
+        // Update counter on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            updateOrderCounter();
+        });
+
+        // Set up real-time updates
+        const pusher = new Pusher('your-pusher-key', {
+            cluster: 'ap1'
+        });
+
+        const channel = pusher.subscribe('orders');
+        channel.bind('new-order', function(data) {
+            updateOrderCounter();
+            // Optional: Show notification
+            if (Notification.permission === "granted") {
+                new Notification("New Order!", {
+                    body: "You have a new pending order.",
+                    icon: "/path/to/your/icon.png"
+                });
+            }
+        });
+    </script>
+
+
 </body>
 
 </html>

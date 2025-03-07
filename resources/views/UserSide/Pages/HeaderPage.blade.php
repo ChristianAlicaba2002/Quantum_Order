@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -136,15 +135,15 @@
     }
 
     .cartGroup {
-        width: .79rem;
-        height: .80rem;
+        width: 1.3rem;
+        height: 1.5rem;
         background-color: red;
         text-align: center;
         border-radius: 50%;
-        padding: .15rem;
+        padding: .20rem;
         font-size: small;
         position: relative;
-        margin-top: -2.6rem;
+        margin-top: -3rem;
         margin-left: 2.5rem;
     }
 
@@ -161,7 +160,7 @@
         position: absolute;
         margin-top: 3.8rem;
         margin-left: 65%;
-        z-index: 10;
+        z-index: 2000;
         display: none;
         height: 75vh;
         overflow-y: scroll;
@@ -361,7 +360,8 @@
                         <h4>{{ $item->category }}</h4>
                         <h4>x{{ $item->quantity }}</h4>
                         <label>{{ $item->description }}</label>
-                        <p style="color: red">Price:&#8369;<span class="item-price">{{ $item->price }}</span></p>
+                        <p style="color: red">Price:&#8369;<span class="item-price">{{ $item->price }}</span>
+                        </p>
                     </div>
                     <div class="ItemButtons">
                         <button type="button" onclick="updateQuantity(this, -1, {{ $item->stock }})">-</button>
@@ -457,14 +457,59 @@
             }
         }
 
-        document.getElementById('cartIcon').addEventListener('click', function() {
-            const addToCartDivision = document.getElementById('AddToCartDivision');
-            if (addToCartDivision) {
-                if (addToCartDivision.style.display === 'none' || addToCartDivision.style.display === '') {
-                    addToCartDivision.style.display = 'block';
-                } else {
-                    addToCartDivision.style.display = 'none';
-                }
+        const cartIcon = document.getElementById('cartIcon');
+        const cartDropdown = document.getElementById('AddToCartDivision');
+        const backdrop = document.createElement('div');
+        backdrop.className = 'cart-backdrop';
+        document.body.appendChild(backdrop);
+
+        function openCart(event) {
+            if (event) {
+                event.stopPropagation();
+            }
+
+            cartDropdown.style.display = 'block';
+            backdrop.style.display = 'block';
+
+            // Force reflow
+            void cartDropdown.offsetWidth;
+
+            // Add animation classes
+            cartDropdown.classList.add('show');
+            backdrop.classList.add('show');
+        }
+
+        function closeCart() {
+            backdrop.classList.remove('show');
+            cartDropdown.classList.remove('show');
+
+            setTimeout(() => {
+                cartDropdown.style.display = 'none';
+                backdrop.style.display = 'none';
+            }, 300);
+        }
+
+        // Cart icon click handler
+        cartIcon.addEventListener('click', (event) => {
+            if (cartDropdown.style.display === 'none' || cartDropdown.style.display === '') {
+                openCart(event);
+            } else {
+                closeCart();
+            }
+        });
+
+        // Prevent cart closing when clicking inside
+        cartDropdown.addEventListener('click', (event) => {
+            event.stopPropagation();
+        });
+
+        // Close cart when clicking backdrop
+        backdrop.addEventListener('click', closeCart);
+
+        // Close cart when pressing Escape
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape' && cartDropdown.style.display === 'block') {
+                closeCart();
             }
         });
 

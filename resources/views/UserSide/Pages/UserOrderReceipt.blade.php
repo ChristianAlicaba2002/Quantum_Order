@@ -9,7 +9,6 @@
     <title>Order Receipt - {{ $order->orderId }}</title>
     <!-- Include jsPDF library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -459,78 +458,182 @@
         }
 
         function exportToPDF() {
-            // Show loading modal
             document.getElementById('loadingModal').style.display = 'block';
 
-            // Get the receipt element
-            const receiptElement = document.getElementById('receipt');
-
-            // Hide action buttons temporarily for the PDF
-            const actionButtons = receiptElement.querySelector('.action-buttons');
-            actionButtons.style.display = 'none';
-
-            // Use html2canvas to capture the receipt as an image
-            html2canvas(receiptElement, {
-                scale: 2, // Higher scale for better quality
-                useCORS: true, // Enable CORS for images
-                logging: false,
-                allowTaint: true
-            }).then(canvas => {
-                // Initialize jsPDF
+            try {
                 const {
                     jsPDF
                 } = window.jspdf;
                 const pdf = new jsPDF('p', 'mm', 'a4');
 
-                // Calculate dimensions
-                const imgData = canvas.toDataURL('image/png');
-                const pdfWidth = pdf.internal.pageSize.getWidth();
-                const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+                // Colors
+                const orangeColor = '#ff9100';
+                const greyColor = '#666666';
 
-                // Add image to PDF
-                pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+                // Page settings
+                const pageWidth = pdf.internal.pageSize.getWidth();
+                let yPos = 20;
 
-                // If content is longer than one page, add more pages
-                if (pdfHeight > pdf.internal.pageSize.getHeight()) {
-                    let remainingHeight = pdfHeight;
-                    let position = -pdf.internal.pageSize.getHeight();
+                // Receipt Header - match the receipt-header class style
+                pdf.setTextColor(orangeColor);
+                pdf.setFontSize(24);
+                pdf.text('Order Receipt', pageWidth / 2, yPos, {
+                    align: 'center'
+                });
 
-                    while (remainingHeight > 0) {
-                        position += pdf.internal.pageSize.getHeight();
-                        remainingHeight -= pdf.internal.pageSize.getHeight();
+                yPos += 10;
+                pdf.setTextColor(greyColor);
+                pdf.setFontSize(12);
+                pdf.text('Thank you for your purchase!', pageWidth / 2, yPos, {
+                    align: 'center'
+                });
 
-                        if (remainingHeight > 0) {
-                            pdf.addPage();
-                            pdf.addImage(
-                                imgData,
-                                'PNG',
-                                0,
-                                position,
-                                pdfWidth,
-                                pdfHeight
-                            );
-                        }
+                yPos += 7;
+                const date = '{{ date('F d, Y h:i A', strtotime($order->updated_at)) }}';
+                pdf.text(date, pageWidth / 2, yPos, {
+                    align: 'center'
+                });
+
+                // Dashed line separator - match the border-bottom style
+                yPos += 10;
+                pdf.setDrawColor(221, 221, 221);
+                pdf.setLineDashPattern([3, 3], 0);
+                pdf.line(20, yPos, pageWidth - 20, yPos);
+                pdf.setLineDashPattern([], 0);
+
+                // Order Information Section - match the order-info class style
+                yPos += 15;
+                const colWidth = (pageWidth - (20 * 2)) / 2;
+
+                // Left Column
+                pdf.setTextColor(51, 51, 51);
+                pdf.setFontSize(16);
+                pdf.text('Order Information', 20, yPos);
+
+                pdf.setFontSize(12);
+                pdf.setTextColor(102, 102, 102);
+                yPos += 10;
+                pdf.text(`Order ID: {{ $order->orderId }}`, 20, yPos);
+                yPos += 7;
+                pdf.text(`Date: {{ date('F d, Y', strtotime($order->created_at)) }}`, 20, yPos);
+                yPos += 7;
+                pdf.text(`Status: {{ $order->orderStatus }}`, 20, yPos);
+
+                // Right Column
+                const rightCol = 20 + colWidth + 10;
+                let rightY = yPos - 24;
+                pdf.setFontSize(16);
+                pdf.setTextColor(51, 51, 51);
+                pdf.text('Customer Information', rightCol, rightY);
+
+                pdf.setFontSize(12);
+                pdf.setTextColor(102, 102, 102);
+                rightY += 10;
+                pdf.text(`Name: {{ $order->firstName }}`, rightCol, rightY);
+                rightY += 7;
+                pdf.text(`Address: {{ $order->address }}`, rightCol, rightY);
+                rightY += 7;
+                pdf.text(`Phone: {{ $order->phoneNumber }}`, rightCol, rightY);
+
+                // Solid line separator
+                yPos += 15;
+                pdf.setDrawColor(238, 238, 238);
+                pdf.setLineWidth(1);
+                pdf.line(20, yPos, pageWidth - 20, yPos);
+
+                // Order Items Table
+                yPos += 15;
+                pdf.setTextColor(51, 51, 51);
+                pdf.setFontSize(16);
+                pdf.text('Order Items', 20, yPos);
+
+                // Table Headers
+                yPos += 10;
+                const headers = ['Product', 'ID', 'Category', 'Price', 'Quantity', 'Subtotal'];
+                const colWidths = [45, 20, 30, 25, 20, 30];
+
+                // Table header with bottom border only
+                pdf.setLineWidth(2);
+                pdf.setDrawColor(orangeColor);
+                let xPos = 20;
+
+                pdf.setFontSize(12);
+                pdf.setTextColor(0, 0, 0);
+                headers.forEach((header, i) => {
+                    pdf.text(header, xPos, yPos);
+                    xPos += colWidths[i];
+                });
+
+                // Orange line under headers
+                yPos += 2;
+                pdf.line(20, yPos, pageWidth - 20, yPos);
+
+                // Table Content
+                pdf.setTextColor(102, 102, 102);
+                pdf.setLineWidth(1);
+                pdf.setDrawColor(221, 221, 221);
+
+                @foreach ($orderItems as $item)
+                    yPos += 12;
+
+                    // Add new page if needed
+                    if (yPos > 250) {
+                        pdf.addPage();
+                        yPos = 20 + 10;
                     }
-                }
 
-                // Save the PDF
-                pdf.save('Order_Receipt_{{ $order->orderId }}.pdf');
+                    xPos = 20;
+                    pdf.text('{{ $item->productName }}', xPos, yPos);
+                    xPos += colWidths[0];
 
-                // Show action buttons again
-                actionButtons.style.display = 'flex';
+                    pdf.text('{{ $item->productId }}', xPos, yPos);
+                    xPos += colWidths[1];
 
-                // Hide loading modal
-                document.getElementById('loadingModal').style.display = 'none';
-            }).catch(error => {
+                    pdf.text('{{ $item->category }}', xPos, yPos);
+                    xPos += colWidths[2];
+
+                    pdf.text('₱{{ number_format($item->price, 2) }}', xPos, yPos);
+                    xPos += colWidths[3];
+
+                    pdf.text('{{ $item->quantity }}', xPos, yPos);
+                    xPos += colWidths[4];
+
+                    pdf.text('₱{{ number_format($item->price * $item->quantity, 2) }}', xPos, yPos);
+
+                    // Add bottom border for each row
+                    yPos += 2;
+                    pdf.line(20, yPos, pageWidth - 20, yPos);
+                @endforeach
+
+                // Total Section - match the total-section class style
+                yPos += 15;
+                pdf.setLineWidth(1);
+                pdf.setDrawColor(238, 238, 238);
+                pdf.line(20, yPos, pageWidth - 20, yPos);
+
+                yPos += 15;
+                pdf.setFontSize(14);
+                pdf.setTextColor(0, 0, 0);
+                const totalText = 'Total Amount: ₱{{ number_format($order->totalAmount, 2) }}';
+                pdf.text(totalText, pageWidth - 20 - pdf.getTextWidth(totalText), yPos);
+
+                // Thank you message - match the thank-you class style
+                yPos += 20;
+                pdf.setTextColor(102, 102, 102);
+                pdf.setFontSize(12);
+                pdf.text('Thank you for shopping Quantum Order!', pageWidth / 2, yPos, {
+                    align: 'center'
+                });
+
+                // Save PDF
+                pdf.save(`Quantum_Order_Receipt_{{ $order->orderId }}.pdf`);
+
+            } catch (error) {
                 console.error('Error generating PDF:', error);
                 alert('There was an error generating the PDF. Please try again.');
-
-                // Show action buttons again
-                actionButtons.style.display = 'flex';
-
-                // Hide loading modal
+            } finally {
                 document.getElementById('loadingModal').style.display = 'none';
-            });
+            }
         }
     </script>
 </body>
