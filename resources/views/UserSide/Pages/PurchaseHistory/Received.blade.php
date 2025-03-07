@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="shortcut icon" href="assets/logo.jpg" type="image/x-icon">
-    <title>{{Auth::user()->firstName}} Received History</title>
+    <title>{{ Auth::user()->firstName }} Received History</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -34,10 +35,10 @@
             width: 100%;
             border-collapse: collapse;
             background-color: white;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         }
 
-        .orders-table th, 
+        .orders-table th,
         .orders-table td {
             padding: 12px;
             text-align: left;
@@ -65,13 +66,21 @@
         }
     </style>
 </head>
+
 <body>
     <div>
-        <a href="{{route('login')}}" class="back-link">Back to Home</a>
+        <a href="{{ route('login') }}" class="back-link">Back to Home</a>
     </div>
     <h1>Received History</h1>
+    <?php
+    $UserOrders = DB::table('orders')
+        ->where('userId', Auth::user()->userId)
+        ->where('orderStatus', 'Delivered')
+        ->get();
+    ?>
+    <h4>Orders: {{ $UserOrders->count() }}</h4>
 
-    @if(count($receivedOrders) > 0)
+    @if (count($receivedOrders) > 0)
         <table class="orders-table">
             <thead>
                 <tr>
@@ -96,18 +105,19 @@
                 image
                 orderStatus --}}
             <tbody>
-                @foreach($receivedOrders as $order)
+                @foreach ($receivedOrders as $order)
                     <tr>
                         <td>{{ $order->orderId }}</td>
                         <td>{{ $order->productId }}</td>
                         <td>
-                            <img src="{{ asset('/images/' . $order->image) }}" alt="{{ $order->productName }}" style="width:50px;">
+                            <img src="{{ asset('/images/' . $order->image) }}" alt="{{ $order->productName }}"
+                                style="width:50px;">
                         </td>
                         <td>{{ $order->productName }}</td>
                         <td>{{ $order->category }}</td>
                         <td>{{ $order->quantity }}</td>
                         <td>₱{{ number_format($order->price, 2) }}</td>
-                        <td style="color: green">{{$order->orderStatus}}</td>
+                        <td style="color: green">{{ $order->orderStatus }}</td>
                         <td>{{ date('M d, Y h:i A', strtotime($order->created_at)) }}</td>
                     </tr>
                 @endforeach
@@ -119,4 +129,5 @@
         </div>
     @endif
 </body>
+
 </html>

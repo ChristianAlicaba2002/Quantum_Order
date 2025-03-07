@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -23,7 +24,7 @@
             background-color: white;
             padding: 20px;
             border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         .receipt-header {
@@ -79,8 +80,8 @@
         }
 
         .items-table th {
-            background-color: #ff9100;
-            color: white;
+            border-bottom: 2px solid orange;
+            color: black;
         }
 
         .product-image {
@@ -156,7 +157,7 @@
             margin: 10% auto;
             padding: 20px;
             border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             position: relative;
         }
 
@@ -185,7 +186,7 @@
             right: 0;
             background-color: #f9f9f9;
             min-width: 160px;
-            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
             z-index: 1;
             border-radius: 4px;
         }
@@ -212,23 +213,29 @@
                 background-color: white;
                 padding: 0;
             }
-            
+
             .receipt-container {
                 box-shadow: none;
                 max-width: 100%;
             }
-            
+
             .action-buttons {
                 display: none;
             }
         }
 
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
         }
     </style>
 </head>
+
 <body>
     <div class="receipt-container" id="receipt">
         <div class="receipt-header">
@@ -265,13 +272,14 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach($orderItems as $item)
+                @foreach ($orderItems as $item)
                     <tr>
                         <td>
-                            <img src="{{ asset('images/' . $item->image) }}" alt="{{ $item->productName }}" class="product-image">
+                            <img src="{{ asset('images/' . $item->image) }}" alt="{{ $item->productName }}"
+                                class="product-image">
                             {{ $item->productName }}
                         </td>
-                        <td> {{$item->productId}}</td>
+                        <td> {{ $item->productId }}</td>
                         <td>{{ $item->category }}</td>
                         <td>₱{{ number_format($item->price, 2) }}</td>
                         <td>{{ $item->quantity }}</td>
@@ -310,7 +318,8 @@
             <p style="text-align: center;">Your order has been placed successfully.</p>
             <p style="text-align: center;">Order ID: <strong>{{ $order->orderId }}</strong></p>
             <div style="text-align: center; margin-top: 20px;">
-                <button onclick="closeModal()" style="background: #ff9100; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer;">Close</button>
+                <button onclick="closeModal()"
+                    style="background: #ff9100; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer;">Close</button>
             </div>
         </div>
     </div>
@@ -320,14 +329,15 @@
         <div class="modal-content" style="text-align: center; padding: 30px;">
             <h3>Generating PDF...</h3>
             <p>Please wait while we prepare your receipt.</p>
-            <div style="margin: 20px auto; border: 5px solid #f3f3f3; border-top: 5px solid #ff9100; border-radius: 50%; width: 50px; height: 50px; animation: spin 2s linear infinite;"></div>
+            <div
+                style="margin: 20px auto; border: 5px solid #f3f3f3; border-top: 5px solid #ff9100; border-radius: 50%; width: 50px; height: 50px; animation: spin 2s linear infinite;">
+            </div>
         </div>
     </div>
 
     <script>
-        // Show success modal on page load if there's a success message
         document.addEventListener('DOMContentLoaded', function() {
-            @if(session('success'))
+            @if (session('success'))
                 document.getElementById('successModal').style.display = 'block';
             @endif
         });
@@ -336,7 +346,6 @@
             document.getElementById('successModal').style.display = 'none';
         }
 
-        // Close modal when clicking outside of it
         window.onclick = function(event) {
             const modal = document.getElementById('successModal');
             if (event.target == modal) {
@@ -345,13 +354,10 @@
         }
 
         function downloadReceipt() {
-            // Create a new window for printing
             const printWindow = window.open('', '_blank');
-            
-            // Get the receipt HTML
+
             const receiptContent = document.getElementById('receipt').innerHTML;
-            
-            // Write the HTML to the new window
+
             printWindow.document.write(`
                 <!DOCTYPE html>
                 <html>
@@ -445,7 +451,7 @@
                 </body>
                 </html>
             `);
-            
+
             printWindow.document.close();
             printWindow.onload = function() {
                 printWindow.print();
@@ -455,14 +461,14 @@
         function exportToPDF() {
             // Show loading modal
             document.getElementById('loadingModal').style.display = 'block';
-            
+
             // Get the receipt element
             const receiptElement = document.getElementById('receipt');
-            
+
             // Hide action buttons temporarily for the PDF
             const actionButtons = receiptElement.querySelector('.action-buttons');
             actionButtons.style.display = 'none';
-            
+
             // Use html2canvas to capture the receipt as an image
             html2canvas(receiptElement, {
                 scale: 2, // Higher scale for better quality
@@ -471,59 +477,62 @@
                 allowTaint: true
             }).then(canvas => {
                 // Initialize jsPDF
-                const { jsPDF } = window.jspdf;
+                const {
+                    jsPDF
+                } = window.jspdf;
                 const pdf = new jsPDF('p', 'mm', 'a4');
-                
+
                 // Calculate dimensions
                 const imgData = canvas.toDataURL('image/png');
                 const pdfWidth = pdf.internal.pageSize.getWidth();
                 const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-                
+
                 // Add image to PDF
                 pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-                
+
                 // If content is longer than one page, add more pages
                 if (pdfHeight > pdf.internal.pageSize.getHeight()) {
                     let remainingHeight = pdfHeight;
                     let position = -pdf.internal.pageSize.getHeight();
-                    
+
                     while (remainingHeight > 0) {
                         position += pdf.internal.pageSize.getHeight();
                         remainingHeight -= pdf.internal.pageSize.getHeight();
-                        
+
                         if (remainingHeight > 0) {
                             pdf.addPage();
                             pdf.addImage(
-                                imgData, 
-                                'PNG', 
-                                0, 
-                                position, 
-                                pdfWidth, 
+                                imgData,
+                                'PNG',
+                                0,
+                                position,
+                                pdfWidth,
                                 pdfHeight
                             );
                         }
                     }
                 }
-                
+
                 // Save the PDF
                 pdf.save('Order_Receipt_{{ $order->orderId }}.pdf');
-                
+
                 // Show action buttons again
                 actionButtons.style.display = 'flex';
-                
+
                 // Hide loading modal
                 document.getElementById('loadingModal').style.display = 'none';
             }).catch(error => {
                 console.error('Error generating PDF:', error);
                 alert('There was an error generating the PDF. Please try again.');
-                
+
                 // Show action buttons again
                 actionButtons.style.display = 'flex';
-                
+
                 // Hide loading modal
                 document.getElementById('loadingModal').style.display = 'none';
             });
         }
     </script>
 </body>
-</html> 
+
+</html>

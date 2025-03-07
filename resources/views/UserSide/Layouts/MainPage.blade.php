@@ -5,16 +5,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="shortcut icon" href="assets/logo.jpg" type="image/x-icon">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+        integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
     <title>Quantum Order</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
 </head>
 
 <style>
-    *{
+    * {
         font-family: Arial, Helvetica, sans-serif;
     }
-     body {
+
+    body {
         font-size: 12px;
         margin: 0;
         padding: 0;
@@ -24,53 +27,43 @@
     }
 
     nav {
-       background-color: #ff9100;
-       margin: 0;
-       padding: 10px;
-       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-   }
-
-   nav ul {
-       list-style-type: none;
-       padding: 0;
-       display: flex;
-       justify-content: center;
-   }
-
-   nav ul li {
-       margin: 0 10px;
-   }
-
-   nav ul li button {
-       background-color: transparent;
-       color: #fff;
-       border: none;
-       padding: 5px 10px;
-       cursor: pointer;
-       font-size: 14px;
-       transition: background-color 0.3s, color 0.3s;
-       border-radius: 5px;
-   }
-
-   nav ul li button.active {
-       background-color: #fff;
-       color: #ff9100;
-   }
-   nav ul li button:hover{
-    color: #000000;
-    background-color: #ffffff8d;
-   }
-
-    /* .add-to-cart-btn {
         background-color: #ff9100;
-        color: white;
+        margin: 0;
+        padding: 10px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    nav ul {
+        list-style-type: none;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+    }
+
+    nav ul li {
+        margin: 0 10px;
+    }
+
+    nav ul li button {
+        background-color: transparent;
+        color: #fff;
         border: none;
-        padding: 5px 15px;
+        padding: 5px 10px;
         cursor: pointer;
+        font-size: 14px;
+        transition: background-color 0.3s, color 0.3s;
         border-radius: 5px;
-        transition: background-color 0.3s;
-        font-size: 12px;
-    } */
+    }
+
+    nav ul li button.active {
+        background-color: #fff;
+        color: #ff9100;
+    }
+
+    nav ul li button:hover {
+        color: #000000;
+        background-color: #ffffff8d;
+    }
 
     .add-to-cart-btn:hover {
         background-color: #e07b00;
@@ -94,18 +87,18 @@
         gap: 1.5%;
     }
 
-    .products > div {
+    .products>div {
         background-color: #fff;
         border: 1px solid #eee;
         border-radius: 10px;
         margin: 10px;
         padding: 10px;
-        max-width: 15%;
+        max-width: 16%;
         transition: box-shadow 0.3s;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
 
-    .products > div:hover {
+    .products>div:hover {
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     }
 
@@ -120,9 +113,11 @@
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         position: relative;
     }
+
     .product-image {
         position: relative;
     }
+
     .product-image img {
         border-radius: 10px;
         width: 100%;
@@ -195,118 +190,124 @@
 </style>
 
 <body>
-        @include('UserSide.Pages.HeaderPage')
-        <nav>
-            <ul>
+    @include('UserSide.Pages.HeaderPage')
+    <nav>
+        <ul>
+            <li>
+                <button class="btn active" onclick="filterProducts('All', event)">
+                    All
+                </button>
+            </li>
+            @php
+                $categories = DB::table('products')->pluck('category')->unique();
+            @endphp
+            @foreach ($categories as $category)
                 <li>
-                    <button class="btn active" onclick="filterProducts('All', event)">
-                        All
+                    <button class="btn" onclick="filterProducts('{{ $category }}',event)">
+                        {{ $category }}
                     </button>
                 </li>
-                @php
-                    $categories = DB::table('products')->pluck('category')->unique();
-                @endphp
-                @foreach ($categories as $category)
-                    <li>
-                        <button class="btn" onclick="filterProducts('{{ $category }}',event)">
-                            {{ $category }}
-                        </button>
-                    </li>
-                @endforeach
-            </ul>
-            
-        </nav>
+            @endforeach
+        </ul>
 
-        <div>
-            @if(session('success'))
-                <script>alert("{{ session('success') }}")</script>
-            @endif
+    </nav>
 
-            @if(session('error'))
-                <script>alert("{{ session('error') }}")</script>
-            @endif
+    <div>
+        @if (session('success'))
+            <script>
+                alert("{{ session('success') }}")
+            </script>
+        @endif
 
-        
-            <div class="category-name">
-                <h2 id="categoryName">All</h2>
-            </div>
-
-            <div class="products">
-                @php
-                    $products = DB::table('products')->get();
-                @endphp
-                @if ($products->isEmpty())
-                    <h3>No available products</h3>
-                @else
-                    @foreach ($products->sortBy('price') as $product)
-                        <div class="product-card">
-                            <div class="product-image">
-                                <img src="{{ asset('/images/' . $product->image) }}" alt="{{ $product->productName }}">
-                                <a class="view-more-btn" 
-                                href="/ProductDetails/{{$product->productId}}/{{$product->productName}}/{{$product->category}}/{{$product->price}}/{{$product->stock}}/{{$product->description}}/{{$product->image}}">View more</a>
-                            </div>
-                            <div class="product-info">
-                                <h3 class="product-name">{{ $product->productName }}</h3>
-                                <p class="product-category">{{ $product->category }}</p>
-                                <p class="product-category">{{ $product->description }}</p>
-                                <p class="product-price">&#8369;{{ number_format($product->price) }}</p>
-                                <form action="{{ route('addtocart', ['id' => $product->productId]) }}" method="POST" class="add-to-cart-form">
-                                    @csrf
-                                    <input type="hidden" name="productId" value="{{ $product->productId }}">
-                                    <input type="hidden" name="productName" value="{{ $product->productName }}">
-                                    <input type="hidden" name="category" value="{{ $product->category }}">
-                                    <input type="hidden" name="price" value="{{ $product->price }}">
-                                    <input type="hidden" name="stock" value="{{ $product->stock }}">
-                                    <input type="hidden" name="quantity" value="1">
-                                    <input type="hidden" name="description" value="{{ $product->description }}">
-                                    <input type="hidden" name="image" value="{{ $product->image }}">
-                                    <input type="hidden" name="userId" value="{{ Auth::user()->userId }}">
-                                    <input type="hidden" name="username" value="{{ Auth::user()->username }}">
-                                    <button type="submit" class="add-to-cart-btn">Add to cart</button>
-                                </form>
-                            </div>
-                        </div>    
-                    @endforeach
-                @endif
-            </div>
+        @if (session('error'))
+            <script>
+                alert("{{ session('error') }}")
+            </script>
+        @endif
 
 
-
+        <div class="category-name">
+            <h2 id="categoryName">All</h2>
         </div>
 
-    <script>
-          function filterProducts(category, event) {
-               document.querySelectorAll('nav .btn').forEach(btn => {
-                   btn.classList.remove('active');
-               });
-   
-               event.target.classList.add('active');
-   
-               const products = document.querySelectorAll('.products > div');
-               document.getElementById('categoryName').textContent = category;
-   
-               products.forEach(product => {
-                   const productCategory = product.querySelector('p').textContent;
-                   
-                   if (category === 'All' || productCategory === category) {
-                       product.style.display = ''; 
-                   } else {
-                       product.style.display = 'none';
-                   }
-               });
-           }
+        <div class="products">
+            @php
+                $products = DB::table('products')->get();
+            @endphp
+            @if ($products->isEmpty())
+                <h3>No available products</h3>
+            @else
+                @foreach ($products->sortBy('price') as $product)
+                    <div class="product-card">
+                        <div class="product-image">
+                            <img src="{{ asset('/images/' . $product->image) }}" alt="{{ $product->productName }}">
+                            <a class="view-more-btn"
+                                href="/ProductDetails/{{ $product->productId }}/{{ $product->productName }}/{{ $product->category }}/{{ $product->price }}/{{ $product->stock }}/{{ $product->description }}/{{ $product->image }}">View
+                                more</a>
+                        </div>
+                        <div class="product-info">
+                            <h3 class="product-name">{{ $product->productName }}</h3>
+                            <p class="product-category">{{ $product->category }}</p>
+                            <p class="product-category">{{ $product->description }}</p>
+                            <p class="product-price">&#8369;{{ number_format($product->price) }}</p>
+                            <form action="{{ route('addtocart', ['id' => $product->productId]) }}" method="POST"
+                                class="add-to-cart-form">
+                                @csrf
+                                <input type="hidden" name="productId" value="{{ $product->productId }}">
+                                <input type="hidden" name="productName" value="{{ $product->productName }}">
+                                <input type="hidden" name="category" value="{{ $product->category }}">
+                                <input type="hidden" name="price" value="{{ $product->price }}">
+                                <input type="hidden" name="stock" value="{{ $product->stock }}">
+                                <input type="hidden" name="quantity" value="1">
+                                <input type="hidden" name="description" value="{{ $product->description }}">
+                                <input type="hidden" name="image" value="{{ $product->image }}">
+                                <input type="hidden" name="userId" value="{{ Auth::user()->userId }}">
+                                <input type="hidden" name="username" value="{{ Auth::user()->username }}">
+                                <button type="submit" class="add-to-cart-btn">Add to cart</button>
+                            </form>
+                        </div>
+                    </div>
+                @endforeach
+            @endif
+        </div>
 
-        
+
+
+    </div>
+
+    <script>
+        function filterProducts(category, event) {
+            document.querySelectorAll('nav .btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            event.target.classList.add('active');
+
+            const products = document.querySelectorAll('.products > div');
+            document.getElementById('categoryName').textContent = category;
+
+            products.forEach(product => {
+                const productCategory = product.querySelector('p').textContent;
+
+                if (category === 'All' || productCategory === category) {
+                    product.style.display = '';
+                } else {
+                    product.style.display = 'none';
+                }
+            });
+        }
+
+
 
         document.addEventListener('DOMContentLoaded', function() {
-            @if(session('info') && session('confirm'))
+            @if (session('info') && session('confirm'))
                 if (confirm("{{ session('info') }}")) {
                     let lastFormData = @json(session('lastFormData') ?? null);
                     if (lastFormData) {
                         let form = document.createElement('form');
                         form.method = 'POST';
                         form.action = lastFormData.action;
-                        
+
                         let csrfToken = document.createElement('input');
                         csrfToken.type = 'hidden';
                         csrfToken.name = '_token';

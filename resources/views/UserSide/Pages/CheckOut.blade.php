@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -20,7 +21,7 @@
             background-color: white;
             padding: 20px;
             border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         .order-summary {
@@ -41,8 +42,8 @@
         }
 
         .items-table th {
-            background-color: #ff9100;
-            color: white;
+            border-bottom: 2px solid orange;
+            color: black;
         }
 
         .product-image {
@@ -127,17 +128,18 @@
         }
     </style>
 </head>
+
 <body>
     <div class="checkout-container">
         <h1>Review Your Order</h1>
 
-        @if(session('error'))
+        @if (session('error'))
             <div class="alert alert-danger">
                 {{ session('error') }}
             </div>
         @endif
 
-        @if(isset($items) && !empty($items))
+        @if (isset($items) && !empty($items))
             <div class="order-summary">
                 <h2>Order Summary</h2>
                 <table class="items-table">
@@ -151,10 +153,11 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach($items as $item)
+                        @foreach ($items as $item)
                             <tr>
                                 <td>
-                                    <img src="{{ asset('images/' . $item['image']) }}" alt="{{ $item['productName'] }}" class="product-image">
+                                    <img src="{{ asset('images/' . $item['image']) }}" alt="{{ $item['productName'] }}"
+                                        class="product-image">
                                     {{ $item['productName'] }}
                                 </td>
                                 <td>{{ $item['category'] }}</td>
@@ -170,25 +173,30 @@
                     <strong>Total Amount: ₱{{ number_format($totalPrice, 2) }}</strong>
                 </div>
             </div>
-        
+
             <div class="shipping-info">
                 <h2>Shipping Information</h2>
 
                 <form action="{{ route('checkout.process') }}" method="post" id="checkoutForm">
                     @csrf
-                    @foreach($items as $index => $item)
-                        <input type="hidden" name="items[{{$index}}][productId]" value="{{ $item['productId'] }}">
-                        <input type="hidden" name="items[{{$index}}][productName]" value="{{ $item['productName'] }}">
-                        <input type="hidden" name="items[{{$index}}][category]" value="{{ $item['category'] }}">
-                        <input type="hidden" name="items[{{$index}}][price]" value="{{ $item['price'] }}">
-                        <input type="hidden" name="items[{{$index}}][quantity]" value="{{ $item['quantity'] }}">
-                        <input type="hidden" name="items[{{$index}}][image]" value="{{ $item['image'] }}">
+                    @foreach ($items as $index => $item)
+                        <input type="hidden" name="items[{{ $index }}][productId]"
+                            value="{{ $item['productId'] }}">
+                        <input type="hidden" name="items[{{ $index }}][productName]"
+                            value="{{ $item['productName'] }}">
+                        <input type="hidden" name="items[{{ $index }}][category]"
+                            value="{{ $item['category'] }}">
+                        <input type="hidden" name="items[{{ $index }}][price]" value="{{ $item['price'] }}">
+                        <input type="hidden" name="items[{{ $index }}][quantity]"
+                            value="{{ $item['quantity'] }}">
+                        <input type="hidden" name="items[{{ $index }}][image]" value="{{ $item['image'] }}">
                     @endforeach
                     <input type="hidden" name="totalPrice" value="{{ $totalPrice }}">
 
                     <div class="form-group">
                         <label for="address">Delivery Address</label>
-                        <input type="text" id="address" name="address" value="{{ Auth::user()->address }}" required>
+                        <input type="text" id="address" name="address" value="{{ Auth::user()->address }}"
+                            required>
                     </div>
 
                     <div class="form-group">
@@ -198,7 +206,8 @@
 
                     <div class="form-group">
                         <label for="phoneNumber">Contact Number</label>
-                        <input type="text" id="phoneNumber" name="phoneNumber" value="{{ Auth::user()->PhoneNumber }}" required>
+                        <input type="text" id="phoneNumber" name="phoneNumber" maxlength="11" minlength="11"
+                            value="{{ Auth::user()->PhoneNumber }}" required>
                     </div>
 
                     <div style="margin-top: 30px;">
@@ -215,8 +224,7 @@
         @endif
     </div>
 
-    <script>
-    
-    </script>
+    <script></script>
 </body>
+
 </html>

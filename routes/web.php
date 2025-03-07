@@ -116,6 +116,7 @@ Route::delete('/retore/{id}', [ProductController::class, 'RestoringSpecialProduc
 Route::post('/addtocart/{id}',[UserController::class, 'UserAddToCart'])->name('addtocart');
 Route::post('/removefromcart/{id}',[UserController::class, 'UserRemoveItemFromAddtoCart'])->name('removefromcart'); 
 Route::put('/UpdateInformationUser/{id}',[UserController::class,'UpdateInformationUser'])->name('UpdateInformationUser');
+// Route::get("/CountOrders",[UserController::class , 'UserOrderHistory']);
 Route::post('/checkout', [UserController::class, 'checkoutItems'])->name('checkout');
 
 Route::get('/pending-orders', [AdminController::class, 'viewPendingOrders'])->name('admin.pending-orders');
