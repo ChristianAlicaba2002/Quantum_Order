@@ -26,9 +26,7 @@
 
 <body>
     @auth
-
-        @include('UserSide.Layouts.MainPage')
-        
+        @include('UserSide.Layouts.HomePage')
     @else
         <h1>Quantum Order</h1>
         <p>Log into Quantum Order</p>

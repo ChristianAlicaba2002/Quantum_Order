@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="assets/logo.jpg" type="image/x-icon">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Quantum Order</title>
 </head>
@@ -267,10 +268,14 @@
             <li>
                 <a href="{{route('OrderHistory')}}">Orders</a>
             </li>
+
+            <li>
+                <a href="/pending-orders">Pending Orders</a>
+            </li>
            </ul>
         </div>
 
-        @if (session('failedToExport'))
+        @if(session('failedToExport'))
             <script>alert("{{session('failedToExport')}}")</script>
         @endif
 
@@ -353,7 +358,7 @@
                 </tbody>
             </table>
             @if($products->isEmpty())
-                <p>No products found</p>
+                <p>Don't have any products added</p>
             @endif
         </div>
 

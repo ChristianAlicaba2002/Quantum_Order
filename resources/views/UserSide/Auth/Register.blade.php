@@ -99,7 +99,7 @@
         </div>
 
         <div>
-            <input type="tel" name="phoneNumber"  placeholder="Mobile Number" required><br>
+            <input type="tel" name="phoneNumber"  placeholder="Mobile Number" maxlength="11" required><br>
             @if(session('error'))
                 <script>alert("{{session('error')}}")</script>
             @endif

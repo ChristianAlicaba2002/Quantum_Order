@@ -2,21 +2,20 @@
 
 namespace App\Http\Controllers\UserSide;
 
+use App\Models\CheckOut;
+use App\Models\AddtoCart;
 use Illuminate\Http\Request;
+use App\Services\ImageService;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
-use App\Application\User\UpdateUser;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Application\User\RegisterUser;
-use App\Models\User;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
 use App\Http\Requests\UserRegistrationRequest;
-use App\Models\AddtoCart;
-use App\Services\ImageService;
 
 
 class UserController extends Controller
@@ -227,48 +226,57 @@ class UserController extends Controller
         }
     }
 
-    public function UserAddToCart(Request $request , string $productId)
+    public function UserAddToCart(Request $request, string $productId)
     {
-
         $product = DB::table('products')->where('productId', $productId)->first();
-        if (! $product) {
+        if (!$product) {
             return redirect('/')->with('error', 'Product not found');
         }
 
-
-        $Validator = Validator::make($request->all(), [
-            'productId' =>'required|string|exists:products,productId',
-            'productName' =>'required|string|exists:products,productName',
-            'category' =>'required|string|exists:products,category',
-            'price' =>'required|integer|exists:products,price',
-            'stock' =>'required|integer|exists:products,stock',
-            'quantity' =>'required|integer',
-            'description' =>'required|string|exists:products,description',
-            'image' =>'required|string|exists:products,image',
-            'userId' =>'required|string|exists:users,userId',
-            'username' =>'required|string|exists:users,username',
+        $validator = Validator::make($request->all(), [
+            'productId' => 'required|string|exists:products,productId',
+            'productName' => 'required|string|exists:products,productName',
+            'category' => 'required|string|exists:products,category',
+            'price' => 'required|integer|exists:products,price',
+            'stock' => 'required|integer|exists:products,stock',
+            'quantity' => 'required|integer',
+            'description' => 'required|string|exists:products,description',
+            'image' => 'required|string|exists:products,image',
+            'userId' => 'required|string|exists:users,userId',
+            'username' => 'required|string|exists:users,username',
         ]);
 
-        if ($Validator->fails()) {
-            return redirect('/')->with('error', $Validator->errors()->first());
+        if ($validator->fails()) {
+            return redirect('/MainPage')->with('error', $validator->errors()->first());
         }
 
-        AddtoCart::create([
-            'productId' => $request->productId,
-            'productName' => $request->productName,
-            'category' => $request->category,
-            'price' => $request->price,
-            'stock' => $request->stock,
-            'quantity' => $request->quantity,
-            'description' => $request->description,
-            'image' => $request->image,
-            'userId' => $request->userId,
-            'username' => $request->username,
-        ]);
+        $existingCartItem = AddtoCart::where('productId', $request->productId)
+            ->where('userId', $request->userId)
+            ->first();
 
-        return redirect('/')->with('success','Add to cart successfully');
+        if ($existingCartItem) {
+            if ($request->has('confirm') && $request->confirm === 'yes') {
+                $existingCartItem->quantity += $request->quantity;
+                $existingCartItem->save();
+                return redirect('/MainPage')->with('success', 'Product quantity updated in cart');
+            } else {
+                // Store the form data in session
+                session([
+                    'lastFormData' => [
+                        'action' => route('addtocart', ['id' => $productId]),
+                        'fields' => $request->except(['_token', 'confirm'])
+                    ]
+                ]);
+                
+                return redirect('/MainPage')->with([
+                    'info' => 'Product already in your cart, do you want to add more?',
+                    'confirm' => true
+                ]);
+            }
+        }
 
-
+        AddtoCart::create(attributes: $request->except('_token'));
+        return redirect('/MainPage')->with('success', 'Added to cart successfully');
     }
 
     public function UserRemoveItemFromAddtoCart(string $productId)
@@ -276,34 +284,299 @@ class UserController extends Controller
         $product = DB::table('add_to_cart')->where('productId', $productId)->first();
 
         if (!$product) {
-            return redirect('/')->with('error', 'Product not found in cart');
+            return redirect('/MainPage')->with('error', 'Product not found in cart');
         }
 
         try {
             DB::table('add_to_cart')->where('productId', $productId)->delete();
-            return redirect('/')->with('success', 'Product removed from cart successfully');
+            return redirect('/MainPage')->with('success', 'Product removed from cart successfully');
         } catch (\Exception $e) {
-            return redirect('/')->with('error', 'Failed to remove product from cart. Please try again.');
+            return redirect('/MainPage')->with('error', 'Failed to remove product from cart. Please try again.');
         }
     }
 
-    public function checkout(Request $request)
+    public function checkoutItems(Request $request)
     {
-       Validator::make($request->all(), [
-        'productId' =>'required|string|exists:add_to_cart,productId',
-        'productName' =>'required|string|exists:add_to_cart,productName',
-        'category' =>'required|string|exists:add_to_cart,category',
-        'userId' =>'required|string|exists:add_to_cart,userId',
-        'firstName' =>'required|string|exists:add_to_cart,firstName',
-        'address' =>'required|string|exists:add_to_cart,address',
-        'phoneNumber' =>'required|string|exists:add_to_cart,phoneNumber',
-        'totalPrice' =>'required|string|exists:add_to_cart,totalPrice',
-        'stock' =>'required|string|exists:add_to_cart,stock',
-       ]);
-       
-        return redirect()->back()->with('success', 'Checkout completed successfully!');
+        // Validate the request
+        $request->validate([
+            'selected_items' => 'required|array',
+            'total_price' => 'required|numeric'
+        ]);
+
+        $selectedItems = $request->input('selected_items');
+        $totalPrice = $request->input('total_price');
+
+        // Get the cart items that were selected
+        $cartItems = DB::table('add_to_cart')
+            ->whereIn('productId', $selectedItems)
+            ->where('userId', Auth::user()->userId)
+            ->get();
+
+        if ($cartItems->isEmpty()) {
+            return redirect()->back()->with('error', 'No items selected for checkout');
+        }
+
+        return view('UserSide.Pages.CheckOut', [
+            'cartItems' => $cartItems,
+            'totalPrice' => $totalPrice
+        ]);
     }
 
+    public function toPayHistory()
+    {
+        $userId = Auth::user()->userId;
+        
+        // Get pending/to pay orders
+        $toPayOrders = DB::table('orders')
+            ->join('order_details', 'orders.orderId', '=', 'order_details.orderId')
+            ->where('orders.userId', $userId)
+            ->where('orders.orderStatus', 'Pending')
+            ->select('orders.*', 'order_details.*')
+            ->orderBy('orders.created_at', 'desc')
+            ->get();
+
+        return view('UserSide.Pages.PurchaseHistory.ToPay', compact('toPayOrders'));
+    }
+
+
+    public function DeliveryHIstory()
+    {
+        $userId = Auth::user()->userId;
+        
+        // Get accepted/received orders
+        $deliveryOrders = DB::table('orders')
+            ->join('order_details', 'orders.orderId', '=', 'order_details.orderId')
+            ->where('orders.userId', $userId)
+            ->where('orders.orderStatus', 'Accepted')
+            ->select('orders.*', 'order_details.*')
+            ->orderBy('orders.created_at', 'desc')
+            ->get();
+
+        return view('UserSide.Pages.PurchaseHistory.Delivery', compact('deliveryOrders'));
+    }
+
+    public function MoveToRecieved(Request $request, $id)
+    {
+        // First get the order
+        $order = DB::table('orders')->where('orderId', $id)->first();
+        if(!$order) {
+            return redirect()->back()->with('error', 'Order not found');
+        }
+
+        // Get the order details which contain product information
+        $orderDetails = DB::table('order_details')
+            ->where('orderId', $id)
+            ->first();
+        
+        if(!$orderDetails) {
+            return redirect()->back()->with('error', 'Order details not found');
+        }
+
+        try {
+            $receivedOrder = DB::table('delivered_items')->insert([
+                'orderId' => $order->orderId,
+                'productId' => $orderDetails->productId,
+                'productName' => $orderDetails->productName,
+                'category' => $orderDetails->category,
+                'quantity' => $orderDetails->quantity,
+                'price' => $orderDetails->price,
+                'image' => $orderDetails->image,
+                'orderStatus' => 'Delivered',
+                'created_at' => now(),
+                'updated_at' => now()
+            ]);
+
+            // Update the status in orders table
+            DB::table('orders')
+                ->where('orderId', $id)
+                ->update([
+                    'orderStatus' => 'Delivered',
+                    'updated_at' => now()
+                ]);
+
+            return view('UserSide.Pages.PurchaseHistory.Received', compact('receivedOrders'))->with('success', 'Order marked as received successfully');
+
+        } catch (\Exception $e) {
+            Log::error('Error moving order to received: ' . $e->getMessage());
+            return redirect()->back()
+                ->with('error', 'Failed to mark order as received. Please try again.');
+        }
+    }
+
+    public function receivedHistory()
+    {
+        $userId = Auth::user()->userId;
+        
+        // Get accepted/received orders
+        $receivedOrders = DB::table('delivered_items')->get();
+
+        return view('UserSide.Pages.PurchaseHistory.Received', compact('receivedOrders'));
+    }
+
+    public function cancelledHistory()
+    {
+        $userId = Auth::user()->userId;
+        
+        // Get declined/cancelled orders
+        $cancelledOrders = DB::table('orders')
+            ->join('order_details', 'orders.orderId', '=', 'order_details.orderId')
+            ->where('orders.userId', $userId)
+            ->where('orders.orderStatus', 'Declined')
+            ->select('orders.*', 'order_details.*')
+            ->orderBy('orders.created_at', 'desc')
+            ->get();
+
+        return view('UserSide.Pages.PurchaseHistory.Cancelled', compact('cancelledOrders'));
+    }
+
+    public function cancelOrder(Request $request, $orderId)
+    {
+        $order = DB::table('orders')->where('orderId', $orderId)->first();
+        if(!$order) {
+            return redirect()->back()->with('error', 'Order not found');
+        }
+
+        try {
+            DB::table('orders')->where('orderId', $orderId)->update([
+                'orderStatus' => 'Declined',
+                'updated_at' => now()
+            ]);
+
+            return redirect()->back()->with('success', 'Order cancelled successfully');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Failed to cancel order: ' . $e->getMessage());
+        }
+    }
+
+    public function checkoutPreview(Request $request)
+    {
+        try {
+            // Validate the request
+            $validated = $request->validate([
+                'items' => 'required|array',
+                'totalPrice' => 'required|numeric'
+            ]);
+
+            $items = $request->items;
+            $totalPrice = $request->totalPrice;
+
+            if (empty($items)) {
+                return redirect()->back()->with('error', 'Please select items to checkout');
+            }
+
+            return view('UserSide.Pages.CheckOut', compact('items', 'totalPrice'));
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Error processing checkout: ' . $e->getMessage());
+        }
+    }
+
+    public function checkoutProcess(Request $request)
+    {
+        try {
+            // Validate the request
+            $validated = $request->validate([
+                'items' => 'required|array',
+                'totalPrice' => 'required|numeric',
+                'address' => 'required|string',
+                'paymentMethod' => 'required|string',
+                'phoneNumber' => 'required|string'
+            ]);
+
+            $items = $request->items;
+            $totalPrice = $request->totalPrice;
+            $userId = Auth::user()->userId;
+            $firstName = Auth::user()->firstName;
+            $address = $request->address;
+            $paymentMethod = $request->paymentMethod;
+            $phoneNumber = $request->phoneNumber;
+
+            // Generate a unique order ID
+            $orderId = 'ORD-' . uniqid();
+
+            DB::beginTransaction();
+
+            try {
+                // Create the order header
+                DB::table('orders')->insert([
+                    'orderId' => $orderId,
+                    'userId' => $userId,
+                    'firstName' => $firstName,
+                    'address' => $address,
+                    'paymentMethod'=> $paymentMethod,
+                    'phoneNumber' => $phoneNumber,
+                    'totalAmount' => $totalPrice,
+                    'orderStatus' => 'Pending',
+                    'created_at' => now(),
+                    'updated_at' => Carbon::now()->toDateTimeLocalString(),
+                ]);
+
+                // Insert order details for each product
+                foreach ($items as $item) {
+                    DB::table('order_details')->insert([
+                        'orderId' => $orderId,
+                        'productId' => $item['productId'],
+                        'productName' => $item['productName'],
+                        'category' => $item['category'],
+                        'quantity' => $item['quantity'],
+                        'price' => $item['price'],
+                        'image' => $item['image'],
+                        'created_at' => now(),
+                        'updated_at' => now()
+                    ]);
+
+                    // Update product stock
+                    DB::table('products')
+                        ->where('productId', $item['productId'])
+                        ->decrement('stock', $item['quantity']);
+                }
+
+                // Remove items from cart
+                foreach ($items as $item) {
+                    DB::table('add_to_cart')
+                        ->where('userId', $userId)
+                        ->where('productId', $item['productId'])
+                        ->delete();
+                }
+
+                DB::commit();
+
+                // Redirect to the receipt page with order details
+                return redirect()->route('user.order.receipt', ['orderId' => $orderId])
+                    ->with('success', 'Order placed successfully! Your order ID is: ' . $orderId);
+
+            } catch (\Exception $e) {
+                DB::rollBack();
+                return redirect()->back()->with('error', 'Error processing your order: ' . $e->getMessage());
+            }
+
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Error validating your order: ' . $e->getMessage());
+        }
+    }
+
+    // Add this new method to display the receipt
+    public function showOrderReceipt($orderId)
+    {
+        try {
+            // Get order details
+            $order = DB::table('orders')
+                ->where('orderId', $orderId)
+                ->first();
+            
+            if (!$order) {
+                return redirect('/')->with('error', 'Order not found');
+            }
+            
+            // Get order items
+            $orderItems = DB::table('order_details')
+                ->where('orderId', $orderId)
+                ->get();
+            
+            return view('UserSide.Pages.UserOrderReceipt', compact('order', 'orderItems'));
+        } catch (\Exception $e) {
+            return redirect('/')->with('error', 'Error retrieving order details: ' . $e->getMessage());
+        }
+    }
 }
 
 
