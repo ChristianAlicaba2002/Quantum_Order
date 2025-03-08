@@ -33,11 +33,16 @@
 
         .orders-table {
             width: 100%;
-            overflow-y: scroll;
             border-collapse: collapse;
             background-color: white;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            margin-top: 20px;
+        }
+
+        .orders-table th {
+            position: sticky;
+            top: 0;
+            background-color: #ff9100;
+            color: white;
         }
 
         .orders-table td {
@@ -65,11 +70,6 @@
         .orders-table tr:hover {
             background-color: #f9f9f9;
         }
-
-        /* .status-declined {
-            color: #dc3545;
-            font-weight: bold;
-        } */
 
         .no-orders {
             text-align: center;

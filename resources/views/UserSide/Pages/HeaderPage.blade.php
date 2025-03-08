@@ -136,15 +136,15 @@
     }
 
     .cartGroup {
-        width: 1rem;
-        height: 1rem;
+        width: 1.1rem;
+        height: 1.2rem;
         background-color: red;
         text-align: center;
         border-radius: 50%;
         padding: .20rem;
         font-size: small;
         position: relative;
-        margin-top: -2.8rem;
+        margin-top: -2.7rem;
         margin-left: 2.5rem;
     }
 

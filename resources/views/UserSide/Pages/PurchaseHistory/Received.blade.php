@@ -46,6 +46,8 @@
         }
 
         .orders-table th {
+            position: sticky;
+            top: 0;
             background-color: #ff9100;
             color: white;
         }
@@ -64,6 +66,12 @@
             padding: 20px;
             color: #666;
         }
+
+        .Table-Container {
+            max-width: 100%;
+            max-height: 60vh;
+            overflow-y: scroll;
+        }
     </style>
 </head>
 
@@ -81,48 +89,42 @@
     <h4>Orders: {{ $UserOrders->count() }}</h4>
 
     @if (count($receivedOrders) > 0)
-        <table class="orders-table">
-            <thead>
-                <tr>
-                    <th>Order ID</th>
-                    <th>Product ID</th>
-                    <th>Image</th>
-                    <th>Product Name</th>
-                    <th>Category</th>
-                    <th>Quantity</th>
-                    <th>Price</th>
-                    <th>Status</th>
-                    <th>Order Date</th>
-                </tr>
-            </thead>
-
-            {{-- orderId
-                productId
-                productName
-                category
-                quantity
-                price
-                image
-                orderStatus --}}
-            <tbody>
-                @foreach ($receivedOrders as $order)
+        <div class="Table-Container">
+            <table class="orders-table">
+                <thead>
                     <tr>
-                        <td>{{ $order->orderId }}</td>
-                        <td>{{ $order->productId }}</td>
-                        <td>
-                            <img src="{{ asset('/images/' . $order->image) }}" alt="{{ $order->productName }}"
-                                style="width:50px;">
-                        </td>
-                        <td>{{ $order->productName }}</td>
-                        <td>{{ $order->category }}</td>
-                        <td>{{ $order->quantity }}</td>
-                        <td>₱{{ number_format($order->price, 2) }}</td>
-                        <td style="color: green">{{ $order->orderStatus }}</td>
-                        <td>{{ date('M d, Y h:i A', strtotime($order->created_at)) }}</td>
+                        <th>Order ID</th>
+                        <th>Product ID</th>
+                        <th>Image</th>
+                        <th>Product Name</th>
+                        <th>Category</th>
+                        <th>Quantity</th>
+                        <th>Price</th>
+                        <th>Status</th>
+                        <th>Order Date</th>
                     </tr>
-                @endforeach
-            </tbody>
-        </table>
+                </thead>
+
+                <tbody>
+                    @foreach ($receivedOrders as $order)
+                        <tr>
+                            <td>{{ $order->orderId }}</td>
+                            <td>{{ $order->productId }}</td>
+                            <td>
+                                <img src="{{ asset('/images/' . $order->image) }}" alt="{{ $order->productName }}"
+                                    style="width:50px;">
+                            </td>
+                            <td>{{ $order->productName }}</td>
+                            <td>{{ $order->category }}</td>
+                            <td>{{ $order->quantity }}</td>
+                            <td>₱{{ number_format($order->price, 2) }}</td>
+                            <td style="color: green">{{ $order->orderStatus }}</td>
+                            <td>{{ date('M d, Y h:i A', strtotime($order->created_at)) }}</td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
     @else
         <div class="no-orders">
             <h3>No received orders found.</h3>

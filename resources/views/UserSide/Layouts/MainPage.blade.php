@@ -383,7 +383,6 @@
                                         <input type="hidden" name="image" value="{{ $product->image }}">
                                         <input type="hidden" name="userId" value="{{ Auth::user()->userId }}">
                                         <input type="hidden" name="username" value="{{ Auth::user()->username }}">
-                                        {{-- <button type="submit" class="add-to-cart">Add to cart</button> --}}
                                         <button type="submit" class="add-to-cart-btn">
                                             <i class="bi bi-cart-plus"></i>
                                         </button>

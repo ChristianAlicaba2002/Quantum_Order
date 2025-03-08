@@ -310,8 +310,6 @@
     @include('UserSide.Pages.HeaderPage')
 
     <div class="layout-container">
-
-
         <!-- Sidebar -->
         <div class="sidebar">
             <!-- Categories Box -->
