@@ -6,8 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="shortcut icon" href="assets/logo.jpg" type="image/x-icon">
     <title>Pending Orders</title>
-
-    <!-- Add Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
     <style>
@@ -22,6 +20,7 @@
             color: white;
             padding: 12px;
             text-align: left;
+            text-align: center;
         }
 
         .orders-table td {
@@ -320,11 +319,11 @@
                 <thead>
                     <tr></tr>
                     <th>Order ID</th>
-                    <th>Image</th>
                     <th>Customer Name</th>
                     <th>Total Amount</th>
                     <th>Date</th>
                     <th>Status</th>
+                    <th>More</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -354,7 +353,7 @@
                                 <td>{{ $order->firstName }}</td>
                                 <td>₱{{ number_format($order->totalAmount, 2) }}</td>
                                 <td>
-                                    {{ date('M d, Y H:i', strtotime($order->created_at)) }}
+                                    {{ date('M d, Y H:i', strtotime($order->updated_at)) }}
                                     <span class="time-ago">({{ $timeAgo }})</span>
                                 </td>
                                 <td>
@@ -389,7 +388,6 @@
                                         @endif
                                     </a>
                                 </td>
-                                <td></td>
                             </tr>
                         @endforeach
                     @else

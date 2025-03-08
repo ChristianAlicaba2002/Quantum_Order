@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -8,7 +9,7 @@
         integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
         crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <title>Document</title>
+    <title>{{ Auth::user()->firstName ?? 'Home' }}</title>
 </head>
 <style>
     * {
@@ -135,15 +136,15 @@
     }
 
     .cartGroup {
-        width: 1.3rem;
-        height: 1.5rem;
+        width: 1rem;
+        height: 1rem;
         background-color: red;
         text-align: center;
         border-radius: 50%;
         padding: .20rem;
         font-size: small;
         position: relative;
-        margin-top: -3rem;
+        margin-top: -2.8rem;
         margin-left: 2.5rem;
     }
 
@@ -297,6 +298,37 @@
     .checkout-btn:hover {
         background-color: #e68200;
     }
+
+    .product-card {
+        transition: opacity 0.3s ease-in-out;
+    }
+
+    #noResultsMessage {
+        transition: opacity 0.3s ease-in-out;
+        color: #666;
+        font-size: 16px;
+        margin: 20px 0;
+    }
+
+    #productsList {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        width: 100%;
+        min-height: 200px;
+        /* Ensures there's space for the message */
+        position: relative;
+        /* For proper message positioning */
+    }
+
+    #noResultsMessage {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+        width: 100%;
+    }
 </style>
 
 <body>
@@ -310,7 +342,8 @@
         </div>
 
         <div class="SearchItemsInput">
-            <input type="search" placeholder="Search your item" onkeyup="searchProducts(this.value)">
+            <input type="text" placeholder="Search you item" oninput="searchProducts(this.value)"
+                class="search-input">
         </div>
 
         <div class="Icons">
@@ -427,23 +460,73 @@
 
     <script>
         function searchProducts(searchText) {
-            const products = document.querySelectorAll('.products > div');
-            const isfound = document.getElementById('isfound');
-            searchproductsText = searchText.toLowerCase();
+            const products = document.querySelectorAll('.product-card');
+            const searchTerm = searchText.toLowerCase().trim();
+
+            // Reset all products if search is empty
+            if (searchTerm === '') {
+                products.forEach(product => {
+                    product.style.opacity = '1';
+                    product.style.display = '';
+                });
+                const existingMessage = document.getElementById('noResultsMessage');
+                if (existingMessage) {
+                    existingMessage.remove();
+                }
+                return;
+            }
+
+            let hasResults = false;
 
             products.forEach(product => {
-                const productName = product.querySelector('h3').textContent.toLowerCase();
+                const productName = product.querySelector('.product-name').textContent.toLowerCase().trim();
+                const productCategory = product.querySelector('.product-category').textContent.toLowerCase().trim();
+                const price = product.querySelector('.price').textContent.toLowerCase().trim();
 
-                if (productName.includes(searchText)) {
+                const isMatch =
+                    productName.includes(searchTerm) ||
+                    productCategory.includes(searchTerm) ||
+                    price.includes(searchTerm) ||
+                    productName.split(' ').some(word => word === searchTerm) ||
+                    productCategory.split(' ').some(word => word === searchTerm);
+
+                if (isMatch) {
+                    hasResults = true;
                     product.style.display = '';
-                    document.body.style.backgroundColor = 'white'
-
+                    product.style.opacity = '0';
+                    requestAnimationFrame(() => {
+                        product.style.opacity = '1';
+                    });
                 } else {
-                    product.style.display = 'none';
-                    // document.body.style.backgroundColor = 'lightgray'
+                    product.style.opacity = '0';
+                    setTimeout(() => {
+                        product.style.display = 'none';
+                    }, 300);
                 }
             });
 
+            // Handle no results message
+            const noResultsMsg = document.getElementById('noResultsMessage');
+            if (!hasResults) {
+                if (!noResultsMsg) {
+                    const message = document.createElement('div');
+                    message.id = 'noResultsMessage';
+                    message.style.cssText = `
+                        width: 100%;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        padding: 40px;
+                        grid-column: 1 / -1;
+                    `;
+                    message.innerHTML = `
+                        <h3 style="color: #666; font-size: 18px;">No products found for "${searchText}"</h3>
+                    `;
+                    document.querySelector('#productsList').appendChild(message);
+                }
+            } else if (noResultsMsg) {
+                noResultsMsg.remove();
+            }
         }
 
         function closeModal() {
@@ -471,10 +554,8 @@
             cartDropdown.style.display = 'block';
             backdrop.style.display = 'block';
 
-            // Force reflow
             void cartDropdown.offsetWidth;
 
-            // Add animation classes
             cartDropdown.classList.add('show');
             backdrop.classList.add('show');
         }
@@ -489,7 +570,6 @@
             }, 300);
         }
 
-        // Cart icon click handler
         cartIcon.addEventListener('click', (event) => {
             if (cartDropdown.style.display === 'none' || cartDropdown.style.display === '') {
                 openCart(event);
@@ -498,15 +578,12 @@
             }
         });
 
-        // Prevent cart closing when clicking inside
         cartDropdown.addEventListener('click', (event) => {
             event.stopPropagation();
         });
 
-        // Close cart when clicking backdrop
         backdrop.addEventListener('click', closeCart);
 
-        // Close cart when pressing Escape
         document.addEventListener('keydown', (event) => {
             if (event.key === 'Escape' && cartDropdown.style.display === 'block') {
                 closeCart();
@@ -552,31 +629,26 @@
         }
 
         function proceedToCheckout() {
-            // Check if any items are selected
             const checkboxes = document.querySelectorAll('.cart-item input[type="checkbox"]:checked');
             if (checkboxes.length === 0) {
                 alert('Please select at least one item to checkout');
                 return false;
             }
 
-            // Create a form to submit the selected items
             const form = document.createElement('form');
             form.method = 'POST';
             form.action = '{{ route('checkout.preview') }}';
 
-            // Add CSRF token
             const csrfToken = document.createElement('input');
             csrfToken.type = 'hidden';
             csrfToken.name = '_token';
             csrfToken.value = '{{ csrf_token() }}';
             form.appendChild(csrfToken);
 
-            // Get selected items and add to form
             let totalAmount = 0;
             checkboxes.forEach((checkbox, index) => {
                 const cartItem = checkbox.closest('.cart-item');
 
-                // Get product details
                 const productId = cartItem.querySelector('form').action.split('/').pop();
                 const productName = cartItem.querySelector('h3').textContent;
                 const category = cartItem.querySelector('h4').textContent;
@@ -584,11 +656,9 @@
                 const quantity = parseInt(cartItem.querySelector('input[type="number"]').value);
                 const image = cartItem.querySelector('img').src.split('/').pop();
 
-                // Calculate subtotal
                 const subtotal = price * quantity;
                 totalAmount += subtotal;
 
-                // Add fields to form
                 const fields = {
                     'productId': productId,
                     'productName': productName,
@@ -607,14 +677,12 @@
                 }
             });
 
-            // Add total price
             const totalPriceInput = document.createElement('input');
             totalPriceInput.type = 'hidden';
             totalPriceInput.name = 'totalPrice';
             totalPriceInput.value = totalAmount.toFixed(2);
             form.appendChild(totalPriceInput);
 
-            // Submit the form
             document.body.appendChild(form);
             form.submit();
 
@@ -622,6 +690,7 @@
         }
     </script>
 
+    @yield('content')
 
 </body>
 

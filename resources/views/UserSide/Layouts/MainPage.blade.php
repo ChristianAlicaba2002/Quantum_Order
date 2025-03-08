@@ -5,391 +5,312 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="shortcut icon" href="assets/logo.jpg" type="image/x-icon">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
-        integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
-        crossorigin="anonymous" referrerpolicy="no-referrer" />
     <title>Quantum Order</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
-</head>
-
-<style>
-    /* Modern Reset & Base Styles */
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-        font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-    }
-
-    :root {
-        --primary-color: #ff9100;
-        --primary-dark: #e07b00;
-        --text-color: #2d3436;
-        --bg-color: #f8f9fa;
-        --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        --hover-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
-        --border-radius: 12px;
-        --spacing: 1rem;
-    }
-
-    body {
-        background-color: var(--bg-color);
-        color: var(--text-color);
-        line-height: 1.6;
-    }
-
-    /* Modern Navigation */
-    nav {
-        background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
-        padding: 1rem;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    }
-
-    nav ul {
-        display: flex;
-        gap: 0.5rem;
-        justify-content: center;
-        flex-wrap: wrap;
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 0 1rem;
-    }
-
-    nav ul li button {
-        background: rgba(255, 255, 255, 0.1);
-        color: white;
-        border: none;
-        padding: 0.8rem 1.5rem;
-        border-radius: 25px;
-        font-weight: 500;
-        transition: all 0.3s ease;
-        backdrop-filter: blur(5px);
-    }
-
-    nav ul li button.active {
-        background: white;
-        color: var(--primary-color);
-        transform: translateY(-2px);
-    }
-
-    nav ul li button:hover {
-        background: rgba(255, 255, 255, 0.2);
-        transform: scale(1.05);
-    }
-
-    /* Modern Product Grid */
-    .products {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-        gap: 2rem;
-        padding: 2rem;
-        max-width: 1400px;
-        margin: 0 auto;
-    }
-
-    .product-card {
-        background: white;
-        border-radius: var(--border-radius);
-        overflow: hidden;
-        transition: all 0.3s ease;
-        position: relative;
-        display: flex;
-        flex-direction: column;
-        box-shadow: var(--card-shadow);
-    }
-
-    .product-card:hover {
-        transform: translateY(-5px);
-        box-shadow: var(--hover-shadow);
-    }
-
-    .product-image {
-        position: relative;
-        overflow: hidden;
-        aspect-ratio: 1;
-    }
-
-    .product-image img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        transition: transform 0.5s ease;
-    }
-
-    .product-card:hover .product-image img {
-        transform: scale(1.05);
-    }
-
-    .view-more-btn {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        background: rgba(0, 0, 0, 0.7);
-        color: white;
-        padding: 0.8rem 1.5rem;
-        border-radius: 25px;
-        opacity: 0;
-        transition: all 0.3s ease;
-        text-decoration: none;
-        font-weight: 500;
-        backdrop-filter: blur(3px);
-    }
-
-    .product-card:hover .view-more-btn {
-        opacity: 1;
-    }
-
-    .product-info {
-        padding: 1.5rem;
-        display: flex;
-        flex-direction: column;
-        gap: 0.5rem;
-        flex: 1;
-    }
-
-    .product-name {
-        font-size: 1.2rem;
-        font-weight: 600;
-        color: var(--text-color);
-        margin-bottom: 0.5rem;
-    }
-
-    .product-category {
-        color: #64748b;
-        font-size: 0.9rem;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }
-
-    .product-price {
-        font-size: 1.25rem;
-        font-weight: 700;
-        color: var(--primary-color);
-        margin: 0.5rem 0;
-    }
-
-    .add-to-cart-btn {
-        background: var(--primary-color);
-        color: white;
-        border: none;
-        padding: 0.8rem 1.5rem;
-        border-radius: 25px;
-        font-weight: 500;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        width: 100%;
-        margin-top: auto;
-    }
-
-    .add-to-cart-btn:hover {
-        background: var(--primary-dark);
-        transform: translateY(-2px);
-    }
-
-    .category-name {
-        padding: 2rem 2rem 0;
-        max-width: 1400px;
-        margin: 0 auto;
-    }
-
-    .category-name h2 {
-        font-size: 2rem;
-        font-weight: 700;
-        color: var(--text-color);
-        position: relative;
-        display: inline-block;
-    }
-
-    .category-name h2::after {
-        content: '';
-        position: absolute;
-        bottom: -10px;
-        left: 0;
-        width: 60px;
-        height: 4px;
-        background: var(--primary-color);
-        border-radius: 2px;
-    }
-
-    /* Responsive Design */
-    @media (max-width: 1024px) {
-        .products {
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
-            padding: 1.5rem;
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
-        .category-name h2 {
-            font-size: 1.75rem;
-        }
-    }
-
-    @media (max-width: 768px) {
-        nav ul {
-            gap: 0.3rem;
+        body {
+            background-color: #ffffff;
+            font-family: Arial, sans-serif;
         }
 
-        nav ul li button {
-            padding: 0.6rem 1.2rem;
-            font-size: 0.9rem;
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            background-color: white;
         }
 
-        .products {
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-            padding: 1rem;
-        }
-
-        .product-info {
-            padding: 1rem;
-        }
-
-        .product-name {
-            font-size: 1.1rem;
-        }
-
-        .category-name {
-            padding: 1.5rem 1.5rem 0;
-        }
-
-        .category-name h2 {
+        .logo {
+            color: #FF6B35;
+            font-weight: bold;
             font-size: 1.5rem;
         }
-    }
 
-    @media (max-width: 480px) {
-        nav {
-            padding: 0.8rem;
+        .search-bar {
+            flex-grow: 1;
+            max-width: 600px;
+            margin: 0 2rem;
+        }
+
+        .search-bar input {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: #f5f5f5;
         }
 
         nav ul {
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-            padding-bottom: 0.5rem;
+            display: flex;
+            gap: 20px;
+            list-style: none;
+            padding: 10px 20px;
+            margin: 0;
+            border-bottom: 1px solid #eee;
+            background-color: #ffffff;
         }
 
-        nav ul::-webkit-scrollbar {
-            height: 3px;
+        nav button {
+            color: #666;
+            padding: 8px 16px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-size: 14px;
         }
 
-        nav ul::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.3);
-            border-radius: 3px;
+        nav button.active {
+            color: #FF6B35;
+            background: none;
         }
 
         .products {
-            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-            gap: 0.8rem;
-            padding: 0.8rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .product-card {
+            flex: 0 0 calc(25% - 15px);
+            /* 25% width for 4 items per row, minus gap */
+            background: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .product-card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transform: translateY(-4px);
+        }
+
+        .image-container {
+            position: relative;
+            width: 100%;
+            background: #D3D3D3;
+            aspect-ratio: 4/3;
+            overflow: hidden;
+            border-radius: 8px 8px 0 0;
+        }
+
+        .image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .product-card:hover .image-container img {
+            transform: scale(1.05);
+        }
+
+        .view-more {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #666;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 8px 16px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 14px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .product-card:hover .view-more {
+            opacity: 1;
         }
 
         .product-info {
-            padding: 0.8rem;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 0 0 8px 8px;
         }
 
-        .product-name {
-            font-size: 1rem;
+        .product-details {
+            margin-bottom: 8px;
         }
 
-        .product-price {
-            font-size: 1.1rem;
+        .price-cart-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .price {
+            color: #FF0000;
+            font-size: 14px;
+            font-weight: normal;
+            margin: 0;
+            /* Remove margin bottom */
+        }
+
+        .add-to-cart {
+            background-color: #FF6B35;
+            color: white;
+            border: none;
+            padding: 10px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: background-color 0.3s ease;
+            width: auto;
+            min-width: 90px;
+        }
+
+        .add-to-cart:hover {
+            background-color: #ff5722;
         }
 
         .add-to-cart-btn {
-            padding: 0.6rem 1rem;
-            font-size: 0.9rem;
+            background: #FF6B35;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            float: right;
+            transition: background-color 0.3s ease;
         }
 
-        .category-name {
-            padding: 1rem 1rem 0;
+        .add-to-cart-btn:hover {
+            background: #ff5722;
         }
 
-        .category-name h2 {
-            font-size: 1.25rem;
+        .category-title {
+            font-size: 24px;
+            padding: 20px;
+            color: #333;
         }
-    }
 
-    /* Loading Animation */
-    .product-card.loading {
-        animation: pulse 1.5s infinite;
-    }
+        .products>div {
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
 
-    @keyframes pulse {
-        0% {
+        .product-card.fade-out {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        .product-card.fade-in {
             opacity: 1;
+            transform: translateY(0);
         }
 
-        50% {
-            opacity: 0.7;
+        /* Skeleton Loading Styles */
+        .skeleton {
+            background: #f0f0f0;
+            background: linear-gradient(110deg, #ececec 8%, #f5f5f5 18%, #ececec 33%);
+            background-size: 200% 100%;
+            animation: 1.5s shine linear infinite;
         }
 
-        100% {
+        @keyframes shine {
+            to {
+                background-position-x: -200%;
+            }
+        }
+
+        .skeleton-card {
+            flex: 0 0 calc(25% - 15px);
+            background: #fff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
             opacity: 1;
-        }
-    }
-
-    /* Toast Notification */
-    .toast {
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        background: white;
-        padding: 1rem 1.5rem;
-        border-radius: var(--border-radius);
-        box-shadow: var(--card-shadow);
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        z-index: 1000;
-        animation: slideIn 0.3s ease;
-    }
-
-    @keyframes slideIn {
-        from {
-            transform: translateX(100%);
+            transition: opacity 0.3s ease;
         }
 
-        to {
-            transform: translateX(0);
+        .skeleton-image {
+            width: 100%;
+            aspect-ratio: 4/3;
         }
-    }
 
-    /* Empty State */
-    .empty-state {
-        text-align: center;
-        padding: 3rem;
-        color: #64748b;
-    }
+        .skeleton-info {
+            padding: 15px;
+        }
 
-    .empty-state i {
-        font-size: 3rem;
-        margin-bottom: 1rem;
-        color: var(--primary-color);
-    }
-</style>
+        .skeleton-text {
+            height: 12px;
+            margin-bottom: 8px;
+            border-radius: 4px;
+        }
+
+        .skeleton-text.title {
+            width: 80%;
+            height: 14px;
+        }
+
+        .skeleton-text.category {
+            width: 60%;
+        }
+
+        .skeleton-text.price {
+            width: 40%;
+        }
+
+        .skeleton-button {
+            width: 100%;
+            height: 32px;
+            border-radius: 4px;
+            margin-top: 12px;
+        }
+
+        /* Hide skeleton cards when not loading */
+        .products:not(.loading) .skeleton-card {
+            display: none;
+        }
+
+        /* Show product cards when not loading */
+        .products:not(.loading) .product-card {
+            display: block;
+        }
+
+        /* Hide product cards while loading */
+        .products.loading .product-card {
+            display: none;
+        }
+
+        #skeletonContainer {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            width: 100%;
+        }
+
+        #productsList {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            width: 100%;
+        }
+    </style>
+</head>
 
 <body>
     @include('UserSide.Pages.HeaderPage')
     <nav>
-        <ul style="list-style-type: none;">
-            <li>
-                <button class="btn active" onclick="filterProducts('All', event)">
-                    All
-                </button>
-            </li>
+        <ul>
+            <li><button onclick="filterProducts('All', event)">All</button></li>
             @php
                 $categories = DB::table('products')->pluck('category')->unique();
             @endphp
             @foreach ($categories as $category)
-                <li>
-                    <button class="btn" onclick="filterProducts('{{ $category }}',event)">
-                        {{ $category }}
-                    </button>
-                </li>
+                <li><button onclick="filterProducts('{{ $category }}', event)">{{ $category }}</button></li>
             @endforeach
         </ul>
-
     </nav>
 
     <div>
@@ -405,81 +326,145 @@
             </script>
         @endif
 
-
-        <div class="category-name">
-            <h2 id="categoryName">All</h2>
+        <div>
+            <h2 class="category-title" id="categoryName">All</h2>
         </div>
 
-        <div class="products">
-            @php
-                $products = DB::table('products')->get();
-            @endphp
-            @if ($products->isEmpty())
-                <h3>No available products</h3>
-            @else
-                @foreach ($products->sortBy('price') as $product)
-                    <div class="product-card">
-                        <div class="product-image">
-                            <img src="{{ asset('/images/' . $product->image) }}" alt="{{ $product->productName }}"
-                                data-src="{{ asset('/images/' . $product->image) }}" class="lazy">
-                            <a class="view-more-btn"
-                                href="/ProductDetails/{{ $product->productId }}/{{ $product->productName }}/{{ $product->category }}/{{ $product->price }}/{{ $product->stock }}/{{ $product->description }}/{{ $product->image }}">View
-                                more</a>
-                        </div>
-                        <div class="product-info">
-                            <h3 class="product-name">{{ $product->productName }}</h3>
-                            <p class="product-category">{{ $product->category }}</p>
-                            <p class="product-category">{{ $product->description }}</p>
-                            <p class="product-price">&#8369;{{ number_format($product->price) }}</p>
-                            <form action="{{ route('addtocart', ['id' => $product->productId]) }}" method="POST"
-                                class="add-to-cart-form">
-                                @csrf
-                                <input type="hidden" name="productId" value="{{ $product->productId }}">
-                                <input type="hidden" name="productName" value="{{ $product->productName }}">
-                                <input type="hidden" name="category" value="{{ $product->category }}">
-                                <input type="hidden" name="price" value="{{ $product->price }}">
-                                <input type="hidden" name="stock" value="{{ $product->stock }}">
-                                <input type="hidden" name="quantity" value="1">
-                                <input type="hidden" name="description" value="{{ $product->description }}">
-                                <input type="hidden" name="image" value="{{ $product->image }}">
-                                <input type="hidden" name="userId" value="{{ Auth::user()->userId }}">
-                                <input type="hidden" name="username" value="{{ Auth::user()->username }}">
-                                <button type="submit" class="add-to-cart-btn">Add to cart</button>
-                            </form>
+        <div class="products loading" id="productsContainer">
+            <!-- Skeleton Loading Template -->
+            <div id="skeletonContainer">
+                @for ($i = 0; $i < 10; $i++)
+                    <div class="skeleton-card">
+                        <div class="skeleton-image skeleton"></div>
+                        <div class="skeleton-info">
+                            <div class="skeleton-text title skeleton"></div>
+                            <div class="skeleton-text category skeleton"></div>
+                            <div class="skeleton-text price skeleton"></div>
+                            <div class="skeleton-button skeleton"></div>
                         </div>
                     </div>
-                @endforeach
-            @endif
+                @endfor
+            </div>
+
+            <?php
+            $products = DB::table('products')->get();
+            ?>
+
+            <!-- Actual Products -->
+            <div id="productsList">
+                @if ($products->isEmpty())
+                    <h3>No available products</h3>
+                @else
+                    @foreach ($products->sortBy('price') as $product)
+                        <div class="product-card">
+                            <div class="image-container">
+                                <img src="{{ asset('/images/' . $product->image) }}" alt="{{ $product->productName }}"
+                                    onerror="this.onerror=null; this.src='{{ asset('assets/default-product.png') }}'">
+                                <a href="/ProductDetails/{{ $product->productId }}/{{ $product->productName }}/{{ $product->category }}/{{ $product->price }}/{{ $product->stock }}/{{ $product->description }}/{{ $product->image }}"
+                                    class="view-more">View more</a>
+                            </div>
+                            <div class="product-info">
+                                <div class="product-details">
+                                    <h3 class="product-name">{{ $product->productName }}</h3>
+                                    <p class="product-category">{{ $product->category }}</p>
+                                </div>
+                                <div class="price-cart-container">
+                                    <p class="price">&#8369;{{ number_format($product->price, 2) }}</p>
+                                    <form action="{{ route('addtocart', ['id' => $product->productId]) }}"
+                                        method="POST" style="margin: 0;">
+                                        @csrf
+                                        <input type="hidden" name="productId" value="{{ $product->productId }}">
+                                        <input type="hidden" name="productName" value="{{ $product->productName }}">
+                                        <input type="hidden" name="category" value="{{ $product->category }}">
+                                        <input type="hidden" name="price" value="{{ $product->price }}">
+                                        <input type="hidden" name="stock" value="{{ $product->stock }}">
+                                        <input type="hidden" name="quantity" value="1">
+                                        <input type="hidden" name="description" value="{{ $product->description }}">
+                                        <input type="hidden" name="image" value="{{ $product->image }}">
+                                        <input type="hidden" name="userId" value="{{ Auth::user()->userId }}">
+                                        <input type="hidden" name="username" value="{{ Auth::user()->username }}">
+                                        {{-- <button type="submit" class="add-to-cart">Add to cart</button> --}}
+                                        <button type="submit" class="add-to-cart-btn">
+                                            <i class="bi bi-cart-plus"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
+                @endif
+            </div>
         </div>
-
-
-
     </div>
 
     <script>
         function filterProducts(category, event) {
-            document.querySelectorAll('nav .btn').forEach(btn => {
+            // Show skeleton loading
+            const productsContainer = document.getElementById('productsContainer');
+            productsContainer.classList.add('loading');
+
+            // Remove active class from all buttons
+            document.querySelectorAll('nav button').forEach(btn => {
                 btn.classList.remove('active');
             });
 
+            // Add active class to clicked button
             event.target.classList.add('active');
 
-            const products = document.querySelectorAll('.products > div');
-            document.getElementById('categoryName').textContent = category;
+            // Update category name with fade effect
+            const categoryTitle = document.getElementById('categoryName');
+            categoryTitle.style.opacity = '0';
+            setTimeout(() => {
+                categoryTitle.textContent = category;
+                categoryTitle.style.opacity = '1';
+            }, 200);
 
-            products.forEach(product => {
-                const productCategory = product.querySelector('p').textContent;
+            // Filter products with animation after brief loading delay
+            setTimeout(() => {
+                // Hide skeleton and show filtered content
+                productsContainer.classList.remove('loading');
 
-                if (category === 'All' || productCategory === category) {
-                    product.style.display = '';
-                } else {
-                    product.style.display = 'none';
-                }
-            });
+                // Filter products with animation
+                const products = document.querySelectorAll('.product-card');
+                products.forEach(product => {
+                    const productCategory = product.querySelector('.product-category').textContent;
+
+                    if (category === 'All' || productCategory === category) {
+                        product.classList.add('fade-out');
+                        setTimeout(() => {
+                            product.style.display = '';
+                            void product.offsetWidth;
+                            product.classList.remove('fade-out');
+                            product.classList.add('fade-in');
+                        }, 300);
+                    } else {
+                        product.classList.add('fade-out');
+                        setTimeout(() => {
+                            product.style.display = 'none';
+                            product.classList.remove('fade-in');
+                        }, 300);
+                    }
+                });
+            }, 500);
         }
 
+        // Update the DOMContentLoaded event handler
+        document.addEventListener('DOMContentLoaded', function() {
+            const productsContainer = document.getElementById('productsContainer');
 
+            // Simulate initial loading delay
+            setTimeout(() => {
+                // Remove loading class to hide skeletons and show products
+                productsContainer.classList.remove('loading');
 
+                // Add fade-in to all products
+                document.querySelectorAll('.product-card').forEach(card => {
+                    card.classList.add('fade-in');
+                });
+            }, 1000);
+        });
+
+        // Handle form submission confirmation
         document.addEventListener('DOMContentLoaded', function() {
             @if (session('info') && session('confirm'))
                 if (confirm("{{ session('info') }}")) {
@@ -501,7 +486,6 @@
                         confirmInput.value = 'yes';
                         form.appendChild(confirmInput);
 
-                        // Add all the form fields
                         for (let key in lastFormData.fields) {
                             let input = document.createElement('input');
                             input.type = 'hidden';
@@ -515,52 +499,6 @@
                     }
                 }
             @endif
-        });
-
-        // Smooth scroll for navigation
-        document.querySelectorAll('nav button').forEach(button => {
-            button.addEventListener('click', (e) => {
-                e.preventDefault();
-                const target = document.querySelector(button.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({
-                        behavior: 'smooth'
-                    });
-                }
-            });
-        });
-
-        // Add to cart animation
-        function showToast(message) {
-            const toast = document.createElement('div');
-            toast.className = 'toast';
-            toast.innerHTML = `
-                <i class="fas fa-check-circle"></i>
-                <span>${message}</span>
-            `;
-            document.body.appendChild(toast);
-            setTimeout(() => {
-                toast.remove();
-            }, 3000);
-        }
-
-        // Lazy loading for images
-        document.addEventListener('DOMContentLoaded', () => {
-            const images = document.querySelectorAll('.product-image img');
-            const imageObserver = new IntersectionObserver((entries, observer) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        const img = entry.target;
-                        img.src = img.dataset.src;
-                        img.classList.remove('lazy');
-                        observer.unobserve(img);
-                    }
-                });
-            });
-
-            images.forEach(img => {
-                imageObserver.observe(img);
-            });
         });
     </script>
 

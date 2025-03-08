@@ -20,13 +20,11 @@
             font-family: Arial, sans-serif;
             margin: 20px;
             background-color: #f5f5f5;
-            /* Reduced base font size */
         }
 
         .back-link {
             color: orange;
             text-decoration: none;
-            font-size: 12px;
             display: inline-flex;
             align-items: center;
             margin-bottom: 15px;
@@ -38,14 +36,10 @@
 
         h1 {
             color: #333;
-            /* Smaller heading */
-            margin-bottom: 15px;
         }
 
         h2 {
             font-size: 20px;
-            /* Smaller modal heading */
-            margin-bottom: 12px;
         }
 
         h3 {

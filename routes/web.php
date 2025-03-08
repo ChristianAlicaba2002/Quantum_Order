@@ -47,6 +47,7 @@ Route::get('/AdminLogin', function () {
 //     })->name('ArchiveProducts');
 // });
 
+Route::get('/home', [UserController::class, 'index'])->name('home');
 
 Route::get('/UserManagement', function () {
     $users = User::all();

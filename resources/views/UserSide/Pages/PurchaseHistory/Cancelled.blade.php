@@ -17,7 +17,6 @@
         .back-link {
             color: orange;
             text-decoration: none;
-            font-size: 14px;
             display: inline-flex;
             align-items: center;
             margin-bottom: 24px;

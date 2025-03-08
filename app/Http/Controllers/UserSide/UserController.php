@@ -16,7 +16,7 @@ use App\Application\User\RegisterUser;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Requests\UserRegistrationRequest;
-
+use App\Models\Products;
 
 class UserController extends Controller
 {
