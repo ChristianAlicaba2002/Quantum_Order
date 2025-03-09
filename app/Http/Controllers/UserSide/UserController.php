@@ -426,12 +426,14 @@ class UserController extends Controller
             ->orderBy('orders.created_at', 'desc')
             ->get();
 
-        return view('UserSide.Pages.PurchaseHistory.Cancelled', compact('cancelledOrders'));
+        return view('UserSide.Pages.PurchaseHistory.Cancelled', compact('cancelledOrders'))
+        ->with('success', 'Order cancelled successfully');
     }
 
     public function cancelOrder(Request $request, $orderId)
     {
-        $order = DB::table('orders')->where('orderId', $orderId)->first();
+        $order = DB::table('orders')->where('orderId' , $orderId)
+        ->first();
         if(!$order) {
             return redirect()->back()->with('error', 'Order not found');
         }
@@ -491,7 +493,8 @@ class UserController extends Controller
             $phoneNumber = $request->phoneNumber;
 
             // Generate a unique order ID
-            $orderId = 'ORD-' . uniqid();
+            // $orderId = 'ORD-' . uniqid();
+            $orderId = 'ORD-' . $this->GetTheGenerateOrderId();
 
             DB::beginTransaction();
 
@@ -553,6 +556,26 @@ class UserController extends Controller
             return redirect()->back()->with('error', 'Error validating your order: ' . $e->getMessage());
         }
     }
+
+    public function GetTheGenerateOrderId(): string
+    {
+        do {
+            $id = $this->GenerateProductID(6);
+            // Check if the generated ID already exists
+            $exists = DB::table('orders')->where('orderid', $id)->first();
+        } while ($exists !== null); // Ensure the ID is unique
+
+        return $id;
+    }
+
+    public function GenerateProductID(int $length = 0): string
+    {
+        $result = substr(bin2hex(random_bytes(ceil($length / 2))), 0, $length);
+
+        return $result;
+    }
+
+
 
     // Add this new method to display the receipt
     public function showOrderReceipt($orderId)

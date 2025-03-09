@@ -14,456 +14,470 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
     <script src="{{ asset('js/app.js') }}" defer></script>
-    <style>
-        /* Base font size adjustments */
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            background-color: #f5f5f5;
-        }
 
-        .back-link {
-            color: orange;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-
-        .back-link:hover {
-            text-decoration: underline;
-        }
-
-        h1 {
-            color: #333;
-        }
-
-        h2 {
-            font-size: 20px;
-        }
-
-        h3 {
-            font-size: 14px;
-            /* Smaller sub-heading */
-            margin-bottom: 10px;
-        }
-
-        .orders-table {
-            width: 100%;
-            border-collapse: collapse;
-            background-color: white;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-        }
-
-        .orders-table th,
-        .orders-table td {
-            padding: 10px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-            font-size: 15px;
-        }
-
-        .orders-table th {
-            background-color: #ff9100;
-            color: white;
-            font-size: 12px;
-            /* Slightly larger than td but still small */
-        }
-
-        .orders-table tr:hover {
-            background-color: #f9f9f9;
-        }
-
-        .status-accepted {
-            color: #28a745;
-            font-weight: bold;
-            font-size: 11px;
-        }
-
-        .no-orders {
-            text-align: center;
-            padding: 20px;
-            color: #666;
-        }
-
-        .tracking-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            z-index: 1000;
-            animation: fadeIn 0.3s ease-in-out;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-            }
-
-            to {
-                opacity: 1;
-            }
-        }
-
-        .tracking-content {
-            background: white;
-            width: 90%;
-            max-width: 600px;
-            /* Slightly smaller modal */
-            margin: 20px auto;
-            padding: 15px;
-            /* Reduced padding */
-            border-radius: 15px;
-            position: relative;
-        }
-
-        .tracking-timeline {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin: 25px 0;
-            padding: 15px 0;
-            position: relative;
-        }
-
-        .timeline-line {
-            position: absolute;
-            top: 50%;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: #ddd;
-            z-index: 1;
-        }
-
-        .progress-line {
-            position: absolute;
-            top: 50%;
-            left: 0;
-            height: 4px;
-            background: #28a745;
-            z-index: 2;
-            transition: width 1s ease-in-out;
-        }
-
-        .tracking-step {
-            position: relative;
-            z-index: 3;
-            text-align: center;
-            width: 90px;
-            /* Reduced width for steps */
-        }
-
-        .step-icon {
-            position: relative;
-            transition: all 0.4s ease;
-            width: 35px;
-            /* Smaller icons */
-            height: 35px;
-            border-radius: 50%;
-            background: #fff;
-            border: 3px solid #ddd;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 10px;
-            font-size: 20px;
-            /* Smaller icon size */
-            color: #ddd;
-            transition: all 0.5s ease;
-        }
-
-        .step-icon::after {
-            content: '';
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            border: 3px solid transparent;
-            top: -3px;
-            left: -3px;
-        }
-
-        .step-icon.completed::after {
-            border-color: #28a745;
-            animation: pulse 1.5s infinite;
-        }
-
-        .step-icon.active {
-            border-color: #28a745;
-            color: #28a745;
-            transform: scale(1.2);
-        }
-
-        .step-icon.completed {
-            background: #28a745;
-            border-color: #28a745;
-            color: white;
-        }
-
-        .step-label {
-            font-size: 15px;
-            /* Smaller step labels */
-            color: #666;
-            margin-top: 5px;
-        }
-
-        .step-label.active {
-            color: #28a745;
-            font-weight: bold;
-        }
-
-        .tracking-details {
-            background: white;
-            padding: 12px;
-            border-radius: 15px;
-            margin-top: 30px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            font-size: 15px;
-        }
-
-        .tracking-details h3 {
-            color: #333;
-            margin-bottom: 20px;
-            border-bottom: 2px solid #ff9100;
-            padding-bottom: 10px;
-            text-align: center;
-        }
-
-        .tracking-details p {
-            margin: 12px 0;
-            color: #555;
-            font-size: 1.1em;
-        }
-
-        .track-btn {
-            margin-top: 10px;
-            background: #ff9100;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: inline-block;
-            font-size: 11px;
-        }
-
-        .track-btn:hover {
-            background: #e68300;
-            transform: translateY(-2px);
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-        }
-
-        .close-modal {
-            position: absolute;
-            right: 10px;
-            top: 10px;
-            font-size: 18px;
-            cursor: pointer;
-            color: #666;
-            transition: color 0.3s ease;
-        }
-
-        .close-modal:hover {
-            color: #ff9100;
-        }
-
-        @keyframes pulse {
-            0% {
-                transform: scale(1);
-            }
-
-            50% {
-                transform: scale(1.02);
-            }
-
-            100% {
-                transform: scale(1);
-            }
-        }
-
-        .tracking-details:hover {
-            animation: pulse 2s infinite;
-        }
-
-        .delivery-timer {
-            margin-top: 10px;
-            background: #f0f0f0;
-            height: 8px;
-            /* Thinner progress bar */
-            border-radius: 6px;
-            overflow: hidden;
-            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
-        }
-
-        .timer-bar {
-            height: 8px;
-            background: #28a745;
-            width: 0;
-            transition: width 0.5s linear, background-color 0.5s ease;
-        }
-
-        .countdown-display {
-            text-align: center;
-            margin: 20px 0;
-            padding: 10px;
-            background: #f8f9fa;
-            border-radius: 10px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        }
-
-        .countdown-timer {
-            font-size: 16px;
-            /* Smaller but still readable timer */
-            font-weight: bold;
-            color: #28a745;
-            margin: 8px 0;
-            font-family: monospace;
-        }
-
-        .delivery-note {
-            margin-top: 10px;
-            color: #666;
-            font-style: italic;
-            text-align: center;
-            font-size: 11px;
-        }
-
-        #currentStatus {
-            color: #28a745 !important;
-            font-weight: bold;
-            font-size: 13px;
-        }
-
-        #estimatedDelivery {
-            color: #28a745;
-            font-weight: bold;
-        }
-
-        .step-icon.delivered {
-            background-color: #28a745 !important;
-            border-color: #28a745 !important;
-            color: white !important;
-            transform: scale(1.1);
-            transition: all 0.3s ease;
-        }
-
-        .track-btn.delivered {
-            background-color: #28a745;
-            position: relative;
-        }
-
-        .track-btn.delivered::after {
-            content: '✓';
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            background: white;
-            color: #28a745;
-            border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-            border: 2px solid #28a745;
-        }
-
-        .step-icon {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background: #fff;
-            border: 3px solid #ddd;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 10px;
-            font-size: 20px;
-            color: #ddd;
-            transition: all 0.5s ease;
-        }
-
-        .step-icon.completed {
-            background-color: #28a745;
-            border-color: #28a745;
-            color: white;
-            transform: scale(1.1);
-        }
-
-        .timer-bar {
-            background-color: #28a745;
-        }
-
-        .tracking-timeline {
-            margin: 25px 0;
-            padding: 15px 0;
-        }
-
-        .step-icon,
-        .timer-bar {
-            transition: all 0.5s ease;
-        }
-
-        .step-label {
-            font-size: 14px;
-            color: #666;
-            margin-top: 8px;
-            transition: all 0.3s ease;
-        }
-
-        .step-icon.completed+.step-label {
-            color: #28a745;
-            font-weight: bold;
-        }
-
-        .confirmation-container {
-            text-align: center;
-            padding: 20px;
-        }
-
-        .start-tracking-btn {
-            background: #ff9100;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 14px;
-            margin-top: 15px;
-            transition: all 0.3s ease;
-        }
-
-        .start-tracking-btn:hover {
-            background: #e68300;
-            transform: translateY(-2px);
-        }
-
-        .delivered-container {
-            text-align: center;
-            padding: 20px;
-        }
-
-        .delivery-checkmark {
-            font-size: 48px;
-            color: #28a745;
-            margin: 20px 0;
-        }
-    </style>
 </head>
+<style>
+    /* Base font size adjustments */
+    body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+        background-color: #f5f5f5;
+    }
+
+    .back-link {
+        color: orange;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+
+    .back-link:hover {
+        text-decoration: underline;
+    }
+
+    h1 {
+        color: #333;
+    }
+
+    h2 {
+        font-size: 20px;
+    }
+
+    h3 {
+        font-size: 14px;
+        /* Smaller sub-heading */
+        margin-bottom: 10px;
+    }
+
+    .orders-table {
+        width: 100%;
+        border-collapse: collapse;
+        background-color: white;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    .orders-table img {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+    }
+
+    .orders-table th,
+    .orders-table td {
+        padding: 10px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+        font-size: 15px;
+    }
+
+    .orders-table th {
+        background-color: #ff9100;
+        color: white;
+        font-size: 12px;
+        /* Slightly larger than td but still small */
+    }
+
+    .orders-table tr:hover {
+        background-color: #f9f9f9;
+    }
+
+    .status-accepted {
+        color: #28a745;
+        font-weight: bold;
+        font-size: 11px;
+    }
+
+    .no-orders {
+        text-align: center;
+        padding: 20px;
+        color: #666;
+    }
+
+    .tracking-modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        z-index: 1000;
+        animation: fadeIn 0.3s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+
+        to {
+            opacity: 1;
+        }
+    }
+
+    .tracking-content {
+        background: white;
+        width: 90%;
+        max-width: 600px;
+        /* Slightly smaller modal */
+        margin: 20px auto;
+        padding: 15px;
+        /* Reduced padding */
+        border-radius: 15px;
+        position: relative;
+    }
+
+    .tracking-timeline {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: 25px 0;
+        padding: 15px 0;
+        position: relative;
+    }
+
+    .timeline-line {
+        position: absolute;
+        top: 50%;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: #ddd;
+        z-index: 1;
+    }
+
+    .progress-line {
+        position: absolute;
+        top: 50%;
+        left: 0;
+        height: 4px;
+        background: #28a745;
+        z-index: 2;
+        transition: width 1s ease-in-out;
+    }
+
+    .tracking-step {
+        position: relative;
+        z-index: 3;
+        text-align: center;
+        width: 90px;
+        /* Reduced width for steps */
+    }
+
+    .step-icon {
+        position: relative;
+        transition: all 0.4s ease;
+        width: 35px;
+        /* Smaller icons */
+        height: 35px;
+        border-radius: 50%;
+        background: #fff;
+        border: 3px solid #ddd;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 10px;
+        font-size: 20px;
+        /* Smaller icon size */
+        color: #ddd;
+        transition: all 0.5s ease;
+    }
+
+    .step-icon::after {
+        content: '';
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        border: 3px solid transparent;
+        top: -3px;
+        left: -3px;
+    }
+
+    .step-icon.completed::after {
+        border-color: #28a745;
+        animation: pulse 1.5s infinite;
+    }
+
+    .step-icon.active {
+        border-color: #28a745;
+        color: #28a745;
+        transform: scale(1.2);
+    }
+
+    .step-icon.completed {
+        background: #28a745;
+        border-color: #28a745;
+        color: white;
+    }
+
+    .step-label {
+        font-size: 15px;
+        /* Smaller step labels */
+        color: #666;
+        margin-top: 5px;
+    }
+
+    .step-label.active {
+        color: #28a745;
+        font-weight: bold;
+    }
+
+    .tracking-details {
+        background: white;
+        padding: 12px;
+        border-radius: 15px;
+        margin-top: 30px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        font-size: 15px;
+    }
+
+    .tracking-details h3 {
+        color: #333;
+        margin-bottom: 20px;
+        border-bottom: 2px solid #ff9100;
+        padding-bottom: 10px;
+        text-align: center;
+    }
+
+    .tracking-details p {
+        margin: 12px 0;
+        color: #555;
+        font-size: 1.1em;
+    }
+
+    .track-btn {
+        margin-top: 10px;
+        background: #ff9100;
+        color: white;
+        border: none;
+        padding: 10px 12px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: inline-block;
+        font-size: 11px;
+    }
+
+    .track-btn:hover {
+        background: #e68300;
+        transform: translateY(-2px);
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    }
+
+    .close-modal {
+        position: absolute;
+        right: 10px;
+        top: 10px;
+        font-size: 18px;
+        cursor: pointer;
+        color: #666;
+        transition: color 0.3s ease;
+    }
+
+    .close-modal:hover {
+        color: #ff9100;
+    }
+
+    @keyframes pulse {
+        0% {
+            transform: scale(1);
+        }
+
+        50% {
+            transform: scale(1.02);
+        }
+
+        100% {
+            transform: scale(1);
+        }
+    }
+
+    .tracking-details:hover {
+        animation: pulse 2s infinite;
+    }
+
+    .delivery-timer {
+        margin-top: 10px;
+        background: #f0f0f0;
+        height: 8px;
+        /* Thinner progress bar */
+        border-radius: 6px;
+        overflow: hidden;
+        box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
+    }
+
+    .timer-bar {
+        height: 8px;
+        background: #28a745;
+        width: 0;
+        transition: width 0.5s linear, background-color 0.5s ease;
+    }
+
+    .countdown-display {
+        text-align: center;
+        margin: 20px 0;
+        padding: 10px;
+        background: #f8f9fa;
+        border-radius: 10px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .countdown-timer {
+        font-size: 16px;
+        /* Smaller but still readable timer */
+        font-weight: bold;
+        color: #28a745;
+        margin: 8px 0;
+        font-family: monospace;
+    }
+
+    .delivery-note {
+        margin-top: 10px;
+        color: #666;
+        font-style: italic;
+        text-align: center;
+        font-size: 11px;
+    }
+
+    #currentStatus {
+        color: #28a745 !important;
+        font-weight: bold;
+        font-size: 13px;
+    }
+
+    #estimatedDelivery {
+        color: #28a745;
+        font-weight: bold;
+    }
+
+    .step-icon.delivered {
+        background-color: #28a745 !important;
+        border-color: #28a745 !important;
+        color: white !important;
+        transform: scale(1.1);
+        transition: all 0.3s ease;
+    }
+
+    .track-btn.delivered {
+        background-color: #28a745;
+        position: relative;
+    }
+
+    .track-btn.delivered::after {
+        content: '✓';
+        position: absolute;
+        top: -5px;
+        right: -5px;
+        background: white;
+        color: #28a745;
+        border-radius: 50%;
+        width: 20px;
+        height: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        border: 2px solid #28a745;
+    }
+
+    .step-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: #fff;
+        border: 3px solid #ddd;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 10px;
+        font-size: 20px;
+        color: #ddd;
+        transition: all 0.5s ease;
+    }
+
+    .step-icon.completed {
+        background-color: #28a745;
+        border-color: #28a745;
+        color: white;
+        transform: scale(1.1);
+    }
+
+    .timer-bar {
+        background-color: #28a745;
+    }
+
+    .tracking-timeline {
+        margin: 25px 0;
+        padding: 15px 0;
+    }
+
+    .step-icon,
+    .timer-bar {
+        transition: all 0.5s ease;
+    }
+
+    .step-label {
+        font-size: 14px;
+        color: #666;
+        margin-top: 8px;
+        transition: all 0.3s ease;
+    }
+
+    .step-icon.completed+.step-label {
+        color: #28a745;
+        font-weight: bold;
+    }
+
+    .confirmation-container {
+        text-align: center;
+        padding: 20px;
+    }
+
+    .start-tracking-btn {
+        background: #ff9100;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 14px;
+        margin-top: 15px;
+        transition: all 0.3s ease;
+    }
+
+    .start-tracking-btn:hover {
+        background: #e68300;
+        transform: translateY(-2px);
+    }
+
+    .delivered-container {
+        text-align: center;
+        padding: 20px;
+    }
+
+    .delivery-checkmark {
+        font-size: 48px;
+        color: #28a745;
+        margin: 20px 0;
+    }
+
+    label,
+    h4 {
+        color: rgba(47, 47, 47, 0.651);
+    }
+</style>
 
 <body>
     <div>
         <a href="{{ route('login') }}" class="back-link">Back to Home</a>
     </div>
     <h1>Delivery History</h1>
+    <label>Hi! {{ Auth::user()->firstName }} Here are your Delivery orders.</label>
 
     @if (count($deliveryOrders) > 0)
+        <h4>Total Delivery: {{ $deliveryOrders->count() }}</h4>
         <table class="orders-table">
             <thead>
                 <tr>
@@ -488,8 +502,7 @@
                     <tr>
                         <td>{{ $order->orderId }}</td>
                         <td>
-                            <img src="{{ asset('/images/' . $order->image) }}" alt="{{ $order->productName }}"
-                                style="width:50px;">
+                            <img src="{{ asset('/images/' . $order->image) }}" alt="{{ $order->productName }}">
                         </td>
                         <td>{{ $order->productName }}</td>
                         <td>{{ $order->category }}</td>

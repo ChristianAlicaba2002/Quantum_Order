@@ -136,7 +136,7 @@
     }
 
     .cartGroup {
-        width: 1.1rem;
+        width: 1.2rem;
         height: 1.2rem;
         background-color: red;
         text-align: center;
@@ -342,7 +342,7 @@
         </div>
 
         <div class="SearchItemsInput">
-            <input type="text" placeholder="Search you item" oninput="searchProducts(this.value)"
+            <input type="text" placeholder="Search your item" oninput="searchProducts(this.value)"
                 class="search-input">
         </div>
 

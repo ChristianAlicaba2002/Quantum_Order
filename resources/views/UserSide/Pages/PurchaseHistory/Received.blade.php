@@ -38,6 +38,12 @@
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         }
 
+        .orders-table img {
+            width: 50%;
+            height: 55%;
+            border-radius: 50%;
+        }
+
         .orders-table th,
         .orders-table td {
             padding: 12px;

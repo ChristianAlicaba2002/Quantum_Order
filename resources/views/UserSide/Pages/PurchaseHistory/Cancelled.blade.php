@@ -104,10 +104,12 @@
         ->get();
     ?>
     <h4>Cancelled: {{ $UserOrders->count() }}</h4>
+    <input type="search" name="" id="SearchItem" placeholder="Search product"
+        onchange="SearchDeletedItem(this.value)">
 
     <div class="container">
         @if (count($cancelledOrders) > 0)
-            <table class="orders-table">
+            <table class="orders-table" id="TableCancelledOrders">
                 <thead>
                     <tr>
                         <th>Order ID</th>
@@ -146,6 +148,31 @@
             </div>
         @endif
     </div>
+
+    <script>
+        function SearchDeletedItem(itemSearch) {
+            document.getElementById('SearchItem').addEventListener('keyup', () => {
+                const TableCancelledOrders = document.getElementById('TableCancelledOrders');
+                itemSearch = itemSearch.toLowerCase();
+
+                let tr = TableCancelledOrders.getElementsByTagName('tr');
+
+                for (let i = 0; i < tr.length; i++) {
+                    let td = tr[i].getElementsByTagName('td')[3];
+
+                    if (td) {
+                        let textValue = td.textContent || td.innerText;
+                        if (textValue.toLowerCase().indexOf(SearchItem) > -1) {
+                            tr[i].style.display = '';
+                        } else {
+                            tr[i].style.display = 'none';
+                        }
+                    }
+                }
+            });
+
+        }
+    </script>
 
 </body>
 
