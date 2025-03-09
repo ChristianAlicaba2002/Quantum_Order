@@ -89,6 +89,40 @@
             max-height: 60vh;
             overflow-y: scroll;
         }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #ff9100;
+            box-shadow: 0 0 0 2px rgba(255, 145, 0, 0.1);
+        }
+
+        .cancelled-item {
+            transition: all 0.3s ease;
+        }
+
+        .cancelled-item.hidden {
+            display: none;
+        }
+
+        /* Add smooth transition for rows */
+        .orders-table tr {
+            transition: background-color 0.3s ease;
+        }
+
+        #noResults td {
+            color: #666;
+            background-color: #f9f9f9;
+        }
     </style>
 </head>
 
@@ -104,8 +138,8 @@
         ->get();
     ?>
     <h4>Cancelled: {{ $UserOrders->count() }}</h4>
-    <input type="search" name="" id="SearchItem" placeholder="Search product"
-        onchange="SearchDeletedItem(this.value)">
+    <input type="search" id="SearchItem" placeholder="Search cancelled orders..."
+        oninput="searchCancelledItems(this.value)" class="search-input">
 
     <div class="container">
         @if (count($cancelledOrders) > 0)
@@ -150,27 +184,59 @@
     </div>
 
     <script>
-        function SearchDeletedItem(itemSearch) {
-            document.getElementById('SearchItem').addEventListener('keyup', () => {
-                const TableCancelledOrders = document.getElementById('TableCancelledOrders');
-                itemSearch = itemSearch.toLowerCase();
+        function searchCancelledItems(searchText) {
+            const table = document.getElementById('TableCancelledOrders');
+            const rows = table.getElementsByTagName('tr');
+            const searchTerm = searchText.toLowerCase().trim();
 
-                let tr = TableCancelledOrders.getElementsByTagName('tr');
+            // Start from index 1 to skip the header row
+            for (let i = 1; i < rows.length; i++) {
+                const row = rows[i];
+                const orderId = row.cells[0].textContent.toLowerCase();
+                const productName = row.cells[2].textContent.toLowerCase();
+                const category = row.cells[3].textContent.toLowerCase();
+                const price = row.cells[5].textContent.toLowerCase();
+                const status = row.cells[7].textContent.toLowerCase();
+                const date = row.cells[8].textContent.toLowerCase();
 
-                for (let i = 0; i < tr.length; i++) {
-                    let td = tr[i].getElementsByTagName('td')[3];
+                const isMatch = orderId.includes(searchTerm) ||
+                    productName.includes(searchTerm) ||
+                    category.includes(searchTerm) ||
+                    price.includes(searchTerm) ||
+                    status.includes(searchTerm) ||
+                    date.includes(searchTerm);
 
-                    if (td) {
-                        let textValue = td.textContent || td.innerText;
-                        if (textValue.toLowerCase().indexOf(SearchItem) > -1) {
-                            tr[i].style.display = '';
-                        } else {
-                            tr[i].style.display = 'none';
-                        }
-                    }
+                if (isMatch) {
+                    row.style.display = '';
+                    // Highlight the matching row
+                    row.style.backgroundColor = '#fff8f3';
+                    setTimeout(() => {
+                        row.style.backgroundColor = '';
+                    }, 2000);
+                } else {
+                    row.style.display = 'none';
                 }
-            });
+            }
 
+            // Show "No results" message if no matches found
+            const visibleRows = Array.from(rows).slice(1).some(row => row.style.display !== 'none');
+            const existingMessage = document.getElementById('noResults');
+
+            if (!visibleRows) {
+                if (!existingMessage) {
+                    const noResults = document.createElement('tr');
+                    noResults.id = 'noResults';
+                    const messageCell = document.createElement('td');
+                    messageCell.colSpan = '9'; // Span all columns
+                    messageCell.style.textAlign = 'center';
+                    messageCell.style.padding = '20px';
+                    messageCell.innerHTML = `No cancelled orders found for "${searchText}"`;
+                    noResults.appendChild(messageCell);
+                    table.getElementsByTagName('tbody')[0].appendChild(noResults);
+                }
+            } else if (existingMessage) {
+                existingMessage.remove();
+            }
         }
     </script>
 
