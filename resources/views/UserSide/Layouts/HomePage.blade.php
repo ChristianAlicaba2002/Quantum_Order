@@ -34,6 +34,7 @@
     }
 
     .sidebar-title {
+        text-align: center;
         font-size: 18px;
         font-weight: bold;
         margin-bottom: 15px;
@@ -150,7 +151,7 @@
         width: 100%;
         height: 100%;
         object-fit: cover;
-        border-radius: 8px;
+        border-radius: 10px;
     }
 
 
@@ -215,8 +216,8 @@
     }
 
     .product-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 5px 15px rgba(255, 107, 53, 0.2);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+
     }
 
     .product-image {
@@ -265,7 +266,7 @@
         padding: 6px 12px;
         border-radius: 4px;
         cursor: pointer;
-        font-size: 12px;
+        font-size: 15px;
         float: right;
         transition: all 0.3s ease;
     }

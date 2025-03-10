@@ -143,7 +143,6 @@ class UserController extends Controller
 
     public function UpdateInformationUser(Request $request, string $userId): \Illuminate\Http\RedirectResponse
     {
-        // Use Eloquent model instead of DB facade
         $user = DB::table('users')->where('userId', $userId)->first();
         
         if (!$user) {
@@ -575,9 +574,66 @@ class UserController extends Controller
         return $result;
     }
 
+    public function reorderCancelled($orderId)
+    {
+        try {
+            // Get the order details
+            $order = DB::table('orders')
+                ->where('orders.orderId', $orderId)
+                ->where('orders.userId', Auth::user()->userId)
+                ->join('products', 'orders.productId', '=', 'products.productId')
+                ->select(
+                    'orders.*',
+                    'products.stock',
+                    'products.status as productStatus'
+                )
+                ->first();
 
+            if (!$order) {
+                return redirect()->back()->with('error', 'Order not found');
+            }
 
-    // Add this new method to display the receipt
+            // Check if product is available and has stock
+            if ($order->productStatus !== 'active' || $order->stock < $order->quantity) {
+                return redirect()->back()
+                    ->with('error', 'Product is not available or insufficient stock');
+            }
+
+            // Prepare checkout data
+            $items = [[
+                'productId' => $order->productId,
+                'productName' => $order->productName,
+                'category' => $order->category,
+                'quantity' => $order->quantity,
+                'price' => $order->price,
+                'image' => $order->image,
+                'stock' => $order->stock
+            ]];
+
+            // Store in session for checkout
+            session([
+                'checkout_items' => $items,
+                'totalPrice' => $order->quantity * $order->price
+            ]);
+
+            // Update original order status
+            DB::table('orders')
+                ->where('orderId', $orderId)
+                ->update([
+                    'orderStatus' => 'Reordered',
+                    'updated_at' => now()
+                ]);
+
+            // Redirect to checkout preview
+            return redirect()->route('checkout.preview')
+                ->with('success', 'Order has been restored for checkout');
+
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', 'Failed to process reorder. Please try again.');
+        }
+    }
+
     public function showOrderReceipt($orderId)
     {
         try {
@@ -600,6 +656,8 @@ class UserController extends Controller
             return redirect('/')->with('error', 'Error retrieving order details: ' . $e->getMessage());
         }
     }
+
+   
 }
 
 

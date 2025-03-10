@@ -45,7 +45,8 @@
     }
 
     h3 {
-        font-size: 14px;
+        margin-top: 15%;
+        font-size: 20px;
         /* Smaller sub-heading */
         margin-bottom: 10px;
     }

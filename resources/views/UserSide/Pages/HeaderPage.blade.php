@@ -110,8 +110,6 @@
         display: flex;
         align-items: center;
         text-align: left;
-        color: red;
-        font-size: large;
     }
 
     .icon-button:hover {
@@ -249,10 +247,6 @@
         align-items: center;
     }
 
-    .active {
-        color: #ff9100;
-        border-bottom: 2px solid orange;
-    }
 
     .Icons {
         margin-top: 1rem;

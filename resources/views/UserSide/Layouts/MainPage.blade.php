@@ -23,14 +23,6 @@
         font-family: Arial, sans-serif;
     }
 
-    /* .header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 1rem 2rem;
-        background-color: white;
-    } */
-
     .logo {
         color: #FF6B35;
         font-weight: bold;
@@ -68,11 +60,16 @@
         background: none;
         cursor: pointer;
         font-size: 14px;
+        transition: .4s ease-in-out;
     }
 
     nav button.active {
         color: #FF6B35;
         background: none;
+    }
+
+    .active {
+        color: orange;
     }
 
     .products {
@@ -129,7 +126,7 @@
         text-decoration: none;
         font-size: 14px;
         opacity: 0;
-        transition: opacity 0.3s ease;
+        transition: opacity 0.3s ease-in-out;
     }
 
     .product-card:hover .view-more {
@@ -196,7 +193,7 @@
         padding: 6px 12px;
         border-radius: 4px;
         cursor: pointer;
-        font-size: 12px;
+        font-size: 15px;
         float: right;
         transition: background-color 0.3s ease;
     }
@@ -519,7 +516,6 @@
             }, 500);
         }
 
-        // Update the DOMContentLoaded event handler
         document.addEventListener('DOMContentLoaded', function() {
             const productsContainer = document.getElementById('productsContainer');
 
@@ -535,7 +531,6 @@
             }, 1000);
         });
 
-        // Handle form submission confirmation
         document.addEventListener('DOMContentLoaded', function() {
             @if (session('info') && session('confirm'))
                 if (confirm("{{ session('info') }}")) {

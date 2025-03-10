@@ -126,6 +126,72 @@
             padding: 20px;
             text-align: center;
         }
+
+        .checkout-item {
+            display: flex;
+            gap: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            background: white;
+        }
+
+        .product-image img {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+
+        .product-details {
+            flex: 1;
+        }
+
+        .product-details h3 {
+            margin: 0 0 10px 0;
+            color: #333;
+        }
+
+        .category {
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .price {
+            color: #FF6B35;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        .total-section {
+            margin-top: 20px;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 8px;
+            text-align: right;
+        }
+
+        .no-items {
+            text-align: center;
+            padding: 40px;
+            background: #f9f9f9;
+            border-radius: 8px;
+        }
+
+        .back-btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background: #FF6B35;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            margin-top: 15px;
+        }
+
+        .back-btn:hover {
+            background: #ff5722;
+        }
     </style>
 </head>
 
@@ -138,6 +204,11 @@
                 {{ session('error') }}
             </div>
         @endif
+
+        @php
+            $items = session('checkout_items', []);
+            $totalPrice = session('totalPrice', 0);
+        @endphp
 
         @if (isset($items) && !empty($items))
             <div class="order-summary">
@@ -156,7 +227,7 @@
                         @foreach ($items as $item)
                             <tr>
                                 <td>
-                                    <img src="{{ asset('images/' . $item['image']) }}" alt="{{ $item['productName'] }}"
+                                    <img src="{{ asset('/images/' . $item['image']) }}" alt="{{ $item['productName'] }}"
                                         class="product-image">
                                     {{ $item['productName'] }}
                                 </td>
@@ -217,9 +288,9 @@
                 </form>
             </div>
         @else
-            <div class="alert alert-warning">
-                <p>No items selected for checkout.</p>
-                <a href="{{ url('/') }}" class="back-btn">Back to Shopping</a>
+            <div class="no-items">
+                <p>No items found for checkout</p>
+                <a href="{{ route('MainPage') }}" class="back-btn">Return to Shop</a>
             </div>
         @endif
     </div>

@@ -166,7 +166,7 @@
 
                 <div class="stock-info">
                     <span class="stock-label">Available Stock:</span>
-                    <span class="stock-count">{{ $stock }} units</span>
+                    <span class="stock-count" id="stock-count">{{ $stock }} units</span>
                 </div>
 
                 <div class="description-box">
@@ -174,8 +174,17 @@
                     <p class="description-text">{{ $description }}</p>
                 </div>
 
-                <form action="/add-to-cart/{{ $productId }}" method="POST">
+                <form action="{{ route('addtocart', ['id' => $productId]) }}" method="POST" style="margin: 0;">
                     @csrf
+                    <input type="hidden" name="productId" value="{{ $productId }}">
+                    <input type="hidden" name="productName" value="{{ $productName }}">
+                    <input type="hidden" name="category" value="{{ $category }}">
+                    <input type="hidden" name="price" value="{{ $price }}">
+                    <input type="hidden" name="stock" value="{{ $stock }}">
+                    <input type="hidden" name="description" value="{{ $description }}">
+                    <input type="hidden" name="image" value="{{ $image }}">
+                    <input type="hidden" name="userId" value="{{ Auth::user()->userId }}">
+                    <input type="hidden" name="username" value="{{ Auth::user()->username }}">
                     <div class="add-to-cart-section">
                         <input type="number" name="quantity" class="quantity-input" value="1" min="1"
                             max="{{ $stock }}" required>
