@@ -114,6 +114,7 @@
     .alert-success {
         background: #def7ec;
         color: #03543f;
+        text-align: center;
     }
 
     .alert-danger {
@@ -143,7 +144,6 @@
         <a href="{{ route('login') }}" class="back-link">Back to Home</a>
     </div>
     <h1>To Pay History</h1>
-    <h3>Hi, {{ Auth::user()->firstName }}! Here are your pending orders.</h3>
 
     @if (session('success'))
         <div class="alertContainer">
@@ -156,6 +156,7 @@
 
 
     @if (count($toPayOrders) > 0)
+        <h3>Hi, {{ Auth::user()->firstName }}! Here are your pending orders.</h3>
         <h4>Total pending: {{ $toPayOrders->count() }}</h4>
         <table class="orders-table">
             <thead>

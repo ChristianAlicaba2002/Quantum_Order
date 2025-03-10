@@ -133,52 +133,26 @@
     }
 
     .carousel-container {
-        position: relative;
         width: 100%;
         height: 100%;
     }
 
     .carousel-slides {
-        display: flex;
-        transition: transform 0.5s ease;
-        height: 100%;
-    }
-
-    .carousel-slide {
-        min-width: 100%;
-        height: 100%;
-        flex-shrink: 0;
-    }
-
-    .carousel-slide img {
+        position: relative;
         width: 100%;
-        height: 400px;
-        object-fit: cover;
-        object-position: center;
-    }
-
-    .carousel-dots {
-        position: absolute;
-        bottom: 20px;
-        left: 50%;
-        transform: translateX(-50%);
+        height: 100%;
         display: flex;
-        gap: 8px;
-        z-index: 2;
+        justify-content: center;
+        align-items: center;
     }
 
-    .carousel-dot {
-        width: 10px;
-        height: 10px;
-        border-radius: 50%;
-        background: rgba(255, 255, 255, 0.5);
-        cursor: pointer;
-        transition: background-color 0.3s ease;
+    video {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 8px;
     }
 
-    .carousel-dot.active {
-        background: #fff;
-    }
 
     .bottom-grid {
         display: grid;
@@ -337,7 +311,7 @@
             <div class="sidebar-box">
                 <h3 class="sidebar-title">Featured Products</h3>
                 <?php
-                $featuredProducts = DB::table('products')->orderBy('created_at', 'desc')->take(5)->get();
+                $featuredProducts = DB::table('products')->orderBy('created_at', 'desc')->take(10)->get();
                 ?>
 
                 @foreach ($featuredProducts as $product)
@@ -359,24 +333,12 @@
             <div class="main-carousel">
                 <div class="carousel-container">
                     <div class="carousel-slides" id="carouselSlides">
-                        <div class="carousel-slide">
-                            <img src="{{ asset('assets/carousel1.jpg') }}" alt="Carousel Image 1">
-                        </div>
-                        <div class="carousel-slide">
-                            <img src="{{ asset('assets/carousel2.jpg') }}" alt="Carousel Image 2">
-                        </div>
-                        <div class="carousel-slide">
-                            <img src="{{ asset('assets/carousel3.jpg') }}" alt="Carousel Image 3">
-                        </div>
-                        <div class="carousel-slide">
-                            <img src="{{ asset('assets/carousel4.jpg') }}" alt="Carousel Image 4">
-                        </div>
-                    </div>
-                    <div class="carousel-dots" id="carouselDots">
-                        <div class="carousel-dot active"></div>
-                        <div class="carousel-dot"></div>
-                        <div class="carousel-dot"></div>
-                        <div class="carousel-dot"></div>
+                        <video autoplay muted loop playsinline>
+                            <source
+                                src="{{ asset('assets/Video/Ecommerce Promotions - Motion Graphic Animation..mp4') }}"
+                                type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
                     </div>
                 </div>
             </div>
@@ -409,7 +371,7 @@
                     <?php
                     $products = DB::table('products')->get();
                     ?>
-                    @foreach ($products->take(10) as $product)
+                    @foreach ($products->take(15) as $product)
                         <div class="product-card">
                             <img src="{{ asset('/images/' . $product->image) }}" alt="{{ $product->productName }}"
                                 class="product-image" onerror="this.src='{{ asset('assets/default-product.png') }}'">
@@ -423,13 +385,6 @@
                                             <i class="bi bi-cart-plus"></i>
                                         </button>
                                     </a>
-                                    {{-- <form action="{{ route('addtocart', ['id' => $product->productId]) }}"
-                                        method="POST" style="display: inline;">
-                                        @csrf
-                                        <button type="submit" class="add-to-cart-btn">
-                                            <i class="bi bi-cart-plus"></i>
-                                        </button>
-                                    </form> --}}
                                 </div>
                             </div>
                         </div>
@@ -439,43 +394,6 @@
         </div>
     </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const slides = document.querySelector('#carouselSlides');
-            const dots = document.querySelectorAll('.carousel-dot');
-            let currentSlide = 0;
-            const totalSlides = dots.length;
-
-            function moveToSlide(index) {
-                currentSlide = index;
-                slides.style.transform = `translateX(-${currentSlide * 100}%)`;
-                updateDots();
-            }
-
-            function updateDots() {
-                dots.forEach((dot, index) => {
-                    dot.classList.toggle('active', index === currentSlide);
-                });
-            }
-
-            function nextSlide() {
-                currentSlide = (currentSlide + 1) % totalSlides;
-                moveToSlide(currentSlide);
-            }
-
-            // Add click events to dots
-            dots.forEach((dot, index) => {
-                dot.addEventListener('click', () => moveToSlide(index));
-            });
-
-            // Auto-advance carousel
-            const interval = setInterval(nextSlide, 5000);
-
-            // Pause on hover
-            slides.addEventListener('mouseenter', () => clearInterval(interval));
-            slides.addEventListener('mouseleave', () => setInterval(nextSlide, 5000));
-        });
-    </script>
 </body>
 
 </html>

@@ -23,13 +23,13 @@
         font-family: Arial, sans-serif;
     }
 
-    .header {
+    /* .header {
         display: flex;
         justify-content: space-between;
         align-items: center;
         padding: 1rem 2rem;
         background-color: white;
-    }
+    } */
 
     .logo {
         color: #FF6B35;
@@ -144,6 +144,18 @@
 
     .product-details {
         margin-bottom: 8px;
+    }
+
+    .product-details h3 {
+        color: #333;
+        font-size: 18px;
+        margin: 0;
+    }
+
+    .product-details p {
+        color: #666;
+        font-size: 14px;
+        margin: 0;
     }
 
     .price-cart-container {
@@ -322,6 +334,7 @@
     .alert-success {
         background: #def7ec;
         color: #03543f;
+        text-align: center;
     }
 
     .alert-danger {
@@ -373,9 +386,12 @@
 
 
         @if (session('error'))
-            <script>
-                alert("{{ session('error') }}")
-            </script>
+            <div class="alertContainer">
+                <div class="alert alert-danger fade-in" role="alert">
+                    <i class="fas fa-check-circle me-2"></i>
+                    {{ session('error') }}
+                </div>
+            </div>
         @endif
 
         <div>

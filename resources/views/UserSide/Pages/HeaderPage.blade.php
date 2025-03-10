@@ -31,6 +31,7 @@
         margin: 1.1rem 0 1rem 1rem;
         min-width: 14%;
         text-align: center;
+        font-weight: bold;
         /* background-color: red; */
     }
 
@@ -47,6 +48,7 @@
         border-radius: 5px;
         background-color: rgb(242, 242, 242);
         transition: .2s ease-in-out;
+        font-size: 1.1rem;
     }
 
     .SearchItemsInput input:focus {
@@ -108,6 +110,8 @@
         display: flex;
         align-items: center;
         text-align: left;
+        color: red;
+        font-size: large;
     }
 
     .icon-button:hover {
@@ -447,8 +451,7 @@
                 <form action="{{ route('auth.logout') }}" method="post">
                     @csrf
                     <button type="submit" class="icon-button">
-                        <i class="bi bi-box-arrow-right"></i>
-                        <p for="">Logout</p>
+                        <i class="bi bi-box-arrow-right" style="margin-right:.80rem;"></i>Logout
                     </button>
                 </form>
             </div>
