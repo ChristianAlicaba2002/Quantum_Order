@@ -298,16 +298,16 @@ class UserController extends Controller
     {
         // Validate the request
         $request->validate([
-            'selected_items' => 'required|array',
-            'total_price' => 'required|numeric'
+            'items' => 'required|array',
+            'totalPrice' => 'required|numeric'
         ]);
 
-        $selectedItems = $request->input('selected_items');
-        $totalPrice = $request->input('total_price');
+        $items = $request->input('items');
+        $totalPrice = $request->input('totalPrice');
 
         // Get the cart items that were selected
         $cartItems = DB::table('add_to_cart')
-            ->whereIn('productId', $selectedItems)
+            ->whereIn('productId', $items)
             ->where('userId', Auth::user()->userId)
             ->get();
 
@@ -316,7 +316,7 @@ class UserController extends Controller
         }
 
         return view('UserSide.Pages.CheckOut', [
-            'cartItems' => $cartItems,
+            'items' => $items,
             'totalPrice' => $totalPrice
         ]);
     }
@@ -454,11 +454,11 @@ class UserController extends Controller
         try {
             // Validate the request
             $validated = $request->validate([
-                'items' => 'required|array',
+                'selectedItems' => 'required|array',
                 'totalPrice' => 'required|numeric'
             ]);
 
-            $items = $request->items;
+            $items = $request->selectedItems;
             $totalPrice = $request->totalPrice;
 
             if (empty($items)) {
@@ -621,7 +621,7 @@ class UserController extends Controller
                 ->where('orderId', $orderId)
                 ->update([
                     'orderStatus' => 'Reordered',
-                    'updated_at' => now()
+                    'updated_at' => Carbon::now()->toDateTimeLocalString()
                 ]);
 
             // Redirect to checkout preview
@@ -659,5 +659,3 @@ class UserController extends Controller
 
    
 }
-
-

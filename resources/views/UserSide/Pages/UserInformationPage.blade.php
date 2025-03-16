@@ -347,15 +347,22 @@
                         
                         ?>
                         <div class="OrderSummary">
+
+                            <label style="font-weight: bolder; font-size:1.2rem;">Order Summary</label>
                             @if ($UserOrders->count() > 0)
-                                <label style="font-weight: bolder; font-size:1.2rem;">Order Summary</label>
                                 <label for="">Total Orders: {{ $UserOrders->count() }}</label>
+                            @else
+                                <label for="">Total Orders: 0</label>
                             @endif
                             @if ($CancelledOrder->count() > 0)
                                 <label for="">Cancelled: {{ $CancelledOrder->count() }}</label>
+                            @else
+                                <label for="">Cancelled: 0</label>
                             @endif
                             @if ($DeliveredOrder->count() > 0)
                                 <label for="">Delivered: {{ $DeliveredOrder->count() }}</label>
+                            @else
+                                <label for="">Delivered: 0</label>
                             @endif
                         </div>
 

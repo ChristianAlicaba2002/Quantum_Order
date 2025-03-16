@@ -28,11 +28,11 @@
 
     .mainHeader h1 {
         font-size: 1.3rem;
-        margin: 1.1rem 0 1rem 1rem;
+        margin: 1rem 0 1rem 1rem;
         min-width: 14%;
         text-align: center;
         font-weight: bold;
-        /* background-color: red; */
+        margin-top: 1.5rem;
     }
 
     .SearchItemsInput {
@@ -110,6 +110,7 @@
         display: flex;
         align-items: center;
         text-align: left;
+        font-size: 1.1rem;
     }
 
     .icon-button:hover {
@@ -138,7 +139,7 @@
     }
 
     .cartGroup {
-        width: 1.2rem;
+        width: 1.3rem;
         height: 1.2rem;
         background-color: red;
         text-align: center;
@@ -176,7 +177,6 @@
         padding: 1.1rem 0 1.1rem 1rem;
         top: 0;
         position: sticky;
-        /* border-bottom: 1px solid rgba(0, 0, 0, 0.505); */
     }
 
     .cart-item {
@@ -314,9 +314,7 @@
         gap: 20px;
         width: 100%;
         min-height: 200px;
-        /* Ensures there's space for the message */
         position: relative;
-        /* For proper message positioning */
     }
 
     #noResultsMessage {
@@ -391,7 +389,8 @@
                         <h4>{{ $item->category }}</h4>
                         <h4>x{{ $item->quantity }}</h4>
                         <label>{{ $item->description }}</label>
-                        <p style="color: red">Price:&#8369;<span class="item-price">{{ $item->price }}</span>
+                        <p style="color: red">Price:&#8369;<span
+                                class="item-price">{{ number_format($item->price, 2) }}</span>
                         </p>
                     </div>
                     <div class="ItemButtons">
@@ -426,8 +425,6 @@
             @endif
 
         </div>
-
-
 
         <div class="userinformation dropdown">
             <div class="dropdown-trigger">
@@ -587,6 +584,21 @@
             }
         });
 
+        function calculateTotal() {
+            let total = 0;
+            const cartItems = document.querySelectorAll('.cart-item');
+            cartItems.forEach(cartItem => {
+                const checkbox = cartItem.querySelector('input[type="checkbox"]');
+                if (checkbox.checked) {
+                    const priceText = cartItem.querySelector('.item-price').textContent;
+                    const price = parseFloat(priceText);
+                    const quantity = parseInt(cartItem.querySelector('input[name="quantity"]').value);
+                    total += price * quantity;
+                }
+            });
+            document.getElementById('totalPrice').textContent = `₱ ${total.toFixed(2)}`;
+        }
+
         function toggleCheckAll(checkbox) {
             const checkboxes = document.querySelectorAll('.cart-item input[type="checkbox"]');
             checkboxes.forEach(cb => {
@@ -610,20 +622,6 @@
             calculateTotal();
         }
 
-        function calculateTotal() {
-            let total = 0;
-            const cartItems = document.querySelectorAll('.cart-item');
-            cartItems.forEach(cartItem => {
-                const checkbox = cartItem.querySelector('input[type="checkbox"]');
-                if (checkbox.checked) {
-                    const priceText = cartItem.querySelector('.item-price').textContent;
-                    const price = parseFloat(priceText);
-                    const quantity = parseInt(cartItem.querySelector('input[name="quantity"]').value);
-                    total += price * quantity;
-                }
-            });
-            document.getElementById('totalPrice').textContent = `₱ ${total.toFixed(2)}`;
-        }
 
         function proceedToCheckout() {
             const checkboxes = document.querySelectorAll('.cart-item input[type="checkbox"]:checked');
@@ -633,7 +631,7 @@
             }
 
             const form = document.createElement('form');
-            form.method = 'POST';
+            form.method = 'GET';
             form.action = '{{ route('checkout.preview') }}';
 
             const csrfToken = document.createElement('input');
@@ -669,7 +667,6 @@
                     const input = document.createElement('input');
                     input.type = 'hidden';
                     input.name = `items[${index}][${key}]`;
-                    input.value = value;
                     form.appendChild(input);
                 }
             });

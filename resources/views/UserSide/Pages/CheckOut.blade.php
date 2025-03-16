@@ -206,11 +206,11 @@
         @endif
 
         @php
-            $items = session('checkout_items', []);
+            $items = session('items', []);
             $totalPrice = session('totalPrice', 0);
         @endphp
 
-        @if (isset($items) && !empty($items))
+        @if (isset($item) && !empty($items))
             <div class="order-summary">
                 <h2>Order Summary</h2>
                 <table class="items-table">

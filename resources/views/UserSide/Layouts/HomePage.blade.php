@@ -210,7 +210,7 @@
         border-radius: 8px;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         overflow: hidden;
-        height: 350px;
+        height: auto;
         position: relative;
         transition: all 0.3s ease;
     }
@@ -253,8 +253,9 @@
 
     .product-price {
         color: #FF6B35;
-        font-weight: bold;
-        font-size: 16px;
+        font-weight: 500;
+        font-size: 14px;
+        margin-top: 1rem;
         margin-bottom: 0;
         display: inline-block;
     }
@@ -334,7 +335,7 @@
             <div class="main-carousel">
                 <div class="carousel-container">
                     <div class="carousel-slides" id="carouselSlides">
-                        <video autoplay muted loop playsinline>
+                        <video autoplay controls loop playsinline>
                             <source
                                 src="{{ asset('assets/Video/Ecommerce Promotions - Motion Graphic Animation..mp4') }}"
                                 type="video/mp4">
@@ -379,6 +380,19 @@
                             <div class="product-details">
                                 <h3 class="product-name">{{ $product->productName }}</h3>
                                 <p class="product-category">{{ $product->category }}</p>
+                                <label for="" style="font-size: .80rem;">
+                                    @if (floatval($product->stock) >= 50)
+                                        ⭐⭐⭐⭐⭐
+                                    @elseif (floatval($product->stock) > 40)
+                                        ⭐⭐⭐⭐
+                                    @elseif (floatval($product->stock) > 30)
+                                        ⭐⭐⭐
+                                    @elseif(floatval($product->stock) > 20)
+                                        ⭐⭐
+                                    @else
+                                        ⭐
+                                    @endif
+                                </label>
                                 <div>
                                     <p class="product-price">₱{{ number_format($product->price, 2) }}</p>
                                     <a href="{{ route('MainPage') }}">

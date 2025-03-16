@@ -166,7 +166,7 @@
 
                 <div class="stock-info">
                     <span class="stock-label">Available Stock:</span>
-                    <span class="stock-count" id="stock-count">{{ $stock }} units</span>
+                    <span class="stock-count">{{ $stock }} units</span>
                 </div>
 
                 <div class="description-box">
@@ -186,8 +186,8 @@
                     <input type="hidden" name="userId" value="{{ Auth::user()->userId }}">
                     <input type="hidden" name="username" value="{{ Auth::user()->username }}">
                     <div class="add-to-cart-section">
-                        <input type="number" name="quantity" class="quantity-input" value="1" min="1"
-                            max="{{ $stock }}" required>
+                        <input type="number" name="quantity" id="ChangeQuantity" class="quantity-input" value="1"
+                            min="1" max="{{ $stock }}" required>
                         <button type="submit" class="add-to-cart-btn">
                             Add to Cart
                         </button>

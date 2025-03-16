@@ -76,6 +76,10 @@
         margin-top: 16%;
     }
 
+    .no-orders h3 {
+        font-size: 1.2rem;
+    }
+
     .btn {
         background-color: #ff9100;
         color: white;

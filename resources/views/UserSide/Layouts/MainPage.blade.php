@@ -23,13 +23,13 @@
         font-family: Arial, sans-serif;
     }
 
-    .logo {
+    /* .logo {
         color: #FF6B35;
         font-weight: bold;
         font-size: 1.5rem;
-    }
+    } */
 
-    .search-bar {
+    /* .search-bar {
         flex-grow: 1;
         max-width: 600px;
         margin: 0 2rem;
@@ -41,7 +41,7 @@
         border: 1px solid #ddd;
         border-radius: 4px;
         background-color: #f5f5f5;
-    }
+    } */
 
     nav ul {
         display: flex;
@@ -55,7 +55,7 @@
 
     nav button {
         color: #666;
-        padding: 8px 16px;
+        padding: 5px 16px;
         border: none;
         background: none;
         cursor: pointer;
@@ -310,49 +310,96 @@
         width: 100%;
     }
 
-    .alertContainer {
-        width: 100%;
-        display: flex;
-        justify-content: center;
+
+    .alert-container {
+        position: fixed;
+        top: 17%;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 1000;
+        width: 80%;
+        max-width: 500px;
+        text-align: center;
+    }
+
+    .alert-center {
+        position: fixed;
+        top: 15%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 1000;
+        width: 80%;
+        max-width: 400px;
+        text-align: center;
     }
 
     .alert {
+        padding: 15px;
+        margin-bottom: 20px;
         border-radius: 8px;
-        font-size: 0.9rem;
-        border: none;
-        position: absolute;
-        width: 50%;
-    }
-
-    .alert p {
-        text-align: center;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        animation: slideIn 0.5s ease-out;
     }
 
     .alert-success {
-        background: #def7ec;
-        color: #03543f;
-        text-align: center;
+        background-color: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
     }
 
     .alert-danger {
-        background: #fde8e8;
-        color: #9b1c1c;
+        background-color: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
     }
 
-    @keyframes fadeIn {
+    @keyframes slideIn {
         from {
+            transform: translateY(-100%);
             opacity: 0;
-            transform: translateY(-10px);
         }
 
         to {
-            opacity: 1;
             transform: translateY(0);
+            opacity: 1;
         }
     }
 
-    .fade-in {
-        animation: fadeIn 0.3s ease-in-out alternate;
+
+
+    .alert-icon {
+        font-size: 20px;
+    }
+
+    .alert-close {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        cursor: pointer;
+        padding: 5px;
+        color: inherit;
+        opacity: 0.7;
+    }
+
+    .alert-close:hover {
+        opacity: 1;
+    }
+
+    @keyframes slideOut {
+        from {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        to {
+            transform: translateY(-100%);
+            opacity: 0;
+        }
     }
 </style>
 
@@ -372,24 +419,23 @@
 
     <div>
 
-        @if (session('success'))
-            <div class="alertContainer">
-                <div class="alert alert-success fade-in" role="alert">
-                    <i class="fas fa-check-circle me-2"></i>
-                    {{ session('success') }}
+        <div class="alert-container">
+            @if (session('success'))
+                <div class="alert alert-success" id="successAlert">
+                    <i class="bi bi-check-circle alert-icon"></i>
+                    <span>{{ session('success') }}</span>
                 </div>
-            </div>
-        @endif
+            @endif
+        </div>
 
-
-        @if (session('error'))
-            <div class="alertContainer">
-                <div class="alert alert-danger fade-in" role="alert">
-                    <i class="fas fa-check-circle me-2"></i>
-                    {{ session('error') }}
+        <div class="alert-center">
+            @if (session('error'))
+                <div class="alert alert-danger" id="errorAlert">
+                    <i class="bi bi-exclamation-circle alert-icon"></i>
+                    <span>{{ session('error') }}</span>
                 </div>
-            </div>
-        @endif
+            @endif
+        </div>
 
         <div>
             <h2 class="category-title" id="categoryName">All</h2>
@@ -432,6 +478,20 @@
                                 <div class="product-details">
                                     <h3 class="product-name">{{ $product->productName }}</h3>
                                     <p class="product-category">{{ $product->category }}</p>
+                                    <label for="" style="font-size: .80rem;">
+
+                                        @if (floatval($product->stock) >= 50)
+                                            ⭐⭐⭐⭐⭐
+                                        @elseif (floatval($product->stock) > 40)
+                                            ⭐⭐⭐⭐
+                                        @elseif (floatval($product->stock) > 30)
+                                            ⭐⭐⭐
+                                        @elseif(floatval($product->stock) > 20)
+                                            ⭐⭐
+                                        @else
+                                            ⭐
+                                        @endif
+                                    </label>
                                 </div>
                                 <div class="price-cart-container">
                                     <p class="price">&#8369;{{ number_format($product->price, 2) }}</p>
@@ -567,19 +627,27 @@
             @endif
         });
 
-        document.addEventListener('DOMContentLoaded', function() {
+        // document.addEventListener('DOMContentLoaded', function() {
+        //     const alerts = document.querySelectorAll('.alert');
+        //     alerts.forEach(alert => {
+        //         setTimeout(() => {
+        //             alert.style.opacity = '0';
+        //             alert.style.transform = 'translateY(-20px)';
+        //             setTimeout(() => {
+
+        //                 alert.remove()
+        //             }, 300);
+        //         }, 5000);
+        //     });
+        // });
+
+        setTimeout(() => {
             const alerts = document.querySelectorAll('.alert');
             alerts.forEach(alert => {
-                setTimeout(() => {
-                    alert.style.opacity = '0';
-                    alert.style.transform = 'translateY(-20px)';
-                    setTimeout(() => {
-
-                        alert.remove()
-                    }, 300);
-                }, 5000);
+                alert.style.animation = 'slideOut 0.5s ease-out forwards';
+                setTimeout(() => alert.remove(), 500);
             });
-        });
+        }, 5000);
     </script>
 
 </body>
