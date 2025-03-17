@@ -107,9 +107,7 @@ Route::post('/order/{orderId}/update-status', [AdminController::class, 'updateOr
 Route::post('/cancel.order/{orderId}', [UserController::class, 'cancelOrder'])->name('cancel.order');
 Route::post('/reorder-cancelled/{orderId}', [UserController::class, 'reorderCancelled'])
     ->name('reorder.cancelled');
-Route::get('/checkout/preview', [UserController::class, 'checkoutPreview'])->name('checkout.preview');
-
-
+Route::post('/checkout/preview', [UserController::class, 'checkoutPreview'])->name('checkout.preview');
 Route::post('/checkout/process', [UserController::class, 'checkoutProcess'])->name('checkout.process');
 Route::post('deliveredItems/{id}',[UserController::class , 'MoveToRecieved'])->name('deliveredItems.process');
 // Add this route for the order receipt

@@ -587,22 +587,23 @@
         function calculateTotal() {
             let total = 0;
             const cartItems = document.querySelectorAll('.cart-item');
-            cartItems.forEach(cartItem => {
-                const checkbox = cartItem.querySelector('input[type="checkbox"]');
+            
+            cartItems.forEach(item => {
+                const checkbox = item.querySelector('input[type="checkbox"]');
                 if (checkbox.checked) {
-                    const priceText = cartItem.querySelector('.item-price').textContent;
-                    const price = parseFloat(priceText);
-                    const quantity = parseInt(cartItem.querySelector('input[name="quantity"]').value);
+                    const price = parseFloat(item.querySelector('.item-price').textContent.replace(/[^\d.-]/g, ''));
+                    const quantity = parseInt(item.querySelector('input[name="quantity"]').value);
                     total += price * quantity;
                 }
             });
-            document.getElementById('totalPrice').textContent = `₱ ${total.toFixed(2)}`;
+
+            document.getElementById('totalPrice').textContent = '₱ ' + total.toFixed(2);
         }
 
-        function toggleCheckAll(checkbox) {
+        function toggleCheckAll(source) {
             const checkboxes = document.querySelectorAll('.cart-item input[type="checkbox"]');
-            checkboxes.forEach(cb => {
-                cb.checked = checkbox.checked;
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = source.checked;
             });
             calculateTotal();
         }
@@ -624,63 +625,72 @@
 
 
         function proceedToCheckout() {
-            const checkboxes = document.querySelectorAll('.cart-item input[type="checkbox"]:checked');
-            if (checkboxes.length === 0) {
+            const cartItems = document.querySelectorAll('.cart-item');
+            const selectedItems = [];
+            let totalPrice = 0;
+
+            // Check if any items are selected
+            const hasSelectedItems = Array.from(cartItems).some(item => 
+                item.querySelector('input[type="checkbox"]').checked
+            );
+
+            if (!hasSelectedItems) {
                 alert('Please select at least one item to checkout');
                 return false;
             }
 
-            const form = document.createElement('form');
-            form.method = 'GET';
-            form.action = '{{ route('checkout.preview') }}';
+            // Collect data from selected items
+            cartItems.forEach(item => {
+                const checkbox = item.querySelector('input[type="checkbox"]');
+                if (checkbox.checked) {
+                    // Get the form element to extract the product ID
+                    const form = item.querySelector('form');
+                    const productId = form.action.split('/').pop();
+                    
+                    const itemDetails = {
+                        productId: productId,
+                        productName: item.querySelector('.cart-item-details h3').textContent.trim(),
+                        category: item.querySelector('.cart-item-details h4').textContent.trim(),
+                        quantity: parseInt(item.querySelector('input[name="quantity"]').value),
+                        price: parseFloat(item.querySelector('.item-price').textContent.replace(/[^\d.-]/g, '')),
+                        image: item.querySelector('.cart-item-image img').src.split('/').pop(),
+                        stock: parseInt(item.querySelector('input[name="quantity"]').getAttribute('max'))
+                    };
+                    
+                    selectedItems.push(itemDetails);
+                    totalPrice += itemDetails.price * itemDetails.quantity;
+                }
+            });
 
+            // Create and submit form
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '{{ route("checkout.preview") }}';
+            
+            // Add CSRF token
             const csrfToken = document.createElement('input');
             csrfToken.type = 'hidden';
             csrfToken.name = '_token';
             csrfToken.value = '{{ csrf_token() }}';
             form.appendChild(csrfToken);
 
-            let totalAmount = 0;
-            checkboxes.forEach((checkbox, index) => {
-                const cartItem = checkbox.closest('.cart-item');
+            // Add selected items as JSON string
+            const itemsInput = document.createElement('input');
+            itemsInput.type = 'hidden';
+            itemsInput.name = 'selectedItems';
+            itemsInput.value = JSON.stringify(selectedItems);
+            form.appendChild(itemsInput);
 
-                const productId = cartItem.querySelector('form').action.split('/').pop();
-                const productName = cartItem.querySelector('h3').textContent;
-                const category = cartItem.querySelector('h4').textContent;
-                const price = parseFloat(cartItem.querySelector('.item-price').textContent);
-                const quantity = parseInt(cartItem.querySelector('input[type="number"]').value);
-                const image = cartItem.querySelector('img').src.split('/').pop();
-
-                const subtotal = price * quantity;
-                totalAmount += subtotal;
-
-                const fields = {
-                    'productId': productId,
-                    'productName': productName,
-                    'category': category,
-                    'price': price,
-                    'quantity': quantity,
-                    'image': image
-                };
-
-                for (const [key, value] of Object.entries(fields)) {
-                    const input = document.createElement('input');
-                    input.type = 'hidden';
-                    input.name = `items[${index}][${key}]`;
-                    form.appendChild(input);
-                }
-            });
-
+            // Add total price
             const totalPriceInput = document.createElement('input');
             totalPriceInput.type = 'hidden';
             totalPriceInput.name = 'totalPrice';
-            totalPriceInput.value = totalAmount.toFixed(2);
+            totalPriceInput.value = totalPrice.toFixed(2);
             form.appendChild(totalPriceInput);
 
+            // Append form to body and submit
             document.body.appendChild(form);
             form.submit();
-
-            return false;
         }
     </script>
 

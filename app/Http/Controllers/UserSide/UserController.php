@@ -454,20 +454,32 @@ class UserController extends Controller
         try {
             // Validate the request
             $validated = $request->validate([
-                'selectedItems' => 'required|array',
-                'totalPrice' => 'required|numeric'
+                'selectedItems' => 'required|string',
+                'totalPrice' => 'required|numeric|min:0'
             ]);
 
-            $items = $request->selectedItems;
-            $totalPrice = $request->totalPrice;
-
+            // Decode the JSON string back to array
+            $items = json_decode($request->selectedItems, true);
+            
             if (empty($items)) {
-                return redirect()->back()->with('error', 'Please select items to checkout');
+                return redirect()->back()
+                    ->with('error', 'Please select items to checkout');
             }
 
-            return view('UserSide.Pages.CheckOut', compact('items', 'totalPrice'));
+            // Store in session for the checkout view
+            session([
+                'items' => $items,
+                'totalPrice' => $request->totalPrice
+            ]);
+
+            return view('UserSide.Pages.CheckOut')
+                ->with('items', $items)
+                ->with('totalPrice', $request->totalPrice);
+            
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Error processing checkout: ' . $e->getMessage());
+            Log::error('Checkout preview error: ' . $e->getMessage());
+            return redirect()->back()
+                ->with('error', 'Error processing checkout: ' . $e->getMessage());
         }
     }
 
