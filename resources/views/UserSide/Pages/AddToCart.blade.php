@@ -1,4 +1,4 @@
-@foreach ($UserAddToCart as $item)
+<!-- @foreach ($UserAddToCart as $item)
     <div class="cart-item">
         <input type="checkbox" name="selectedItems[]" value="{{ $item->id }}">
         <div class="cart-item-image">
@@ -16,4 +16,4 @@
             <button class="btn btn-danger" onclick="removeFromCart({{ $item->id }}, event)">Remove</button>
         </div>
     </div>
-@endforeach
+@endforeach -->

@@ -294,6 +294,7 @@
 
                 <form action="{{ route('checkout.process') }}" method="POST">
                     @csrf
+                    <!--  -->
                     <input type="hidden" name="items" value="{{ json_encode($items) }}">
                     <input type="hidden" name="totalPrice" value="{{ $totalPrice }}">
                     

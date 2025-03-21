@@ -335,7 +335,7 @@
             <div class="main-carousel">
                 <div class="carousel-container">
                     <div class="carousel-slides" id="carouselSlides">
-                        <video autoplay controls loop playsinline>
+                        <video autoplay muted controls loop playsinline>
                             <source
                                 src="{{ asset('assets/Video/Ecommerce Promotions - Motion Graphic Animation..mp4') }}"
                                 type="video/mp4">

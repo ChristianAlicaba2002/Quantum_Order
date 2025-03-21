@@ -664,7 +664,7 @@
 
             // Create and submit form
             const form = document.createElement('form');
-            form.method = 'POST';
+            form.method = 'GET';
             form.action = '{{ route("checkout.preview") }}';
             
             // Add CSRF token
