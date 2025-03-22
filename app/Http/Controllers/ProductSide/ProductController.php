@@ -9,6 +9,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use App\Application\Product\ProductRegister;
+use Illuminate\Support\Facades\Log;
 
 
 class ProductController extends Controller
@@ -23,61 +24,45 @@ class ProductController extends Controller
 
     public function addProduct(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'productName' => 'required|string',
-            'category' => 'required|string',
+        // Validate the request
+        $validatedData = $request->validate([
+            'productName' => 'required|string|max:255',
+            'category' => 'required|string|max:255',
             'price' => 'required|numeric',
-            'stock' => 'required|numeric',
+            'stock' => 'required|integer',
             'description' => 'required|string',
-            'image' => 'required|nullable',
+            'image' => 'required|string',
         ]);
 
-        if ($validator->fails()) {
-            return redirect()->back()->withErrors($validator)->withInput();
+        // Generate a unique product ID
+        $productId = $this->GetTheGenerateProductId();
+
+        try {
+            // Insert the new product
+            DB::table('products')->insert([
+                'productId' => $productId,
+                'productName' => $validatedData['productName'],
+                'category' => $validatedData['category'],
+                'price' => $validatedData['price'],
+                'stock' => $validatedData['stock'],
+                'description' => $validatedData['description'],
+                'image' => $validatedData['image'],
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now(),
+            ]);
+
+            return redirect()->back()->with('success', 'Product added successfully!');
+        } catch (\Exception $e) {
+            Log::error('Product insertion failed: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Failed to add product. Please try again.');
         }
-
-        if(DB::table('products')->where('productName', $request->productName)->exists())
-        {
-            return redirect()->back()->with('error', 'Product already exists');
-        }
-
-        $data = [];
-
-        if ($request->file('image')) {
-            $image = $request->file('image');
-            $destinationPath = 'images';
-
-            $imageName = time() . '.' . $image->getClientOriginalExtension();
-            $image->move($destinationPath, $imageName);
-            $data['image'] = $imageName;
-        } else {
-            $data['image'] = 'default.jpg';
-        }
-
-        $price = floatval($request->price);
-        $stock = intval($request->stock);
-
-        $id = $this->GetTheGenerateProductId();        
-
-        $this->productRegister->create(
-            $id,
-            $request->productName,
-            $request->category,
-            $price,
-            $stock,
-            $request->description,
-            $data['image'],
-        );
-
-        return redirect('/AdminLogin')->with('success', 'Product added successfully');
-
     }
 
     public function updateProduct(Request $request, $product_id)
     {
-        $product = DB::table('products')->where('id', $product_id)->first();
-        if (! $product) {
-            return redirect('/AdminLogin')->with('error', 'product not found');
+        $product = DB::table('products')->where('productId', $product_id)->first();
+        if (!$product) {
+            return redirect('/AdminLogin')->with('error', 'Product not found');
         }
 
         $validator = Validator::make($request->all(), [
@@ -101,6 +86,7 @@ class ProductController extends Controller
             'description' => $request->description,
         ];
 
+        // Handle image upload if a new image is provided
         if ($request->hasFile('image')) {
             $image = $request->file('image');
             $destinationPath = 'images';
@@ -108,18 +94,12 @@ class ProductController extends Controller
             $image->move($destinationPath, $imageName);
             $data['image'] = $imageName;
         } else {
+            // Keep the existing image if no new image is uploaded
             $data['image'] = $product->image ?? 'default.jpg';
         }
 
-        $this->productRegister->update(
-            $product->id,
-            $data['productName'],
-            $data['category'],
-            $data['price'],
-            $data['stock'],
-            $data['description'],
-            $data['image']
-        );
+        // Update the product in the database
+        DB::table('products')->where('productId', $product_id)->update($data);
 
         return redirect('/AdminLogin')->with('success', 'Product updated successfully');
     }
@@ -178,7 +158,7 @@ class ProductController extends Controller
         do {
             $id = $this->GenerateProductID(6);
             // Check if the generated ID already exists
-            $exists = $this->productRegister->findByID($id);
+            $exists = DB::table('products')->where('productId', $id)->first();
         } while ($exists !== null); // Ensure the ID is unique
 
         return $id;

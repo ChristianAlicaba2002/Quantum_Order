@@ -392,7 +392,7 @@
                         <td>{{ $product->created_at }}</td>
                         <td>
                             <button type="button"
-                                onclick="EditProducts('{{ $product->id }}','{{ $product->productName }}','{{ $product->category }}','{{ $product->price }}','{{ $product->stock }}','{{ $product->description }}','{{ $product->image }}')">Edit</button>
+                                onclick="EditProducts('{{ $product->productId}}','{{ $product->productName }}','{{ $product->category }}','{{ $product->price }}','{{ $product->stock }}','{{ $product->description }}','{{ $product->image }}')">Edit</button>
                             <form action="/archive/{{ $product->id }}" method="post">
                                 @csrf
                                 @method('DELETE')

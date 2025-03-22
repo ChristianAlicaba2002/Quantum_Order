@@ -143,7 +143,9 @@ class UserController extends Controller
 
     public function UpdateInformationUser(Request $request, string $userId): \Illuminate\Http\RedirectResponse
     {
+        // $user = DB::table('users')->where('userId', $userId)->first();
         $user = DB::table('users')->where('userId', $userId)->first();
+
         
         if (!$user) {
             return redirect()->back()->with('error', 'User not found');
@@ -152,11 +154,18 @@ class UserController extends Controller
         $validator = Validator::make($request->all(), [
             'firstName' => 'required|string|max:255',
             'lastName' => 'required|string|max:255',
-            'gender' => 'required|string|in:Male,Female,Other',
+            'gender' => 'required|in:male,female,other',
             'address' => 'required|string|max:255',
-            'phoneNumber' => 'required|string|regex:/^[0-9]{10,11}$/', // Match database column name
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
+            'phoneNumber' => 'required|string',
+            'image' => 'nullable|image'
         ]);
+
+        // dd($request->file('image'));
+
+
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
 
         try {
             $imageName = $user->image; // Default to current image
@@ -172,6 +181,7 @@ class UserController extends Controller
                 }
             }
 
+
             // Update user information
             $this->registerUser->update(
                 $userId,
@@ -179,7 +189,7 @@ class UserController extends Controller
                 $request->lastName,
                 $request->gender,
                 $request->address,
-                $request->phoneNumber, // Match the validation field name
+                $request->phoneNumber,
                 $user->username,
                 $user->password,
                 $imageName
@@ -198,9 +208,6 @@ class UserController extends Controller
         }
     }
 
-    /**
-     * Handle image upload and return the new image name
-     */
     private function handleImageUpload($image, string $oldImage): ?string
     {
         try {
@@ -212,11 +219,21 @@ class UserController extends Controller
                 Storage::disk('public')->delete('images/' . $oldImage);
             }
 
+            // Log the original file name and size
+            Log::info('Uploading image: ' . $image->getClientOriginalName() . ' with size: ' . $image->getSize());
+
+            // Check if the image is valid
+            if (!$image->isValid()) {
+                Log::error('Uploaded image is not valid.');
+                return null;
+            }
+
             $imageName = time() . '.' . $image->getClientOriginalExtension();
             
             // Store the new image
             Storage::disk('public')->putFileAs('images', $image, $imageName);
 
+            Log::info('Image uploaded successfully: ' . $imageName);
             return $imageName;
 
         } catch (\Exception $e) {
@@ -224,6 +241,11 @@ class UserController extends Controller
             return null;
         }
     }
+
+
+
+
+
 
     public function UserAddToCart(Request $request, string $productId)
     {
@@ -495,7 +517,6 @@ class UserController extends Controller
                 'phoneNumber' => 'required|string'
             ]);
 
-            // Decode the items JSON string back to an array
             $items = json_decode($request->items, true);
 
             if (empty($items)) {
@@ -508,13 +529,11 @@ class UserController extends Controller
             $paymentMethod = $request->paymentMethod;
             $phoneNumber = $request->phoneNumber;
 
-            // Generate a unique order ID
             $orderId = 'ORD-' . $this->GetTheGenerateOrderId();
 
             DB::beginTransaction();
 
             try {
-                // Create the order header
                 DB::table('orders')->insert([
                     'orderId' => $orderId,
                     'userId' => $userId,
@@ -541,13 +560,11 @@ class UserController extends Controller
                         'updated_at' => Carbon::now()->toDateTimeLocalString()
                     ]);
 
-                    // Decrement the stock of the product
                     DB::table('products')
                         ->where('productId', $item['productId'])
                         ->decrement('stock', $item['quantity']);
                 }
 
-                // Remove items from the cart
                 foreach ($items as $item) {
                     DB::table('add_to_cart')
                         ->where('userId', $userId)
