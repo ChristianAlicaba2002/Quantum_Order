@@ -78,6 +78,68 @@
             max-height: 60vh;
             overflow-y: scroll;
         }
+
+        .cards-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .order-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            overflow: hidden;
+            transition: transform 0.2s;
+        }
+
+        .order-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .order-image {
+            width: 100%;
+            height: 200px;
+            overflow: hidden;
+        }
+
+        .order-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .order-details {
+            padding: 15px;
+        }
+
+        .order-details h3 {
+            margin: 0 0 10px 0;
+            color: #333;
+            font-size: 1.2rem;
+        }
+
+        .order-info p {
+            margin: 5px 0;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .status-delivered {
+            color: #28a745;
+            font-weight: bold;
+            padding: 2px 8px;
+            border-radius: 4px;
+            background-color: rgba(40, 167, 69, 0.1);
+        }
+
+        @media (max-width: 768px) {
+            .cards-container {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            }
+        }
     </style>
 </head>
 
@@ -95,41 +157,26 @@
     <h4>Orders: {{ $UserOrders->count() }}</h4>
 
     @if (count($receivedOrders) > 0)
-        <div class="Table-Container">
-            <table class="orders-table">
-                <thead>
-                    <tr>
-                        <th>Order ID</th>
-                        <th>Product ID</th>
-                        <th>Image</th>
-                        <th>Product Name</th>
-                        <th>Category</th>
-                        <th>Quantity</th>
-                        <th>Price</th>
-                        <th>Status</th>
-                        <th>Order Date</th>
-                    </tr>
-                </thead>
-
-                <tbody>
-                    @foreach ($receivedOrders as $order)
-                        <tr>
-                            <td>{{ $order->orderId }}</td>
-                            <td>{{ $order->productId }}</td>
-                            <td>
-                                <img src="{{ asset('/images/' . $order->image) }}" alt="{{ $order->productName }}"
-                                    style="width:50px;">
-                            </td>
-                            <td>{{ $order->productName }}</td>
-                            <td>{{ $order->category }}</td>
-                            <td>{{ $order->quantity }}</td>
-                            <td>₱{{ number_format($order->price, 2) }}</td>
-                            <td style="color: green">{{ $order->orderStatus }}</td>
-                            <td>{{ date('M d, Y h:i A', strtotime($order->created_at)) }}</td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
+        <div class="cards-container">
+            @foreach ($receivedOrders as $order)
+                <div class="order-card">
+                    <div class="order-image">
+                        <img src="{{ asset('/images/' . $order->image) }}" alt="{{ $order->productName }}">
+                    </div>
+                    <div class="order-details">
+                        <h3>{{ $order->productName }}</h3>
+                        <div class="order-info">
+                            <p><strong>Order ID:</strong> {{ $order->orderId }}</p>
+                            <p><strong>Product ID:</strong> {{ $order->productId }}</p>
+                            <p><strong>Category:</strong> {{ $order->category }}</p>
+                            <p><strong>Quantity:</strong> {{ $order->quantity }}</p>
+                            <p><strong>Price:</strong> ₱{{ number_format($order->price, 2) }}</p>
+                            <p><strong>Status:</strong> <span class="status-delivered">{{ $order->orderStatus }}</span></p>
+                            <p><strong>Order Date:</strong> {{ date('M d, Y h:i A', strtotime($order->created_at)) }}</p>
+                        </div>
+                    </div>
+                </div>
+            @endforeach
         </div>
     @else
         <div class="no-orders">

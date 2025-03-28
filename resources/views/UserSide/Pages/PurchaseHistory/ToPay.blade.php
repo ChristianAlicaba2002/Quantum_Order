@@ -35,38 +35,85 @@
         font-size: 2rem;
     }
 
-    .orders-table {
+    .cards-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 20px;
+        padding: 20px;
+    }
+
+    .order-card {
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        overflow: hidden;
+        transition: transform 0.2s;
+    }
+
+    .order-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+
+    .order-image {
         width: 100%;
-        border-collapse: collapse;
-        background-color: white;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        height: 200px;
+        overflow: hidden;
     }
 
-    .orders-table img {
-        width: 50%;
-        height: 55%;
-        border-radius: 50%;
+    .order-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
     }
 
-    .orders-table th,
-    .orders-table td {
-        padding: 12px;
-        text-align: left;
-        border-bottom: 1px solid #ddd;
+    .order-details {
+        padding: 15px;
     }
 
-    .orders-table th {
-        background-color: #ff9100;
-        color: white;
+    .order-details h3 {
+        margin: 0 0 10px 0;
+        color: #333;
+        font-size: 1.2rem;
     }
 
-    .orders-table tr:hover {
-        background-color: #f9f9f9;
+    .order-info p {
+        margin: 5px 0;
+        font-size: 0.9rem;
+        color: #666;
     }
 
     .status-pending {
-        color: #ff9100;
+        color: #ffc107;
         font-weight: bold;
+        padding: 2px 8px;
+        border-radius: 4px;
+        background-color: rgba(255, 193, 7, 0.1);
+    }
+
+    .cancel-form {
+        margin-top: 15px;
+    }
+
+    .cancel-btn {
+        width: 100%;
+        padding: 10px;
+        background-color: #dc3545;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+
+    .cancel-btn:hover {
+        background-color: #c82333;
+    }
+
+    @media (max-width: 768px) {
+        .cards-container {
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        }
     }
 
     .no-orders {
@@ -162,48 +209,32 @@
     @if (count($toPayOrders) > 0)
         <h3>Hi, {{ Auth::user()->firstName }}! your pending orders.</h3>
         <h4>Total pending: {{ $toPayOrders->count() }}</h4>
-        <table class="orders-table">
-            <thead>
-                <tr>
-                    <th>Order ID</th>
-                    <th>Image</th>
-                    <th>Product Name</th>
-                    <th>Category</th>
-                    <th>Quantity</th>
-                    <th>Price</th>
-                    <th>Total Amount</th>
-                    <th>Status</th>
-                    <th>Address</th>
-                    <th>Order Date</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach ($toPayOrders as $order)
-                    <tr>
-                        <td>{{ $order->orderId }}</td>
-                        <td>
-                            <img src="{{ asset('images/' . $order->image) }}" alt="{{ $order->productName }}"
-                                style="width: 50px; height: 50px; object-fit: cover;">
-                        </td>
-                        <td> {{ $order->productName }}</td>
-                        <td>{{ $order->category }}</td>
-                        <td>{{ $order->quantity }}</td>
-                        <td>₱{{ number_format($order->price, 2) }}</td>
-                        <td>₱{{ number_format($order->totalAmount, 2) }}</td>
-                        <td class="status-pending">{{ $order->orderStatus }}</td>
-                        <td>{{ $order->address }}</td>
-                        <td>{{ date('M d, Y h:i A', strtotime($order->created_at)) }}</td>
-                        <td>
-                            <form action="{{ route('cancel.order', $order->orderId) }}" method="post">
-                                @csrf
-                                <button type="submit" class="btn btn-danger">Cancel</button>
-                            </form>
-                        </td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
+        <div class="cards-container">
+            @foreach ($toPayOrders as $order)
+                <div class="order-card">
+                    <div class="order-image">
+                        <img src="{{ asset('images/' . $order->image) }}" alt="{{ $order->productName }}">
+                    </div>
+                    <div class="order-details">
+                        <h3>{{ $order->productName }}</h3>
+                        <div class="order-info">
+                            <p><strong>Order ID:</strong> {{ $order->orderId }}</p>
+                            <p><strong>Category:</strong> {{ $order->category }}</p>
+                            <p><strong>Quantity:</strong> {{ $order->quantity }}</p>
+                            <p><strong>Price:</strong> ₱{{ number_format($order->price, 2) }}</p>
+                            <p><strong>Total Amount:</strong> ₱{{ number_format($order->totalAmount, 2) }}</p>
+                            <p><strong>Status:</strong> <span class="status-pending">{{ $order->orderStatus }}</span></p>
+                            <p><strong>Address:</strong> {{ $order->address }}</p>
+                            <p><strong>Order Date:</strong> {{ date('M d, Y h:i A', strtotime($order->created_at)) }}</p>
+                        </div>
+                        <form action="{{ route('cancel.order', $order->orderId) }}" method="post" class="cancel-form">
+                            @csrf
+                            <button type="submit" class="cancel-btn">Cancel Order</button>
+                        </form>
+                    </div>
+                </div>
+            @endforeach
+        </div>
     @else
         <div class="no-orders">
             <h3>No pending orders found.</h3>

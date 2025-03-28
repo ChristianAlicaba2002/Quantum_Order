@@ -477,6 +477,115 @@
         cursor: pointer;
         font-size: smaller;
     }
+
+    .cards-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 20px;
+        padding: 20px;
+    }
+
+    .order-card {
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        overflow: hidden;
+        transition: transform 0.2s;
+    }
+
+    .order-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+
+    .order-image {
+        width: 100%;
+        height: 200px;
+        overflow: hidden;
+    }
+
+    .order-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .order-details {
+        padding: 15px;
+    }
+
+    .order-details h3 {
+        margin: 0 0 10px 0;
+        color: #333;
+        font-size: 1.2rem;
+    }
+
+    .order-info p {
+        margin: 5px 0;
+        font-size: 0.9rem;
+        color: #666;
+    }
+
+    .status-accepted {
+        color: #28a745;
+        font-weight: bold;
+        padding: 2px 8px;
+        border-radius: 4px;
+        background-color: rgba(40, 167, 69, 0.1);
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 10px;
+        margin-top: 15px;
+    }
+
+    .track-btn, .delivered-btn {
+        flex: 1;
+        padding: 10px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.2s;
+        font-weight: bold;
+    }
+
+    .track-btn {
+        background-color: #007bff;
+        color: white;
+    }
+
+    .track-btn:hover {
+        background-color: #0056b3;
+    }
+
+    .track-btn.delivered {
+        background-color: #28a745;
+    }
+
+    .delivered-btn {
+        float: right;
+        background-color: #28a745;
+        color: white;
+    }
+
+    .delivered-btn:hover {
+        background-color: #218838;
+    }
+
+    .delivered-form {
+        flex: 1;
+    }
+
+    @media (max-width: 768px) {
+        .cards-container {
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        }
+        
+        .action-buttons {
+            flex-direction: column;
+        }
+    }
 </style>
 
 <body>
@@ -488,57 +597,39 @@
 
     @if (count($deliveryOrders) > 0)
         <h4>Total Delivery: {{ $deliveryOrders->count() }}</h4>
-        <table class="orders-table">
-            <thead>
-                <tr>
-                    <th>Order ID</th>
-                    <th>Image</th>
-                    <th>Product Name</th>
-                    <th>Category</th>
-                    <th>Quantity</th>
-                    <th>Price</th>
-                    <th>Total Amount</th>
-                    <th>Payment</th>
-                    <th>Status</th>
-                    <th>Address</th>
-                    <th>Order Date</th>
-                    <th>Action</th>
-                    <th>Track</th>
-                </tr>
-
-            </thead>
-            <tbody>
+        <div class="cards-container">
                 @foreach ($deliveryOrders as $order)
-                    <tr>
-                        <td>{{ $order->orderId }}</td>
-                        <td>
+                <div class="order-card">
+                    <div class="order-image">
                             <img src="{{ asset('/images/' . $order->image) }}" alt="{{ $order->productName }}">
-                        </td>
-                        <td>{{ $order->productName }}</td>
-                        <td>{{ $order->category }}</td>
-                        <td>{{ $order->quantity }}</td>
-                        <td>₱{{ number_format($order->price, 2) }}</td>
-                        <td>₱{{ number_format($order->totalAmount, 2) }}</td>
-                        <td>{{ $order->paymentMethod }}</td>
-                        <td class="status-accepted">{{ $order->orderStatus }}</td>
-                        <td>{{ $order->address }}</td>
-                        <td>{{ date('M d, Y h:i A', strtotime($order->created_at)) }}</td>
-                        <td>
+                    </div>
+                    <div class="order-details">
+                        <h3>{{ $order->productName }}</h3>
+                        <div class="order-info">
+                            <p><strong>Order ID:</strong> {{ $order->orderId }}</p>
+                            <p><strong>Category:</strong> {{ $order->category }}</p>
+                            <p><strong>Quantity:</strong> {{ $order->quantity }}</p>
+                            <p><strong>Price:</strong> ₱{{ number_format($order->price, 2) }}</p>
+                            <p><strong>Total Amount:</strong> ₱{{ number_format($order->totalAmount, 2) }}</p>
+                            <p><strong>Payment Method:</strong> {{ $order->paymentMethod }}</p>
+                            <p><strong>Status:</strong> <span class="status-accepted">{{ $order->orderStatus }}</span></p>
+                            <p><strong>Address:</strong> {{ $order->address }}</p>
+                            <p><strong>Order Date:</strong> {{ date('M d, Y h:i A', strtotime($order->created_at)) }}</p>
+                        </div>
+                        <div class="action-buttons">
                             <button onclick="showTracking('{{ $order->orderStatus }}', '{{ $order->orderId }}')"
                                 class="track-btn {{ $order->orderStatus === 'Delivered' ? 'delivered' : '' }}">
                                 Track Order
                             </button>
-                        </td>
-                        <td>
-                            <form class="btn-delivered"  action="/deliveredItems/{{ $order->orderId }}" method="post">
+                            <form class="delivered-form" action="/deliveredItems/{{ $order->orderId }}" method="post">
                                 @csrf
-                                <button type="submit">Delivered</button>
+                                <button type="submit" class="delivered-btn">Delivered</button>
                             </form>
-                        </td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
+                        </div>
+                    </div>
+                </div>
+            @endforeach
+        </div>
 
         <div id="trackingModal" class="tracking-modal">
             <div class="tracking-content">
