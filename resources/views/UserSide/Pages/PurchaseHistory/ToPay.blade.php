@@ -160,7 +160,7 @@
 
 
     @if (count($toPayOrders) > 0)
-        <h3>Hi, {{ Auth::user()->firstName }}! Here are your pending orders.</h3>
+        <h3>Hi, {{ Auth::user()->firstName }}! your pending orders.</h3>
         <h4>Total pending: {{ $toPayOrders->count() }}</h4>
         <table class="orders-table">
             <thead>

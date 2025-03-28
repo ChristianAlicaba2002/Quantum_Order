@@ -206,6 +206,7 @@
         font-size: 24px;
         padding: 20px;
         color: #333;
+        margin-left: 1%;
     }
 
     .products>div {

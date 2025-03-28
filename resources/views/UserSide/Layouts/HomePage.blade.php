@@ -283,6 +283,7 @@
     }
 </style>
 
+
 <body>
     @include('UserSide.Pages.HeaderPage')
 

@@ -304,7 +304,7 @@
                             <td class="status-declined">{{ $order->orderStatus }}</td>
                             <td>{{ date('M d, Y h:i A', strtotime($order->created_at)) }}</td>
                             <td>
-                                <form action="{{ url('/reorder-cancelled/' . $order->orderId) }}" method="POST">
+                                <form action="/reorder-cancelled/{{$order->orderId}}" method="POST">
                                     @csrf
                                     <button type="submit" class="reorder-btn">
                                         Re-Attempt Order

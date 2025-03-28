@@ -10,8 +10,8 @@
         crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <title>{{ Auth::user()->firstName ?? 'Home' }}</title>
-</head>
-<style>
+
+    <style>
     * {
         font-family: Arial, Helvetica, sans-serif;
     }
@@ -182,9 +182,9 @@
     .cart-item {
         display: flex;
         align-items: center;
-        padding: 10px;
+        padding: 6px;
         border-bottom: 1px solid #eee;
-        background-color: #fff8f0;
+        background-color: white;
         margin: 5px;
         border-radius: 10px;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -192,9 +192,10 @@
     }
 
     .cart-item-image img {
-        border-radius: 10px;
+        margin-left: 10px;
         width: 100px;
-        height: 60px;
+        height: 70px;
+        border-radius: 10px;
         object-fit: cover;
     }
 
@@ -205,33 +206,45 @@
     }
 
     .cart-item-details h3,
-    .cart-item-details h4 {
-        font-size: 14px;
+    .cart-item-details h4 , .cart-item-details p, .item-price{
+        font-size: 12.5px;
         margin: 5px 0;
     }
-
+    .cart-item-details p{
+        color: red;
+    }
     .ItemButtons {
         display: flex;
         flex-direction: row;
     }
 
     .ItemButtons button {
-        background-color: #ff9100;
-        color: #fff;
-        border: none;
-        padding: 3px 10px;
+        color: black;
+        border: 1px solid black;
         cursor: pointer;
-        border-radius: 5px;
         transition: background-color 0.3s;
         font-size: 12px;
+        padding: 0 5px;
+        font-weight: bold;
+    }
+    .ItemButtons input[type="number"] {
+        padding:0;
+        text-align: center;
+        width: 50px;
+        height: 20px;
+        outline: 0;
+        border: 1px solid black;
+        margin: 0;
     }
 
     .ItemButtons button:hover {
-        background-color: #e07b00;
+        background-color: orange;
     }
 
     .checkoutITems {
         background-color: #ffffff;
+        display: flex;
+        justify-content: space-between;
         position: sticky;
         bottom: 0;
         padding: 1.2rem;
@@ -292,15 +305,12 @@
         border-radius: 4px;
         font-weight: bold;
     }
-
     .checkout-btn:hover {
         background-color: #e68200;
     }
-
     .product-card {
         transition: opacity 0.3s ease-in-out;
     }
-
     #noResultsMessage {
         transition: opacity 0.3s ease-in-out;
         color: #666;
@@ -325,7 +335,15 @@
         text-align: center;
         width: 100%;
     }
+    .RemoveButton{
+       margin-top: -3rem;
+    }
+    .RemoveButton button{
+        color: red;
+    }
 </style>
+
+</head>
 
 <body>
 
@@ -382,28 +400,35 @@
                 <div class="cart-item">
                     <input class="" type="checkbox" name="" id="" onclick="calculateTotal()">
                     <div class="cart-item-image">
-                        <img src="{{ asset('images/' . $item->image) }}" alt="Product Image">
+                        <img src="{{ asset('images/' . $item->image) }}" alt="Product Image" loading="lazy">
                     </div>
                     <div class="cart-item-details">
+                        
                         <h3>{{ $item->productName }}</h3>
                         <h4>{{ $item->category }}</h4>
-                        <h4>x{{ $item->quantity }}</h4>
-                        <label>{{ $item->description }}</label>
-                        <p style="color: red">Price:&#8369;<span
-                                class="item-price">{{ number_format($item->price, 2) }}</span>
-                        </p>
+                        <h4>{{ $item->quantity }}x</h4>
+                        <!-- <label>{{ $item->description }}</label> -->
+                        <p>Price:&#8369;
+                            <span class="item-price">{{ number_format($item->price, 2) }}</span>
+                        </p>            
                     </div>
+                       
                     <div class="ItemButtons">
+                       
                         <button type="button" onclick="updateQuantity(this, -1, {{ $item->stock }})">-</button>
-                        <input type="number" name="quantity" value="{{ $item->quantity }}" min="1"
-                            max="{{ $item->stock }}" readonly>
+                            <input type="number" name="quantity" value="{{ $item->quantity }}" min="1" max="{{ $item->stock }}" readonly class="">
                         <button type="button" onclick="updateQuantity(this, 1, {{ $item->stock }})">+</button>
-                        <form action="/removefromcart/{{ $item->productId }}" method="post">
+                        <!-- <form action="/removefromcart/{{ $item->productId }}" method="post">
                             @csrf
-                            <button class="btn btn-danger"><i class="fa-solid fa-xmark"></i>Remove</button>
-                        </form>
+                            <button class="btn btn-danger"><i class="fa-solid fa-xmark"></i></button>
+                        </form> -->
                     </div>
-
+                        <div class="RemoveButton">
+                            <form action="/removefromcart/{{ $item->productId }}" method="post">
+                                @csrf
+                                <button type="submit" style="width: 20px; background-color:transparent; border:0;outline:0;"><i class="fa-solid fa-xmark"></i></button>
+                            </form>
+                        </div>
                 </div>
             @endforeach
 
@@ -413,14 +438,15 @@
                 </div>
             @else
                 <div class="checkoutITems">
-                    <input type="checkbox" name="selectedItems[]" id="checkAll" onclick="toggleCheckAll(this)">
-                    <label style="cursor: pointer" for="checkAll">All</label>
-                    <label for="">Total :</label>
-                    <span style="color: red" id="totalPrice">&#8369; 0.00</span>
                     <div>
+                        <input type="checkbox" name="selectedItems[]" id="checkAll" onclick="toggleCheckAll(this)">
+                        <label style="cursor: pointer" for="checkAll">All</label>
+                    </div>
+                    <div class="Total-Amount">
+                        <label for="">Total :</label>
+                        <span style="color: red" id="totalPrice">&#8369; 0.00</span>
                         <a href="#" onclick="proceedToCheckout()" class="checkout-btn">Check out</a>
                     </div>
-
                 </div>
             @endif
 
@@ -448,9 +474,6 @@
             </div>
         </div>
     </header>
-
-
-
 
     <script>
         function searchProducts(searchText) {
@@ -693,9 +716,6 @@
             form.submit();
         }
     </script>
-
-    @yield('content')
-
 </body>
 
 </html>

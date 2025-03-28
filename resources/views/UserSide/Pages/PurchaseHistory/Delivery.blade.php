@@ -249,7 +249,6 @@
     }
 
     .track-btn {
-        margin-top: 10px;
         background: #ff9100;
         color: white;
         border: none;
@@ -468,6 +467,16 @@
     h4 {
         color: rgba(47, 47, 47, 0.651);
     }
+    .btn-delivered button{
+        padding: .60rem .70rem;
+        border: 0;
+        outline: 0;
+        border-radius: 5px;
+        background-color: green;
+        color: white;
+        cursor: pointer;
+        font-size: smaller;
+    }
 </style>
 
 <body>
@@ -515,16 +524,16 @@
                         <td>{{ $order->address }}</td>
                         <td>{{ date('M d, Y h:i A', strtotime($order->created_at)) }}</td>
                         <td>
-                            <form action="/deliveredItems/{{ $order->orderId }}" method="post">
-                                @csrf
-                                <button type="submit">Delivered</button>
-                            </form>
-                        </td>
-                        <td>
                             <button onclick="showTracking('{{ $order->orderStatus }}', '{{ $order->orderId }}')"
                                 class="track-btn {{ $order->orderStatus === 'Delivered' ? 'delivered' : '' }}">
                                 Track Order
                             </button>
+                        </td>
+                        <td>
+                            <form class="btn-delivered"  action="/deliveredItems/{{ $order->orderId }}" method="post">
+                                @csrf
+                                <button type="submit">Delivered</button>
+                            </form>
                         </td>
                     </tr>
                 @endforeach
