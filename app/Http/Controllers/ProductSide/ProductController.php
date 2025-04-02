@@ -31,7 +31,7 @@ class ProductController extends Controller
         'price' => 'required|numeric|min:0',
         'stock' => 'required|integer|min:0',
         'description' => 'required|string',
-        'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048'
+        'image' => 'required|image'
     ]);
 
     if ($validator->fails()) {
@@ -45,21 +45,17 @@ class ProductController extends Controller
         $productId = $this->GetTheGenerateProductId();
 
         // Handle image upload
-        if ($request->hasFile('image')) {
-            $image = $request->file('image');
+        $data = [];
+
+        if ($request->file(key: 'image')) {
+            $image = $request->file(key: 'image');
+            $destinationPath = 'images';
+
             $imageName = time() . '.' . $image->getClientOriginalExtension();
-            
-            // Ensure the images directory exists
-            if (!file_exists(public_path('images'))) {
-                mkdir(public_path('images'), 0777, true);
-            }
-            
-            // Move the image to the public/images directory
-            $image->move(public_path('images'), $imageName);
+            $image->move($destinationPath, $imageName);
+            $data['image'] = $imageName;
         } else {
-            return redirect()->back()
-                ->with('error', 'Image file is required')
-                ->withInput();
+            $data['image'] = 'default.jpg';
         }
 
         // Insert the new product with trimmed data
@@ -70,7 +66,7 @@ class ProductController extends Controller
             'price' => floatval($request->price),
             'stock' => intval($request->stock),
             'description' => trim($request->description),
-            'image' => $imageName,
+            'image' => $data['image'],
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
         ]);
