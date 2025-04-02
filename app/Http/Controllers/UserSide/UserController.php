@@ -41,8 +41,9 @@ class UserController extends Controller
     public function userRegister(UserRegistrationRequest $request)
     {
         try {
+            $trimmedData = array_map('trim', $request->all());
 
-             $Validator = Validator::make( $request->all(), [
+             $Validator = Validator::make($trimmedData, [
                 'firstName' => 'required|string|max:255',
                 'lastName' => 'required|string|max:255',
                 'gender' => 'required|string|in:Male,Female,Other',
@@ -53,6 +54,11 @@ class UserController extends Controller
                 'confirmPassword' => 'required|same:password',
             ]);
 
+            if(DB::table('users')->where('username', $request->username)->exists())
+            {
+                return redirect('/Register')->with('error', 'username already exists');
+            }
+
             $this->imageService->ensureDefaultImageExists();
             
             $imageName = $this->imageService->storeUserImage($request->file('image'));
@@ -60,13 +66,13 @@ class UserController extends Controller
 
             $this->registerUser->create(
                 $userId,
-                $request->firstName,
-                $request->lastName,
-                $request->gender,
-                $request->address,
-                $request->phoneNumber,
-                $request->username,
-                Hash::make($request->password),
+                $trimmedData['firstName'],
+                $trimmedData['lastName'],
+                $trimmedData['gender'],
+                $trimmedData['address'],
+                $trimmedData['phoneNumber'],
+                $trimmedData['username'],
+                Hash::make($trimmedData['password']),
                 $imageName
             );        
 
