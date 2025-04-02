@@ -156,6 +156,7 @@
         border: none;
         position: absolute;
         width: 50%;
+        animation: slideIn 0.5s ease-out;
     }
 
     .alert p {
@@ -173,7 +174,7 @@
         color: #9b1c1c;
     }
 
-    @keyframes fadeIn {
+    /* @keyframes fadeIn {
         from {
             opacity: 0;
             transform: translateY(-10px);
@@ -187,6 +188,30 @@
 
     .fade-in {
         animation: fadeIn 0.3s ease-in-out alternate;
+    } */
+
+    @keyframes slideIn {
+        from {
+            transform: translateY(-100%);
+            opacity: 0;
+        }
+
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+
+    @keyframes slideOut {
+        from {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        to {
+            transform: translateY(-100%);
+            opacity: 0;
+        }
     }
 </style>
 
@@ -196,11 +221,20 @@
     </div>
     <h1>To Pay History</h1>
 
-    @if (session('success'))
+    <!-- @if (session('success'))
         <div class="alertContainer">
             <div class="alert alert-success fade-in" role="alert">
                 <i class="fas fa-check-circle me-2"></i>
                 {{ session('success') }}
+            </div>
+        </div>
+    @endif -->
+
+    @if (session('success'))
+        <div class="alertContainer">
+            <div class="alert alert-success" id="successAlert">
+                <i class="bi bi-check-circle alert-icon"></i>
+                <span>{{ session('success') }}</span>
             </div>
         </div>
     @endif
@@ -242,19 +276,28 @@
     @endif
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        // document.addEventListener('DOMContentLoaded', function() {
+        //     const alerts = document.querySelectorAll('.alert');
+        //     alerts.forEach(alert => {
+        //         setTimeout(() => {
+        //             alert.style.opacity = '0';
+        //             alert.style.transform = 'translateY(-20px)';
+        //             setTimeout(() => {
+
+        //                 alert.remove()
+        //             }, 300);
+        //         }, 1500);
+        //     });
+        // });
+
+
+        setTimeout(() => {
             const alerts = document.querySelectorAll('.alert');
             alerts.forEach(alert => {
-                setTimeout(() => {
-                    alert.style.opacity = '0';
-                    alert.style.transform = 'translateY(-20px)';
-                    setTimeout(() => {
-
-                        alert.remove()
-                    }, 300);
-                }, 5000);
+                alert.style.animation = 'slideOut 0.5s ease-out forwards';
+                setTimeout(() => alert.remove(), 500);
             });
-        });
+        }, 1500);
     </script>
 
 

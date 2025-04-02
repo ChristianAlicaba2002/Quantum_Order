@@ -23,40 +23,66 @@ class ProductController extends Controller
     }
 
     public function addProduct(Request $request)
-    {
-        // Validate the request
-        $validatedData = $request->validate([
-            'productName' => 'required|string|max:255',
-            'category' => 'required|string|max:255',
-            'price' => 'required|numeric',
-            'stock' => 'required|integer',
-            'description' => 'required|string',
-            'image' => 'required|string',
-        ]);
+{
+    // Validate the request with trimmed data
+    $validator = Validator::make($request->all(), [
+        'productName' => 'required|string|max:255|unique:products,productName',
+        'category' => 'required|string|max:255',
+        'price' => 'required|numeric|min:0',
+        'stock' => 'required|integer|min:0',
+        'description' => 'required|string',
+        'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048'
+    ]);
 
+    if ($validator->fails()) {
+        return redirect()->back()
+            ->withErrors($validator)
+            ->withInput();
+    }
+
+    try {
         // Generate a unique product ID
         $productId = $this->GetTheGenerateProductId();
 
-        try {
-            // Insert the new product
-            DB::table('products')->insert([
-                'productId' => $productId,
-                'productName' => $validatedData['productName'],
-                'category' => $validatedData['category'],
-                'price' => $validatedData['price'],
-                'stock' => $validatedData['stock'],
-                'description' => $validatedData['description'],
-                'image' => $validatedData['image'],
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
-            ]);
-
-            return redirect()->back()->with('success', 'Product added successfully!');
-        } catch (\Exception $e) {
-            Log::error('Product insertion failed: ' . $e->getMessage());
-            return redirect()->back()->with('error', 'Failed to add product. Please try again.');
+        // Handle image upload
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $imageName = time() . '.' . $image->getClientOriginalExtension();
+            
+            // Ensure the images directory exists
+            if (!file_exists(public_path('images'))) {
+                mkdir(public_path('images'), 0777, true);
+            }
+            
+            // Move the image to the public/images directory
+            $image->move(public_path('images'), $imageName);
+        } else {
+            return redirect()->back()
+                ->with('error', 'Image file is required')
+                ->withInput();
         }
+
+        // Insert the new product with trimmed data
+        DB::table('products')->insert([
+            'productId' => $productId,
+            'productName' => trim($request->productName),
+            'category' => trim($request->category),
+            'price' => floatval($request->price),
+            'stock' => intval($request->stock),
+            'description' => trim($request->description),
+            'image' => $imageName,
+            'created_at' => Carbon::now(),
+            'updated_at' => Carbon::now(),
+        ]);
+
+        return redirect()->back()->with('success', 'Product added successfully!');
+    } catch (\Exception $e) {
+        Log::error('Product insertion failed: ' . $e->getMessage());
+        return redirect()->back()
+            ->with('error', 'Failed to add product: ' . $e->getMessage())
+            ->withInput();
     }
+}
 
     public function updateProduct(Request $request, $product_id)
     {
@@ -65,6 +91,7 @@ class ProductController extends Controller
             return redirect('/AdminLogin')->with('error', 'Product not found');
         }
 
+       
         $validator = Validator::make($request->all(), [
             'productName' => 'required|string',
             'category' => 'required|string',

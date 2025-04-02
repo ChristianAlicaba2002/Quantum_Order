@@ -451,7 +451,7 @@
                 alert.style.animation = 'slideOut 0.5s ease-out forwards';
                 setTimeout(() => alert.remove(), 500);
             });
-        }, 5000);
+        }, 1500);
     </script>
 
 </body>

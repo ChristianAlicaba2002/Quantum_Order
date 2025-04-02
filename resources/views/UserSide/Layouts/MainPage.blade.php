@@ -23,26 +23,6 @@
         font-family: Arial, sans-serif;
     }
 
-    /* .logo {
-        color: #FF6B35;
-        font-weight: bold;
-        font-size: 1.5rem;
-    } */
-
-    /* .search-bar {
-        flex-grow: 1;
-        max-width: 600px;
-        margin: 0 2rem;
-    }
-
-    .search-bar input {
-        width: 100%;
-        padding: 0.5rem;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        background-color: #f5f5f5;
-    } */
-
     nav ul {
         display: flex;
         gap: 20px;
@@ -628,27 +608,13 @@
             @endif
         });
 
-        // document.addEventListener('DOMContentLoaded', function() {
-        //     const alerts = document.querySelectorAll('.alert');
-        //     alerts.forEach(alert => {
-        //         setTimeout(() => {
-        //             alert.style.opacity = '0';
-        //             alert.style.transform = 'translateY(-20px)';
-        //             setTimeout(() => {
-
-        //                 alert.remove()
-        //             }, 300);
-        //         }, 5000);
-        //     });
-        // });
-
         setTimeout(() => {
             const alerts = document.querySelectorAll('.alert');
             alerts.forEach(alert => {
                 alert.style.animation = 'slideOut 0.5s ease-out forwards';
                 setTimeout(() => alert.remove(), 500);
             });
-        }, 5000);
+        }, 1500);
     </script>
 
 </body>
