@@ -16,7 +16,7 @@ use App\Application\User\RegisterUser;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Requests\UserRegistrationRequest;
-
+use App\Models\Products;
 
 class UserController extends Controller
 {
@@ -41,8 +41,9 @@ class UserController extends Controller
     public function userRegister(UserRegistrationRequest $request)
     {
         try {
+            $trimmedData = array_map('trim', $request->all());
 
-             $Validator = Validator::make( $request->all(), [
+             $Validator = Validator::make($trimmedData, [
                 'firstName' => 'required|string|max:255',
                 'lastName' => 'required|string|max:255',
                 'gender' => 'required|string|in:Male,Female,Other',
@@ -53,6 +54,11 @@ class UserController extends Controller
                 'confirmPassword' => 'required|same:password',
             ]);
 
+            if(DB::table('users')->where('username', $request->username)->exists())
+            {
+                return redirect('/Register')->with('error', 'username already exists');
+            }
+
             $this->imageService->ensureDefaultImageExists();
             
             $imageName = $this->imageService->storeUserImage($request->file('image'));
@@ -60,13 +66,13 @@ class UserController extends Controller
 
             $this->registerUser->create(
                 $userId,
-                $request->firstName,
-                $request->lastName,
-                $request->gender,
-                $request->address,
-                $request->phoneNumber,
-                $request->username,
-                Hash::make($request->password),
+                $trimmedData['firstName'],
+                $trimmedData['lastName'],
+                $trimmedData['gender'],
+                $trimmedData['address'],
+                $trimmedData['phoneNumber'],
+                $trimmedData['username'],
+                Hash::make($trimmedData['password']),
                 $imageName
             );        
 
@@ -143,8 +149,9 @@ class UserController extends Controller
 
     public function UpdateInformationUser(Request $request, string $userId): \Illuminate\Http\RedirectResponse
     {
-        // Use Eloquent model instead of DB facade
+        // $user = DB::table('users')->where('userId', $userId)->first();
         $user = DB::table('users')->where('userId', $userId)->first();
+
         
         if (!$user) {
             return redirect()->back()->with('error', 'User not found');
@@ -153,11 +160,18 @@ class UserController extends Controller
         $validator = Validator::make($request->all(), [
             'firstName' => 'required|string|max:255',
             'lastName' => 'required|string|max:255',
-            'gender' => 'required|string|in:Male,Female,Other',
+            'gender' => 'required|in:male,female,other',
             'address' => 'required|string|max:255',
-            'phoneNumber' => 'required|string|regex:/^[0-9]{10,11}$/', // Match database column name
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
+            'phoneNumber' => 'required|string',
+            'image' => 'nullable|image'
         ]);
+
+        // dd($request->file('image'));
+
+
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
 
         try {
             $imageName = $user->image; // Default to current image
@@ -173,6 +187,7 @@ class UserController extends Controller
                 }
             }
 
+
             // Update user information
             $this->registerUser->update(
                 $userId,
@@ -180,7 +195,7 @@ class UserController extends Controller
                 $request->lastName,
                 $request->gender,
                 $request->address,
-                $request->phoneNumber, // Match the validation field name
+                $request->phoneNumber,
                 $user->username,
                 $user->password,
                 $imageName
@@ -199,9 +214,6 @@ class UserController extends Controller
         }
     }
 
-    /**
-     * Handle image upload and return the new image name
-     */
     private function handleImageUpload($image, string $oldImage): ?string
     {
         try {
@@ -213,11 +225,21 @@ class UserController extends Controller
                 Storage::disk('public')->delete('images/' . $oldImage);
             }
 
+            // Log the original file name and size
+            Log::info('Uploading image: ' . $image->getClientOriginalName() . ' with size: ' . $image->getSize());
+
+            // Check if the image is valid
+            if (!$image->isValid()) {
+                Log::error('Uploaded image is not valid.');
+                return null;
+            }
+
             $imageName = time() . '.' . $image->getClientOriginalExtension();
             
             // Store the new image
             Storage::disk('public')->putFileAs('images', $image, $imageName);
 
+            Log::info('Image uploaded successfully: ' . $imageName);
             return $imageName;
 
         } catch (\Exception $e) {
@@ -225,6 +247,11 @@ class UserController extends Controller
             return null;
         }
     }
+
+
+
+
+
 
     public function UserAddToCart(Request $request, string $productId)
     {
@@ -295,32 +322,32 @@ class UserController extends Controller
         }
     }
 
-    public function checkoutItems(Request $request)
-    {
-        // Validate the request
-        $request->validate([
-            'selected_items' => 'required|array',
-            'total_price' => 'required|numeric'
-        ]);
+    // public function checkoutItems(Request $request)
+    // {
+    //     // Validate the request
+    //     $request->validate([
+    //         'items' => 'required|array',
+    //         'totalPrice' => 'required|numeric'
+    //     ]);
 
-        $selectedItems = $request->input('selected_items');
-        $totalPrice = $request->input('total_price');
+    //     $items = $request->input('items');
+    //     $totalPrice = $request->input('totalPrice');
 
-        // Get the cart items that were selected
-        $cartItems = DB::table('add_to_cart')
-            ->whereIn('productId', $selectedItems)
-            ->where('userId', Auth::user()->userId)
-            ->get();
+    //     // Get the cart items that were selected
+    //     $cartItems = DB::table('add_to_cart')
+    //         ->whereIn('productId', $items)
+    //         ->where('userId', Auth::user()->userId)
+    //         ->get();
 
-        if ($cartItems->isEmpty()) {
-            return redirect()->back()->with('error', 'No items selected for checkout');
-        }
+    //     if ($cartItems->isEmpty()) {
+    //         return redirect()->back()->with('error', 'No items selected for checkout');
+    //     }
 
-        return view('UserSide.Pages.CheckOut', [
-            'cartItems' => $cartItems,
-            'totalPrice' => $totalPrice
-        ]);
-    }
+    //     return view('UserSide.Pages.CheckOut', [
+    //         'items' => $items,
+    //         'totalPrice' => $totalPrice
+    //     ]);
+    // }
 
     public function toPayHistory()
     {
@@ -426,12 +453,14 @@ class UserController extends Controller
             ->orderBy('orders.created_at', 'desc')
             ->get();
 
-        return view('UserSide.Pages.PurchaseHistory.Cancelled', compact('cancelledOrders'));
+        return view('UserSide.Pages.PurchaseHistory.Cancelled', compact('cancelledOrders'))
+        ->with('success', 'Order cancelled successfully');
     }
 
     public function cancelOrder(Request $request, $orderId)
     {
-        $order = DB::table('orders')->where('orderId', $orderId)->first();
+        $order = DB::table('orders')->where('orderId' , $orderId)
+        ->first();
         if(!$order) {
             return redirect()->back()->with('error', 'Order not found');
         }
@@ -453,20 +482,32 @@ class UserController extends Controller
         try {
             // Validate the request
             $validated = $request->validate([
-                'items' => 'required|array',
-                'totalPrice' => 'required|numeric'
+                'selectedItems' => 'required|string',
+                'totalPrice' => 'required|numeric|min:0'
             ]);
 
-            $items = $request->items;
-            $totalPrice = $request->totalPrice;
-
+            // Decode the JSON string back to array
+            $items = json_decode($request->selectedItems, true);
+            
             if (empty($items)) {
-                return redirect()->back()->with('error', 'Please select items to checkout');
+                return redirect()->back()
+                    ->with('error', 'Please select items to checkout');
             }
 
-            return view('UserSide.Pages.CheckOut', compact('items', 'totalPrice'));
+            // Store in session for the checkout view
+            session([
+                'items' => $items,
+                'totalPrice' => $request->totalPrice
+            ]);
+
+            return view('UserSide.Pages.CheckOut')
+                ->with('items', $items)
+                ->with('totalPrice', $request->totalPrice);
+            
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Error processing checkout: ' . $e->getMessage());
+            Log::error('Checkout preview error: ' . $e->getMessage());
+            return redirect()->back()
+                ->with('error', 'Error processing checkout: ' . $e->getMessage());
         }
     }
 
@@ -475,28 +516,30 @@ class UserController extends Controller
         try {
             // Validate the request
             $validated = $request->validate([
-                'items' => 'required|array',
-                'totalPrice' => 'required|numeric',
+                'items' => 'required|string',
+                'totalPrice' => 'required|numeric|min:0',
                 'address' => 'required|string',
                 'paymentMethod' => 'required|string',
                 'phoneNumber' => 'required|string'
             ]);
 
-            $items = $request->items;
-            $totalPrice = $request->totalPrice;
+            $items = json_decode($request->items, true);
+
+            if (empty($items)) {
+                return redirect()->back()->with('error', 'No items found for checkout.');
+            }
+
             $userId = Auth::user()->userId;
             $firstName = Auth::user()->firstName;
             $address = $request->address;
             $paymentMethod = $request->paymentMethod;
             $phoneNumber = $request->phoneNumber;
 
-            // Generate a unique order ID
-            $orderId = 'ORD-' . uniqid();
+            $orderId = 'ORD-' . $this->GetTheGenerateOrderId();
 
             DB::beginTransaction();
 
             try {
-                // Create the order header
                 DB::table('orders')->insert([
                     'orderId' => $orderId,
                     'userId' => $userId,
@@ -504,13 +547,12 @@ class UserController extends Controller
                     'address' => $address,
                     'paymentMethod'=> $paymentMethod,
                     'phoneNumber' => $phoneNumber,
-                    'totalAmount' => $totalPrice,
+                    'totalAmount' => $request->totalPrice,
                     'orderStatus' => 'Pending',
-                    'created_at' => now(),
+                    'created_at' => Carbon::now()->toDateTimeLocalString(),
                     'updated_at' => Carbon::now()->toDateTimeLocalString(),
                 ]);
 
-                // Insert order details for each product
                 foreach ($items as $item) {
                     DB::table('order_details')->insert([
                         'orderId' => $orderId,
@@ -520,17 +562,15 @@ class UserController extends Controller
                         'quantity' => $item['quantity'],
                         'price' => $item['price'],
                         'image' => $item['image'],
-                        'created_at' => now(),
-                        'updated_at' => now()
+                        'created_at' => Carbon::now()->toDateTimeLocalString(),
+                        'updated_at' => Carbon::now()->toDateTimeLocalString()
                     ]);
 
-                    // Update product stock
                     DB::table('products')
                         ->where('productId', $item['productId'])
                         ->decrement('stock', $item['quantity']);
                 }
 
-                // Remove items from cart
                 foreach ($items as $item) {
                     DB::table('add_to_cart')
                         ->where('userId', $userId)
@@ -540,12 +580,12 @@ class UserController extends Controller
 
                 DB::commit();
 
-                // Redirect to the receipt page with order details
                 return redirect()->route('user.order.receipt', ['orderId' => $orderId])
                     ->with('success', 'Order placed successfully! Your order ID is: ' . $orderId);
 
             } catch (\Exception $e) {
                 DB::rollBack();
+                Log::error('Error processing order: ' . $e->getMessage());
                 return redirect()->back()->with('error', 'Error processing your order: ' . $e->getMessage());
             }
 
@@ -554,7 +594,84 @@ class UserController extends Controller
         }
     }
 
-    // Add this new method to display the receipt
+    public function GetTheGenerateOrderId(): string
+    {
+        do {
+            $id = $this->GenerateProductID(6);
+            // Check if the generated ID already exists
+            $exists = DB::table('orders')->where('orderid', $id)->first();
+        } while ($exists !== null); // Ensure the ID is unique
+
+        return $id;
+    }
+
+    public function GenerateProductID(int $length = 0): string
+    {
+        $result = substr(bin2hex(random_bytes(ceil($length / 2))), 0, $length);
+
+        return $result;
+    }
+
+    public function reorderCancelled($orderId)
+    {
+        try {
+            // Get the order details
+            $order = DB::table('orders')
+                ->where('orders.orderId', $orderId)
+                ->where('orders.userId', Auth::user()->userId)
+                ->join('products', 'orders.productId', '=', 'products.productId')
+                ->select(
+                    'orders.*',
+                    'products.stock',
+                    'products.status as productStatus'
+                )
+                ->first();
+
+            if (!$order) {
+                return redirect()->back()->with('error', 'Order not found');
+            }
+
+            // Check if product is available and has stock
+            if ($order->productStatus !== 'active' || $order->stock < $order->quantity) {
+                return redirect()->back()
+                    ->with('error', 'Product is not available or insufficient stock');
+            }
+
+            // Prepare checkout data
+            $items = [[
+                'productId' => $order->productId,
+                'productName' => $order->productName,
+                'category' => $order->category,
+                'quantity' => $order->quantity,
+                'price' => $order->price,
+                'image' => $order->image,
+                'stock' => $order->stock
+            ]];
+
+            // Store in session for checkout
+            session([
+                'checkout_items' => $items,
+                'totalPrice' => $order->quantity * $order->price
+            ]);
+
+            // Update original order status
+            DB::table('orders')
+                ->where('orderId', $orderId)
+                ->update([
+                    'orderStatus' => 'Reordered',
+                    'updated_at' => Carbon::now()->toDateTimeLocalString()
+                ]);
+
+            // Redirect to checkout preview
+            return redirect()->route('checkout.preview')
+                ->with('success', 'Order has been restored for checkout');
+
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', 'Failed to process reorder. Please try again.');
+        }
+    }
+
     public function showOrderReceipt($orderId)
     {
         try {
@@ -577,6 +694,6 @@ class UserController extends Controller
             return redirect('/')->with('error', 'Error retrieving order details: ' . $e->getMessage());
         }
     }
+
+   
 }
-
-

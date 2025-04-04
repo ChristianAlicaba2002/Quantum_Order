@@ -208,6 +208,9 @@
 
         <div class="form-group">
             <input type="text" name="username" placeholder="Username or Phone number" required><br>
+            @if (session('error'))
+                <label for="" style="color: red;">{{session('error')}}</label>
+            @endif
         </div>
 
         <div class="form-group">

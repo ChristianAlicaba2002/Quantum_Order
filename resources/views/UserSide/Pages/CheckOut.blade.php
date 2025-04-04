@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -20,7 +21,7 @@
             background-color: white;
             padding: 20px;
             border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         .order-summary {
@@ -41,8 +42,8 @@
         }
 
         .items-table th {
-            background-color: #ff9100;
-            color: white;
+            border-bottom: 2px solid orange;
+            color: black;
         }
 
         .product-image {
@@ -125,98 +126,205 @@
             padding: 20px;
             text-align: center;
         }
+
+        .items-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .checkout-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background: #fff;
+        }
+
+        .item-image {
+            width: 60px;
+            margin-right: 15px;
+        }
+
+        .item-image img {
+            width: 100%;
+            height: auto;
+            border-radius: 4px;
+        }
+
+        .item-details {
+            flex: 1;
+        }
+
+        .item-details h3 {
+            font-size: 14px;
+            margin: 0 0 5px 0;
+            color: #333;
+        }
+
+        .item-details p {
+            font-size: 12px;
+            margin: 2px 0;
+            color: #666;
+        }
+
+        .total-section {
+            margin-top: 15px;
+            padding: 10px;
+            background: #f9f9f9;
+            border-radius: 4px;
+            text-align: right;
+        }
+
+        .total-section h3 {
+            font-size: 16px;
+            margin: 0;
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 10px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            margin-bottom: 3px;
+            color: #555;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+
+        .checkout-btn {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background: #FF6B35;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+
+        .checkout-btn:hover {
+            background: #ff5722;
+        }
+
+        .checkout-header {
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto 30px;
+            padding: 20px;
+        }
+
+        .checkout-header h1 {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .checkout-message {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.6;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            border-left: 4px solid #FF6B35;
+            margin-bottom: 20px;
+        }
+
+        .checkout-message p {
+            margin: 0;
+        }
     </style>
 </head>
+
 <body>
     <div class="checkout-container">
-        <h1>Review Your Order</h1>
+        <div class="checkout-header">
+            <h1>Review Your Order</h1>
+            <div class="checkout-message">
+                <p>Before completing your purchase, please review your items and payment details below. Make sure everything looks correct!</p>
+                <p>Need to make changes? You can still update your cart or shipping information.</p>
+            </div>
+        </div>
 
-        @if(session('error'))
+        @if (session('error'))
             <div class="alert alert-danger">
                 {{ session('error') }}
             </div>
         @endif
 
-        @if(isset($items) && !empty($items))
-            <div class="order-summary">
-                <h2>Order Summary</h2>
-                <table class="items-table">
-                    <thead>
-                        <tr>
-                            <th>Product</th>
-                            <th>Category</th>
-                            <th>Price</th>
-                            <th>Quantity</th>
-                            <th>Subtotal</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($items as $item)
-                            <tr>
-                                <td>
-                                    <img src="{{ asset('images/' . $item['image']) }}" alt="{{ $item['productName'] }}" class="product-image">
-                                    {{ $item['productName'] }}
-                                </td>
-                                <td>{{ $item['category'] }}</td>
-                                <td>₱{{ number_format($item['price'], 2) }}</td>
-                                <td>{{ $item['quantity'] }}</td>
-                                <td>₱{{ number_format($item['price'] * $item['quantity'], 2) }}</td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+        @php
+            $items = session('items', []);
+            $totalPrice = session('totalPrice', 0);
+        @endphp
+
+        @if (!empty($items))
+            <div class="items-container">
+                @foreach ($items as $item)
+                    <div class="checkout-item">
+                        <div class="item-image">
+                            <img src="{{ asset('images/' . $item['image']) }}" alt="{{ $item['productName'] }}">
+                        </div>
+                        <div class="item-details">
+                            <h3>{{ $item['productName'] }}</h3>
+                            <p>Category: {{ $item['category'] }}</p>
+                            <p>Qty: {{ $item['quantity'] }}</p>
+                            <p>Price: ₱{{ number_format($item['price'], 2) }}</p>
+                            <p>Subtotal: ₱{{ number_format($item['price'] * $item['quantity'], 2) }}</p>
+                        </div>
+                    </div>
+                @endforeach
 
                 <div class="total-section">
-                    <strong>Total Amount: ₱{{ number_format($totalPrice, 2) }}</strong>
+                    <h3>Total Amount: ₱{{ number_format($totalPrice, 2) }}</h3>
                 </div>
-            </div>
-        
-            <div class="shipping-info">
-                <h2>Shipping Information</h2>
 
-                <form action="{{ route('checkout.process') }}" method="post" id="checkoutForm">
+                <form action="{{ route('checkout.process') }}" method="POST">
                     @csrf
-                    @foreach($items as $index => $item)
-                        <input type="hidden" name="items[{{$index}}][productId]" value="{{ $item['productId'] }}">
-                        <input type="hidden" name="items[{{$index}}][productName]" value="{{ $item['productName'] }}">
-                        <input type="hidden" name="items[{{$index}}][category]" value="{{ $item['category'] }}">
-                        <input type="hidden" name="items[{{$index}}][price]" value="{{ $item['price'] }}">
-                        <input type="hidden" name="items[{{$index}}][quantity]" value="{{ $item['quantity'] }}">
-                        <input type="hidden" name="items[{{$index}}][image]" value="{{ $item['image'] }}">
-                    @endforeach
+                    <!--  -->
+                    <input type="hidden" name="items" value="{{ json_encode($items) }}">
                     <input type="hidden" name="totalPrice" value="{{ $totalPrice }}">
-
+                    
                     <div class="form-group">
                         <label for="address">Delivery Address</label>
-                        <input type="text" id="address" name="address" value="{{ Auth::user()->address }}" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="">Payment Method</label>
-                        <input type="text" name="paymentMethod" value="Cash on Delivery" required readonly>
+                        <input type="text" name="address" value="{{ Auth::user()->address }}" required>
                     </div>
 
                     <div class="form-group">
                         <label for="phoneNumber">Contact Number</label>
-                        <input type="text" id="phoneNumber" name="phoneNumber" value="{{ Auth::user()->PhoneNumber }}" required>
+                        <input type="text" name="phoneNumber" value="{{ Auth::user()->PhoneNumber }}" required>
                     </div>
 
-                    <div style="margin-top: 30px;">
-                        <a href="{{ url('/') }}" class="back-btn">Back</a>
-                        <button type="submit" class="submit-btn">Place Order</button>
+                    <div class="form-group">
+                        <label for="paymentMethod">Payment Method</label>
+                        <input type="text" name="paymentMethod" value="Cash on Delivery" placeholder="Cash on Delivery" required readonly>
                     </div>
+
+                    <button type="submit" class="checkout-btn">Place Order</button>
                 </form>
             </div>
         @else
-            <div class="alert alert-warning">
-                <p>No items selected for checkout.</p>
-                <a href="{{ url('/') }}" class="back-btn">Back to Shopping</a>
+            <div class="no-items">
+                <h2>No items selected for checkout</h2>
+                <a href="{{ route('MainPage') }}" class="back-btn">Back to Shopping</a>
             </div>
         @endif
     </div>
 
-    <script>
-    
-    </script>
+    <script></script>
 </body>
+
 </html>

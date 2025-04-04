@@ -31,24 +31,7 @@ Route::get('/AdminLogin', function () {
     return view('AdminSide.Auth.Login',compact('products'));
 })->name('AdminLogin');
 
-// Route::middleware('auth:admin')->group(function () {   
-//     Route::get('/QuantumOrder', function () {
-//         $users = DB::table('users')->get();
-//         $products = products::all();
-//         return view('AdminSide.Layouts.Dashboard', compact('users', 'products'));
-//     })->name('QuantumOrder');
-
-//     Route::get('/UserManagement', function () {
-//         $users = User::all();
-//         return view('AdminSide.Pages.UserManagement', compact('users'));
-//     })->name('UserManagement');
-
-//     Route::get('/Archive', function () {
-//         $ArchiveProducts = DB::table('archive_products')->get();
-//         return view('AdminSide.Pages.ArchiveProducts', compact('ArchiveProducts'));
-//     })->name('ArchiveProducts');
-// });
-
+Route::get('/home', [UserController::class, 'index'])->name('home');
 
 Route::get('/UserManagement', function () {
     $users = User::all();
@@ -124,10 +107,10 @@ Route::get('/pending-orders', [AdminController::class, 'viewPendingOrders'])->na
 Route::get('/order/{orderId}', [AdminController::class, 'viewOrderDetails'])->name('admin.order-details');
 Route::post('/order/{orderId}/update-status', [AdminController::class, 'updateOrderStatus'])->name('admin.update-order-status');
 Route::post('/cancel.order/{orderId}', [UserController::class, 'cancelOrder'])->name('cancel.order');
-
-
-Route::post('/checkout/preview', [UserController::class, 'checkoutPreview'])->name('checkout.preview');
+Route::post('/reorder-cancelled/{orderId}', [UserController::class, 'reorderCancelled'])
+    ->name('reorder.cancelled');
+Route::get('/checkout/preview', [UserController::class, 'checkoutPreview'])->name('checkout.preview');
 Route::post('/checkout/process', [UserController::class, 'checkoutProcess'])->name('checkout.process');
 Route::post('deliveredItems/{id}',[UserController::class , 'MoveToRecieved'])->name('deliveredItems.process');
-// Add this route for the order receipt
 Route::get('/order/receipt/{orderId}', [UserController::class, 'showOrderReceipt'])->name('user.order.receipt');
+// Add this route for the order receipt
