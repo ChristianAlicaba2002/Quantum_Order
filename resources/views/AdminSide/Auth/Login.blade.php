@@ -11,18 +11,81 @@
 </head>
 
 <style>
-    .password-container {
-        position: relative;
-        display: inline-block;
-    }
+   body{
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .box{
+            background-color: #ffffff;
+            padding: 80px;
+            width: 28%;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+            text-align: center;
+        }
+        h1{
+            color: orange;
+            margin: 0;
+        }
+        p{
+            margin: 10px 0 20px;
+        }
+        .log{
+            display: flex;
+            flex-direction: column;
+        }
+        input {
+            padding: 15px;
+            width: 90%;
+            margin: 10px 0;
+            border: 1px solid #cccccc;
+            border-radius: 5px;
+            background-color:rgb(218, 215, 215);
+        }
+        button{
+            padding: 10px;
+            width: 40%;
+            background-color: orange;
+            border: none;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-bottom: 10px;
+            margin-left: 30%;
+            font-size: 15px;
+        }
+        button:hover {
+            background-color: #EC5228;
+            transition: 0.3s;
+        }
+        a.create{
+            color:blue;
+            margin-bottom: 20px;
+        }
+        a{
+            text-decoration: none;
+            color: black;
+        }
+        a:hover{
+            text-decoration: underline;
+        }
+        .password-container {
+            position: relative;
+            display: inline-block;
+        }
 
-    .toggle-password {
-        position: absolute;
-        right: 10px;
-        top: 50%;
-        transform: translateY(-50%);
-        cursor: pointer;
-    }
+        .toggle-password {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+        }
 </style>
 
 <body>
@@ -34,10 +97,10 @@
             <script>alert("{{session('error')}}")</script>
         @endif
 
-        <div>
+        <div class="box">
             <h1>Admin</h1>
             <p>Welcome</p>
-            <form action="{{ route('auth.adminlogin') }}" method="post">
+            <form action="{{ route('auth.adminlogin') }}" method="post" class="log">
                 @csrf
                 <div>
                     <input type="text" name="email" placeholder="Email">

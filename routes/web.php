@@ -10,6 +10,8 @@ use App\Http\Controllers\ProductSide\ExportToExcel;
 use App\Http\Controllers\ProductSide\ProductController;
 use App\Http\Controllers\ProductSide\ExportToPDFProducts;
 
+
+
 // Public routes
 Route::get('/', function () {
     return view('UserSide.Auth.Login');

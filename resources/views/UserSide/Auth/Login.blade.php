@@ -9,6 +9,67 @@
     <title>Quantum Order</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
+        body{
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .box{
+            background-color: #ffffff;
+            padding: 80px;
+            width: 28%;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+            text-align: center;
+        }
+        h1{
+            color: orange;
+            margin: 0;
+        }
+        p{
+            margin: 10px 0 20px;
+        }
+        .log{
+            display: flex;
+            flex-direction: column;
+        }
+        input {
+            padding: 15px;
+            width: 90%;
+            margin: 10px 0;
+            border: 1px solid #cccccc;
+            border-radius: 5px;
+            background-color:rgb(218, 215, 215);
+        }
+        button{
+            padding: 10px;
+            width: 40%;
+            background-color: orange;
+            border: none;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-bottom: 10px;
+        }
+        button:hover {
+            background-color: #EC5228;
+            transition: 0.3s;
+        }
+        a.create{
+            color:blue;
+            margin-bottom: 20px;
+        }
+        a{
+            text-decoration: none;
+            color: black;
+        }
+        a:hover{
+            text-decoration: underline;
+        }
         .password-container {
             position: relative;
             display: inline-block;
@@ -28,15 +89,16 @@
     @auth
         @include('UserSide.Layouts.HomePage')
     @else
+    <div class="box">
         <h1>Quantum Order</h1>
-        <p>Log into Quantum Order</p>
+        <p>Log in to continue</p>
         @if (session('error'))
             <label style="color: red" for="">{{session('error')}}</label>
         @endif
         @if(session('isEmpty'))
             <label style="color: red" for="">{{session('isEmpty')}}</label>
         @endif
-        <form action="{{ route('auth.login') }}" method="post">
+        <form action="{{ route('auth.login') }}" method="post" class="log">
             @csrf
 
             <div>
@@ -53,16 +115,17 @@
             @if (session('isPasswordEmpty'))
                 <label style="color: red" for="">{{session('isPasswordEmpty')}}</label>
             @endif
-
-            <a href="/Register">Create new account</a>
-            <div>
-                <button type="submit">Login</button>
-            </div>
+                <div>
+                    <button type="submit">Login</button>
+                </div>
+            <a class="create" href="/Register">Create new account</a>
+            
 
             <div>
                 <a href="{{ route('AdminLogin') }}">Switch to Admin</a>
             </div>
         </form>
+    </div>
     @endauth
 
     <script>

@@ -8,36 +8,134 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Quantum Order</title>
 </head>
+<style>
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f5f5f5;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 0;
+        min-height: 100vh;
+        color: #333;
+    }
+    .box{
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        width: 400px;
+        padding: 40px;
+        text-align: center;
+    }
+    h1{
+        color: #2c3e50;
+        margin-bottom: 10px;
+        font-size: 24px;
+        font-weight: 600;
+    }
+    p{
+        color: #666;
+        margin-bottom: 25px;
+        font-size: 14px;
+    }
+    hr{
+        border-top: 1px solid #eee;
+        margin: 0 0 20px 0;
+    }
+    .form-group {
+        margin-bottom: 15px;
+        text-align: left;
+    }
+    .form-group input {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        box-sizing: border-box;
+        font-size: 14px;
+    }
+    .form-group input:focus {
+        outline: none;
+        border-color: #3498db;
+        }
+    .form-group label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: 500;
+        color: #555;
+        font-size: 14px;
+    }
+    .radio-group {
+        margin: 10px 0;
+    }
+    .radio-option {
+        display: inline-block;
+        margin-right: 15px;
+        font-size: 14px;
+    }
+    .radio-option input {
+        margin-right: 5px;
+    }
+    .gender-label {
+        display: inline; /* Inline display for radio buttons */
+        margin-right: 10px; /* Spacing between options */
+    }
+    button {
+        background-color: #FF8C00; /* Orange background for the button */
+        color: white; /* White text */
+        padding: 10px 20px; /* Button padding */
+        border: none; /* No border */
+        border-radius: 5px; /* Rounded corners */
+        cursor: pointer; /* Pointer cursor on hover */
+        margin-top: 20px; /* Space above button */
+        transition: 0.3s; /* Smooth background color transition */
+    }
 
+    button:hover {
+        background-color: #e07e00; /* Darken button on hover */
+    }
+    a {
+        color: #007BFF; /* Blue link color */
+        display: block; /* Make link a block level element */
+        margin-top: 20px; /* Space above the link */
+        text-decoration: none; /* Remove underline */
+    }
+
+    a:hover {
+        text-decoration: underline; /* Underline link on hover */
+    }
+</style>
 <body>
-
+<div class="box">
     <h1>Sign Up</h1>
     <p>Please fill in this form to create an account</p>
     <hr>
     <form action="{{ route('auth.register') }}" method="post" enctype="multipart/form-data">
         @csrf
-        <div>
+        <div class="form-group">
             <input type="text" name="firstName" placeholder="Enter firstName" required><br>
         </div>
-        <div>
+        <div class="form-group">
             <input type="text" name="lastName" placeholder="Enter lastName" required><br>
         </div>
-        <div>
-            <label for="gender">Gender</label><br>
-            <label for="male">
-                <input type="radio" name="gender" value="Male" id="male" />
-                Male
-            </label>
-            <label for="female">
-                <input type="radio" name="gender" value="Female" id="female" />
-                Female
-            </label>
-            <label for="other">
-                <input type="radio" name="gender" value="Other" id="other" />
-                Prefer not to say
-            </label>
+        <div class="form-group">
+            <div class="radio-group">
+                <label class="gender" for="gender">Gender</label><br>
+                    <label for="male" class="radio-option">
+                        <input type="radio" name="gender" value="Male" id="male" />
+                        Male
+                    </label>
+                    <label for="female"class="radio-option">
+                        <input type="radio" name="gender" value="Female" id="female" />
+                        Female
+                    </label>
+                    <label for="other"class="radio-option">
+                        <input type="radio" name="gender" value="Other" id="other" />
+                        Prefer not to say
+                    </label>
+            </div>
         </div>
-        <div>
+        <div class="form-group">
             <label for="">Address</label><br>
             <input type="text" name="address" list="addressList" placeholder="Choose Address" required><br>
             <datalist id="addressList">
@@ -98,7 +196,7 @@
             </datalist>
         </div>
 
-        <div>
+        <div class="form-group">
             <input type="tel" name="phoneNumber"  placeholder="Mobile Number" maxlength="11" required><br>
             @if(session('error'))
                 <script>alert("{{session('error')}}")</script>
@@ -108,18 +206,18 @@
             @endif
         </div>
 
-        <div>
+        <div class="form-group">
             <input type="text" name="username" placeholder="Username or Phone number" required><br>
         </div>
 
-        <div>
+        <div class="form-group">
             <input type="password" name="password" placeholder="Enter password" required><br>
             @if(session('passwordError'))
                 <script>alert("{{session('passwordError')}}")</script>
             @endif
         </div>
 
-        <div>
+        <div class="form-group">
             <input type="password" name="confirmPassword" placeholder="Confirm Password" required><br>
         </div>
 
@@ -134,6 +232,7 @@
         </div>
 
     </form>
+</div>
 </body>
 
 </html>

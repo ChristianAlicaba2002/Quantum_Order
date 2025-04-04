@@ -6,7 +6,6 @@ use App\Models\Products;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-
 class ExportToPDFProducts extends Controller
 {
     public function exportPDF()
