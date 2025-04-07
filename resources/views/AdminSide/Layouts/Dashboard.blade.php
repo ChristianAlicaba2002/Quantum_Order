@@ -5,343 +5,119 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="shortcut icon" href="assets/logo.jpg" type="image/x-icon">
+    <link rel="stylesheet" href="{{ asset('css/dashboard.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Quantum Order</title>
 </head>
 
-<style>
-    * {
-        font-family: Arial, Helvetica, sans-serif;
-    }
-
-    .modal {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.5);
-        z-index: 1000;
-    }
-
-    .modal.show {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
-
-    .modal-dialog {
-        background: white;
-        border-radius: 8px;
-        width: 100%;
-        max-width: 800px;
-        margin: 20px;
-    }
-
-    .modal-content {
-        position: relative;
-    }
-
-    .modal-header {
-        padding: 1rem;
-        border-bottom: 1px solid #dee2e6;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-    .modal-body {
-        padding: 1rem;
-    }
-
-    .modal-footer {
-        padding: 1rem;
-        border-top: 1px solid #dee2e6;
-        display: flex;
-        justify-content: flex-end;
-        gap: 10px;
-    }
-
-    .btn-close {
-        border: none;
-        background: none;
-        font-size: 1.5rem;
-        cursor: pointer;
-    }
-
-    .form-label {
-        display: block;
-        margin-bottom: 0.5rem;
-    }
-
-    .form-control {
-        width: 100%;
-        padding: 0.375rem 0.75rem;
-        border: 1px solid #dee2e6;
-        border-radius: 4px;
-        margin-bottom: 1rem;
-    }
-
-    .btn {
-        padding: 0.375rem 0.75rem;
-        border-radius: 4px;
-        cursor: pointer;
-    }
-
-    .btn-secondary {
-        background-color: #6c757d;
-        color: white;
-        border: none;
-    }
-
-    .btn-primary {
-        background-color: #0d6efd;
-        color: white;
-        border: none;
-    }
-
-    #addProductModal {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.5);
-    }
-
-    #addProductModal.show {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
-
-    #addProductModal>div {
-        background: white;
-        padding: 20px;
-        border-radius: 8px;
-        width: 90%;
-        max-width: 400px;
-        /* Smaller width */
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    }
-
-    #addProductModal h5 {
-        margin: 0 0 20px 0;
-    }
-
-    #addProductModal form div {
-        margin-bottom: 15px;
-    }
-
-    #addProductModal label {
-        display: block;
-        margin-bottom: 5px;
-        font-weight: bold;
-    }
-
-    #addProductModal input,
-    #addProductModal textarea {
-        width: 100%;
-        padding: 8px;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        box-sizing: border-box;
-    }
-
-    #addProductModal button {
-        padding: 8px 15px;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-    }
-
-    #addProductModal button[type="submit"] {
-        background-color: orange;
-        color: white;
-        float: right;
-    }
-
-    #addProductModal button[data-bs-dismiss="modal"] {
-        background-color: #f1f1f1;
-    }
-
-    #productTable img {
-        border-radius: 50%;
-        border: 1px solid rgba(0, 0, 0, 0.122);
-    }
-
-    #editProductModal {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.5);
-        z-index: 1000;
-    }
-
-    #editProductModal.show {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
-
-    #editProductModal>div {
-        background: white;
-        padding: 20px;
-        border-radius: 8px;
-        width: 90%;
-        max-width: 500px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    }
-
-    #editProductModal h5 {
-        margin: 0 0 20px 0;
-        font-size: 1.5rem;
-        color: #333;
-    }
-
-    #editProductModal form div {
-        margin-bottom: 15px;
-    }
-
-    #editProductModal label {
-        display: block;
-        margin-bottom: 5px;
-        font-weight: bold;
-        color: #555;
-    }
-
-    #editProductModal input,
-    #editProductModal textarea {
-        width: 100%;
-        padding: 8px;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        box-sizing: border-box;
-    }
-
-    #editProductModal button {
-        padding: 8px 15px;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-    }
-
-    #editProductModal button[type="submit"] {
-        background-color: #fd7d0d;
-        color: white;
-        float: right;
-    }
-
-    #editProductModal button[data-bs-dismiss="modal"] {
-        background-color: #f1f1f1;
-    }
-
-    #editProductModal img {
-        margin-top: 10px;
-        border-radius: 4px;
-        border: 1px solid #ddd;
-    }
-
-    .pending-orders-link {
-        position: relative;
-        display: flex;
-        align-items: center;
-    }
-
-    .order-counter {
-        background-color: #ff9100;
-        color: white;
-        border-radius: 50%;
-        padding: 2px 6px;
-        font-size: 12px;
-        position: relative;
-        margin-left: 8px;
-        display: none;
-        /* Hidden by default */
-        animation: pulse 1.5s infinite;
-    }
-
-    @keyframes pulse {
-        0% {
-            transform: scale(1);
-        }
-
-        50% {
-            transform: scale(1.1);
-        }
-
-        100% {
-            transform: scale(1);
-        }
-    }
-
-    /* When counter has notifications */
-    .order-counter.has-notifications {
-        display: inline-block;
-    }
-</style>
-
 <body>
-    <h1>Dashboard</h1>
-    <p>Welcome to the admin Quantum Order dashboard</p>
-    <button type="button" data-bs-toggle="modal" data-bs-target="#addProductModal">Add Product</button>
+    <header class="dashboard-header">
+        <div class="header-content">
+            <h1>Dashboard</h1>
+            <p>Welcome to the admin Quantum Order dashboard</p>
+        </div>
+        <div class="header-actions">
+            <button type="button" class="btn-primary" data-bs-toggle="modal" data-bs-target="#addProductModal">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                Add Product
+            </button>
+            <form action="{{ route('auth.adminlogout') }}" method="post">
+                @csrf
+                <button type="submit" class="btn-outline">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                        <polyline points="16 17 21 12 16 7"></polyline>
+                        <line x1="21" y1="12" x2="9" y2="12"></line>
+                    </svg>
+                    Logout
+                </button>
+            </form>
+        </div>
+    </header>
 
-    <form action="{{ route('auth.adminlogout') }}" method="post">
-        @csrf
-        <button type="submit">Logout</button>
-    </form>
-
-    @include('AdminSide.Pages.Badges')
-    @yield('BadgesContent')
-
-
-    <div class="MenuHamburger">
+    <nav class="MenuHamburger">
         <ul>
             <li>
-                <a href="{{ route('ArchiveProducts') }}">Archive</a>
+                <a href="{{ route('ArchiveProducts') }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="21 8 21 21 3 21 3 8"></polyline>
+                        <rect x="1" y="3" width="22" height="5"></rect>
+                        <line x1="10" y1="12" x2="14" y2="12"></line>
+                    </svg>
+                    Archive
+                </a>
             </li>
             <li>
-                <a href="{{ route('OrderHistory') }}">Orders</a>
+                <a href="{{ route('OrderHistory') }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                        <polyline points="10 9 9 9 8 9"></polyline>
+                    </svg>
+                    Orders
+                </a>
             </li>
-
             <li>
                 <a href="/pending-orders" class="pending-orders-link">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <polyline points="12 6 12 12 16 14"></polyline>
+                    </svg>
                     Pending Orders
                     <span class="order-counter" id="orderCounter"></span>
                 </a>
             </li>
         </ul>
-    </div>
+    </nav>
 
     @if (session('failedToExport'))
-        <script>
-            alert("{{ session('failedToExport') }}")
-        </script>
+        <div class="alert alert-danger">
+            {{ session('failedToExport') }}
+        </div>
     @endif
 
-
     <div class="container downloads">
-        <a href="{{ route('UserManagement') }}">User Management</a>
-        <button onclick="window.location.href='{{ route('products.excel') }}'">
+        <a href="{{ route('UserManagement') }}" class="action-link">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                <circle cx="9" cy="7" r="4"></circle>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+            </svg>
+            User Management
+        </a>
+        <a href="{{ route('products.excel') }}" class="export-button">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <line x1="12" y1="18" x2="12" y2="12"></line>
+                <line x1="9" y1="15" x2="15" y2="15"></line>
+            </svg>
             Export to Excel
-        </button>
-
-        <button onclick="window.location.href='{{ route('products.pdf') }}'">
+        </a>
+        <a href="{{ route('products.pdf') }}" class="export-button">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <line x1="16" y1="13" x2="8" y2="13"></line>
+                <line x1="16" y1="17" x2="8" y2="17"></line>
+                <polyline points="10 9 9 9 8 9"></polyline>
+            </svg>
             Export to PDF
-        </button>
-
+        </a>
     </div>
 
     @if (!$products->isEmpty())
-        <nav>
-            <ul class="d-flex justify-content-center gap-4 list-unstyled">
+        <nav class="category-nav-container">
+            <ul class="category-nav">
                 <li>
-                    <button class="btn active" onclick="filterProducts('all', event)">
+                    <button class="filter-btn active" onclick="filterProducts('all', event)">
                         All
                     </button>
                 </li>
@@ -350,7 +126,7 @@
                 @endphp
                 @foreach ($categories as $category)
                     <li>
-                        <button class="btn" onclick="filterProducts('{{ $category }}',event)">
+                        <button class="filter-btn" onclick="filterProducts('{{ $category }}', event)">
                             {{ $category }}'s
                         </button>
                     </li>
@@ -359,62 +135,74 @@
         </nav>
     @endif
 
-
-    <div>
-        <h1 id="categoryTitle">All Products</h1>
-        <table id="productTable">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Image</th>
-                    <th>Name</th>
-                    <th>Category</th>
-                    <th>Price</th>
-                    <th>Stock</th>
-                    <th>Description</th>
-                    <th>Created At</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach ($products->sortBy('price') as $product)
-                    <tr>
-                        <td>{{ $product->productId }}</td>
-                        <td>
-                            <img src="{{ asset('/images/' . $product->image) }}" alt="{{ $product->productName }}"
-                                style="width: 50px; height: 50px; object-fit: cover;">
-                        </td>
-                        <td>{{ $product->productName }}</td>
-                        <td>{{ $product->category }}</td>
-                        <td>&#8369;{{ number_format($product->price) }}</td>
-                        <td style="color: {{ $product->stock <= 20 ? 'red' : 'black' }}">{{ $product->stock }}</td>
-                        <td>{{ $product->description }}</td>
-                        <td>{{ $product->created_at }}</td>
-                        <td>
-                            <button type="button"
-                                onclick="EditProducts('{{ $product->productId}}','{{ $product->productName }}','{{ $product->category }}','{{ $product->price }}','{{ $product->stock }}','{{ $product->description }}','{{ $product->image }}')">Edit</button>
-                            <form action="/archive/{{ $product->id }}" method="post">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit">Archive</button>
-                            </form>
-                        </td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
+    <div class="products-container">
+        <h1 id="categoryTitle" class="section-title">All Products</h1>
+        
         @if ($products->isEmpty())
-            <p>Don't have any products added</p>
+            <p class="no-products">Don't have any products added</p>
+        @else
+            <div class="table-responsive">
+                <table id="productTable" class="products-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Image</th>
+                            <th>Name</th>
+                            <th>Category</th>
+                            <th>Price</th>
+                            <th>Stock</th>
+                            <th>Description</th>
+                            <th>Created At</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($products->sortBy('price') as $product)
+                            <tr>
+                                <td>{{ $product->productId }}</td>
+                                <td>
+                                    <img class="product-image" src="{{ asset('/images/' . $product->image) }}" alt="{{ $product->productName }}">
+                                </td>
+                                <td>{{ $product->productName }}</td>
+                                <td>{{ $product->category }}</td>
+                                <td>&#8369;{{ number_format($product->price) }}</td>
+                                <td class="{{ $product->stock <= 20 ? 'low-stock' : '' }}">{{ $product->stock }}</td>
+                                <td>{{ $product->description }}</td>
+                                <td>{{ $product->created_at }}</td>
+                                <td class="action-cell">
+                                    <button class="edit-btn" type="button" onclick="EditProducts('{{ $product->productId}}','{{ $product->productName }}','{{ $product->category }}','{{ $product->price }}','{{ $product->stock }}','{{ $product->description }}','{{ $product->image }}')">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                                        </svg>
+                                        Edit
+                                    </button>
+                                    <form action="/archive/{{ $product->id }}" method="post">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button class="archive-btn" type="submit">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <polyline points="3 6 5 6 21 6"></polyline>
+                                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                            </svg>
+                                            Archive
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
         @endif
     </div>
 
     <!-- Add Product Modal -->
-    <div id="addProductModal">
+    <div id="addProductModal" class="modal">
         <div>
             <div>
                 <div>
                     <h5>Add New Product</h5>
-
                 </div>
                 <form action="{{ route('create.product') }}" method="POST" enctype="multipart/form-data">
                     <div>
@@ -454,18 +242,6 @@
         </div>
     </div>
 
-    @if (session('success'))
-        <script>
-            alert("{{ session('success') }}")
-        </script>
-    @endif
-
-    @if (session('error'))
-        <script>
-            alert("{{ session('error') }}")
-        </script>
-    @endif
-
     <div id="editProductModal" class="modal">
         <div>
             <div>
@@ -500,8 +276,7 @@
                         <div>
                             <label for="EditImage">Product Image</label>
                             <input type="file" id="EditImage" name="image" accept="image/*">
-                            <img id="EditPreviewImage" src="" alt=""
-                                style="width: 50px; height: 50px; object-fit: cover;">
+                            <img id="EditPreviewImage" src="" alt="" class="preview-image">
                         </div>
                     </div>
                     <div>
@@ -513,10 +288,43 @@
         </div>
     </div>
 
+    @if (session('success'))
+        <div class="toast success-toast">
+            <div class="toast-content">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                </svg>
+                <span>{{ session('success') }}</span>
+            </div>
+        </div>
+    @endif
 
-
+    @if (session('error'))
+        <div class="toast error-toast">
+            <div class="toast-content">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="15" y1="9" x2="9" y2="15"></line>
+                    <line x1="9" y1="9" x2="15" y2="15"></line>
+                </svg>
+                <span>{{ session('error') }}</span>
+            </div>
+        </div>
+    @endif
 
     <script>
+        // Show and auto-hide toast notifications
+        document.addEventListener('DOMContentLoaded', function() {
+            const toasts = document.querySelectorAll('.toast');
+            toasts.forEach(toast => {
+                toast.classList.add('show');
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 5000);
+            });
+        });
+
         //Open modal for adding products
         document.addEventListener('DOMContentLoaded', function() {
             const modal = document.getElementById('addProductModal');
@@ -537,6 +345,22 @@
                     modal.classList.remove('show');
                 }
             });
+            
+            // Image preview
+            const imageInput = document.getElementById('image');
+            const previewImage = document.getElementById('previewImage');
+            
+            imageInput.addEventListener('change', function() {
+                const file = this.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        previewImage.src = e.target.result;
+                        previewImage.style.display = 'block';
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
         });
 
         //Open modal Update Products
@@ -552,6 +376,21 @@
             document.getElementById('EditPreviewImage').src = '/images/' + image;
 
             modal.classList.add('show');
+            
+            // Image preview for edit form
+            const editImageInput = document.getElementById('EditImage');
+            const editPreviewImage = document.getElementById('EditPreviewImage');
+            
+            editImageInput.addEventListener('change', function() {
+                const file = this.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        editPreviewImage.src = e.target.result;
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
         }
 
         // Close modal when clicking outside
@@ -563,7 +402,7 @@
 
         //Filtered Products in navigation Bar
         function filterProducts(category, event) {
-            document.querySelectorAll('nav .btn').forEach(btn => {
+            document.querySelectorAll('nav .filter-btn').forEach(btn => {
                 btn.classList.remove('active');
             });
 
@@ -631,8 +470,6 @@
             }
         });
     </script>
-
-
 </body>
 
 </html>

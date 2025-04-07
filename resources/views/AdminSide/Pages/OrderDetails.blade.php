@@ -4,89 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="shortcut icon" href="assets/logo.jpg" type="image/x-icon">
+    <link rel="stylesheet" href="{{ asset('css/orderdetails.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Order Details</title>
 </head>
-<style>
-    .order-details {
-        padding: 20px;
-    }
-    
-    .order-info {
-        margin-bottom: 30px;
-        background: #f9f9f9;
-        padding: 20px;
-        border-radius: 5px;
-    }
-    
-    .order-items table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-bottom: 30px;
-    }
-    
-    .order-items th,
-    .order-items td {
-        padding: 10px;
-        border: 1px solid #ddd;
-        text-align: left;
-    }
-    
-    .order-actions {
-        display: flex;
-        gap: 10px;
-    }
-    
-    .btn {
-        padding: 8px 16px;
-        border-radius: 4px;
-        cursor: pointer;
-        text-decoration: none;
-        display: inline-block;
-    }
-    
-    .btn-info {
-        background-color: #17a2b8;
-        color: white;
-    }
-    
-    .btn-success {
-        background-color: #28a745;
-        color: white;
-        border: none;
-    }
-    
-    .btn-danger {
-        background-color: #dc3545;
-        color: white;
-        border: none;
-    }
-    
-    .btn-secondary {
-        background-color: #6c757d;
-        color: white;
-    }
-    
-    .alert {
-        padding: 15px;
-        margin-bottom: 20px;
-        border: 1px solid transparent;
-        border-radius: 4px;
-    }
-    
-    .alert-danger {
-        color: #721c24;
-        background-color: #f8d7da;
-        border-color: #f5c6cb;
-    }
-</style>
 <body>
-    
     <div class="order-details">
         <h2>Order Details</h2>
     
         @if(session('error'))
             <div class="alert alert-danger">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="15" y1="9" x2="9" y2="15"></line>
+                    <line x1="9" y1="9" x2="15" y2="15"></line>
+                </svg>
                 {{ session('error') }}
             </div>
         @endif
@@ -98,9 +31,13 @@
                 <p><strong>Customer Name:</strong> {{ $order->firstName }}</p>
                 <p><strong>Address:</strong> {{ $order->address }}</p>
                 <p><strong>Phone:</strong> {{ $order->phoneNumber }}</p>
-                <p><strong>Total Amount:</strong> ₱{{ number_format($order->totalAmount, 2) }}</p>
+                <p><strong>Total Amount:</strong> <span class="price">₱{{ number_format($order->totalAmount, 2) }}</span></p>
                 <p><strong>Payment:</strong> {{ $order->paymentMethod }}</p>
-                <p><strong>Status:</strong> {{ $order->orderStatus }}</p>
+                <p><strong>Status:</strong> 
+                    <span class="status-badge status-{{ strtolower($order->orderStatus) }}">
+                        {{ $order->orderStatus }}
+                    </span>
+                </p>
                 <p><strong>Order Date:</strong> {{ date('M d, Y H:i', strtotime($order->created_at)) }}</p>
             </div>
     
@@ -122,8 +59,8 @@
                                 <td>{{ $item->productName }}</td>
                                 <td>{{ $item->category }}</td>
                                 <td>{{ $item->quantity }}</td>
-                                <td>₱{{ number_format($item->price, 2) }}</td>
-                                <td>₱{{ number_format($item->price * $item->quantity, 2) }}</td>
+                                <td class="price">₱{{ number_format($item->price, 2) }}</td>
+                                <td class="price">₱{{ number_format($item->price * $item->quantity, 2) }}</td>
                             </tr>
                         @empty
                             <tr>
@@ -139,22 +76,43 @@
                     <form action="{{ route('admin.update-order-status', ['orderId' => $order->orderId]) }}" method="POST" class="inline-form">
                         @csrf
                         <input type="hidden" name="status" value="Accepted">
-                        <button type="submit" class="btn btn-success">Accept Order</button>
+                        <button type="submit" class="btn btn-success">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+                            Accept Order
+                        </button>
                     </form>
     
                     <form action="{{ route('admin.update-order-status', ['orderId' => $order->orderId]) }}" method="POST" class="inline-form">
                         @csrf
                         <input type="hidden" name="status" value="Declined">
-                        <button type="submit" class="btn btn-danger">Decline Order</button>
+                        <button type="submit" class="btn btn-danger">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="18" y1="6" x2="6" y2="18"></line>
+                                <line x1="6" y1="6" x2="18" y2="18"></line>
+                            </svg>
+                            Decline Order
+                        </button>
                     </form>
                 </div>
             @endif
     
-            <div class="back-button" style="margin-top: 20px;">
-                <a href="{{ route('admin.pending-orders') }}" class="btn btn-secondary">Back to Orders</a>
+            <div class="back-button">
+                <a href="{{ route('admin.pending-orders') }}" class="btn btn-secondary">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M19 12H5M12 19l-7-7 7-7"/>
+                    </svg>
+                    Back to Orders
+                </a>
             </div>
         @else
             <div class="alert alert-danger">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="15" y1="9" x2="9" y2="15"></line>
+                    <line x1="9" y1="9" x2="15" y2="15"></line>
+                </svg>
                 Order not found.
             </div>
         @endif

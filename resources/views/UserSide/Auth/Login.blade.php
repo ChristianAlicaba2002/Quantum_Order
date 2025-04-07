@@ -4,129 +4,76 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="{{ asset('css/UserLogin.css') }}">
     <link rel="shortcut icon" href="assets/logo.jpg" type="image/x-icon">
-    <title>Quantum Order</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        body{
-            font-family: Arial, sans-serif;
-            background-color: #f9f9f9;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
-        .box{
-            background-color: #ffffff;
-            padding: 80px;
-            width: 28%;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
-            text-align: center;
-        }
-        h1{
-            color: orange;
-            margin: 0;
-        }
-        p{
-            margin: 10px 0 20px;
-        }
-        .log{
-            display: flex;
-            flex-direction: column;
-        }
-        input {
-            padding: 15px;
-            width: 90%;
-            margin: 10px 0;
-            border: 1px solid #cccccc;
-            border-radius: 5px;
-            background-color:rgb(218, 215, 215);
-        }
-        button{
-            padding: 10px;
-            width: 40%;
-            background-color: orange;
-            border: none;
-            color: white;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-bottom: 10px;
-        }
-        button:hover {
-            background-color: #EC5228;
-            transition: 0.3s;
-        }
-        a.create{
-            color:blue;
-            margin-bottom: 20px;
-        }
-        a{
-            text-decoration: none;
-            color: black;
-        }
-        a:hover{
-            text-decoration: underline;
-        }
-        .password-container {
-            position: relative;
-            display: inline-block;
-        }
-
-        .toggle-password {
-            position: absolute;
-            right: 10px;
-            top: 50%;
-            transform: translateY(-50%);
-            cursor: pointer;
-        }
-    </style>
+    <title>Quantum Order</title>
 </head>
 
 <body>
-    @auth
-        @include('UserSide.Layouts.HomePage')
-    @else
-    <div class="box">
-        <h1>Quantum Order</h1>
-        <p>Log in to continue</p>
-        @if (session('error'))
-            <label style="color: red" for="">{{session('error')}}</label>
-        @endif
-        @if(session('isEmpty'))
-            <label style="color: red" for="">{{session('isEmpty')}}</label>
-        @endif
-        <form action="{{ route('auth.login') }}" method="post" class="log">
-            @csrf
-
-            <div>
-                <input type="text" name="username" placeholder="Username or Phone number"><br>
-                @if (session('isUsernameEmpty'))
-                    <label style="color: red" for="">{{session('isUsernameEmpty')}}</label>
-                @endif
-            </div>
-
-            <div class="password-container">
-                <input type="password" name="password" id="password" placeholder="Enter password">
-                <i class="toggle-password fas fa-eye-slash" onclick="togglePassword()"></i>
-            </div><br>
-            @if (session('isPasswordEmpty'))
-                <label style="color: red" for="">{{session('isPasswordEmpty')}}</label>
-            @endif
-                <div>
-                    <button type="submit">Login</button>
+    <div class="login-container">
+        <div class="login-left">
+            <!-- Background image will be applied via CSS -->
+        </div>
+        <div class="login-right">
+            <div class="login-box">
+                <div class="logo">
+                    <img src="assets/logo.jpg" alt="Quantum Order Logo">
                 </div>
-            <a class="create" href="/Register">Create new account</a>
-            
+                <p style="text-align: center;">Log in your account to continue</p>
 
-            <div>
-                <a href="{{ route('AdminLogin') }}">Switch to Admin</a>
+                @if (session('error'))
+                    <div class="alert">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <span>{{ session('error') }}</span>
+                    </div>
+                @endif
+
+                @if(session('isEmpty'))
+                    <div class="alert">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <span>{{ session('isEmpty') }}</span>
+                    </div>
+                @endif
+
+                <form action="{{ route('auth.login') }}" method="post">
+                    @csrf
+                    <div class="input-group">
+                        <input type="text" name="username" placeholder="Username or Phone number" required>
+                        <i class="fas fa-user"></i>
+                        @if (session('isUsernameEmpty'))
+                            <span class="error-message">{{ session('isUsernameEmpty') }}</span>
+                        @endif
+                    </div>
+
+                    <div class="input-group">
+                        <input type="password" name="password" id="password" placeholder="Enter password" required>
+                        <i class="fas fa-eye-slash toggle-password" onclick="togglePassword()"></i>
+                        @if (session('isPasswordEmpty'))
+                            <span class="error-message">{{ session('isPasswordEmpty') }}</span>
+                        @endif
+                    </div>
+
+                    <button type="submit">
+                        <i class="fas fa-sign-in-alt"></i>
+                        Login
+                    </button>
+
+                    <div class="links">
+                        <a href="/Register">
+                            <i class="fas fa-user-plus"></i>
+                            Create new account
+                        </a>
+                        <a href="{{ route('AdminLogin') }}">
+                            <i class="fas fa-exchange-alt"></i>
+                            Switch to Admin
+                        </a>
+                    </div>
+                </form>
             </div>
-        </form>
+        </div>
     </div>
-    @endauth
 
     <script>
         function togglePassword() {
@@ -143,6 +90,17 @@
                 toggleIcon.classList.add('fa-eye-slash');
             }
         }
+
+        // Auto-hide alert after 5 seconds
+        document.addEventListener('DOMContentLoaded', function() {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(alert => {
+                setTimeout(() => {
+                    alert.style.opacity = '0';
+                    setTimeout(() => alert.remove(), 300);
+                }, 5000);
+            });
+        });
     </script>
 </body>
 

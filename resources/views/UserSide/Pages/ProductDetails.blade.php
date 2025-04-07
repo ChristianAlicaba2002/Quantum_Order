@@ -186,11 +186,20 @@
                     <input type="hidden" name="userId" value="{{ Auth::user()->userId }}">
                     <input type="hidden" name="username" value="{{ Auth::user()->username }}">
                     <div class="add-to-cart-section">
+                        
+                        @if (number_format( $stock ) == 0)
+                        <input type="number" name="quantity" id="ChangeQuantity" class="quantity-input" value="0" readonly>
+                        <button type="submit" class="add-to-cart-btn" disabled style="cursor:not-allowed">
+                            Out of Stock
+                        </button>
+                        @else
                         <input type="number" name="quantity" id="ChangeQuantity" class="quantity-input" value="1"
                             min="1" max="{{ $stock }}" required>
                         <button type="submit" class="add-to-cart-btn">
                             Add to Cart
                         </button>
+                        @endif
+                        
                     </div>
                 </form>
             </div>

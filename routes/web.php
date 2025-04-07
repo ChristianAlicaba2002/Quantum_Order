@@ -9,75 +9,124 @@ use App\Http\Controllers\AdminSide\AdminController;
 use App\Http\Controllers\ProductSide\ExportToExcel;
 use App\Http\Controllers\ProductSide\ProductController;
 use App\Http\Controllers\ProductSide\ExportToPDFProducts;
+use App\Http\Middleware\PreventBackHistory;
 
 
-
-// Public routes
+// Client routes
 Route::get('/', function () {
-    return view('UserSide.Auth.Login');
-})->name('login');
+    if(Auth::guard('web')->check())
+    {
+        return redirect()->route('HomePage');
+    }
+    else
+    {
+        return view('UserSide.Auth.Login');
+    }
+})->name('login')->middleware(PreventBackHistory::class);
 
-Route::get('/MainPage',function(){
-    return view('UserSide.Layouts.MainPage');
-})->name('MainPage');
 
 Route::get('/Register', function () {
     return view('UserSide.Auth.Register');
 })->name('register');
 
+
 // Admin login route (public)
 Route::get('/AdminLogin', function () {
-    $products = DB::table('products')->get();
-    return view('AdminSide.Auth.Login',compact('products'));
-})->name('AdminLogin');
+    if(Auth::guard('admin')->check())
+    {
+        return redirect()->route('dashboard');
+    }
+    else{
+        return view('AdminSide.Auth.Login');
+    }
 
-Route::get('/home', [UserController::class, 'index'])->name('home');
-
-Route::get('/UserManagement', function () {
-    $users = User::all();
-    return view('AdminSide.Pages.UserManagement', compact('users'));
-})->name('UserManagement');
-
-Route::get('/Archive', function () {
-    $ArchiveProducts = DB::table('archive_products')->get();
-    return view('AdminSide.Pages.ArchiveProducts', compact('ArchiveProducts'));
-})->name('ArchiveProducts');
-
-Route::get('/OrderHistory', function () {
-    $UserOrders = DB::table('order_users')->get();
-    return view('AdminSide.Pages.OrderPage',compact('UserOrders'));
-})->name('OrderHistory');
-
-Route::get('/UserInformationPage',function(){
-    $users = DB::table('users')->where('userId',Auth::user()->userId)->get();
-    return view('UserSide.Pages.UserInformationPage', compact('users'));
-})->name('UserInformationPage');
+})->name('AdminLogin')->middleware(PreventBackHistory::class);
 
 
-//PurchaseHistory
-Route::get('/cancelled-history', [UserController::class, 'cancelledHistory'])->name('user.cancelled-history');
-Route::get('/to-pay-history', [UserController::class, 'toPayHistory'])->name('user.to-pay-history');
-Route::get('/to-delivery', [UserController::class, 'DeliveryHIstory'])->name('user.to-delivery-history');
-Route::get('/received-history', [UserController::class, 'receivedHistory'])->name('user.received-history');
+//Client Side Middleware
+Route::middleware(['auth:web'])->group( function (){
+    
+    Route::get('/HomePage',function(){
+        return view('UserSide.Layouts.HomePage');
+    })->name('HomePage');
+    
+    Route::get('/MainPage',function(){
+        return view('UserSide.Layouts.MainPage');
+    })->name('MainPage');
 
-//End of Purchase History Route
+    Route::get('/ProductDetails/{productId}/{productName}/{category}/{price}/{stock}/{description}/{image}',function($productId,$productName,$category,$price,$stock,$description,$image){
+        return view('UserSide.Pages.ProductDetails',
+    [
+        'productId'=> $productId,
+        'productName'=> $productName,
+        'category'=> $category,
+        'price'=> $price,
+        'stock'=> $stock,
+        'description'=> $description,
+        'image'=> $image,
+    ]);
+    })->name('ProductDetails');
 
-Route::get('/MainPage',function(){
-    return view('UserSide.Layouts.MainPage');
-})->name('MainPage');
+    Route::get('/UserInformationPage',function(){
+        $users = DB::table('users')->where('userId',Auth::user()->userId)->get();
+        return view('UserSide.Pages.UserInformationPage', compact('users'));
+    })->name('UserInformationPage');
 
-Route::get('/ProductDetails/{productId}/{productName}/{category}/{price}/{stock}/{description}/{image}',function($productId,$productName,$category,$price,$stock,$description,$image){
-    return view('UserSide.Pages.ProductDetails',
-[
-    'productId'=> $productId,
-    'productName'=> $productName,
-    'category'=> $category,
-    'price'=> $price,
-    'stock'=> $stock,
-    'description'=> $description,
-    'image'=> $image,
-]);
-})->name('ProductDetails');
+    //PurchaseHistory
+    Route::get('/cancelled-history', [UserController::class, 'cancelledHistory'])->name('user.cancelled-history');
+    Route::get('/to-pay-history', [UserController::class, 'toPayHistory'])->name('user.to-pay-history');
+    Route::get('/to-delivery', [UserController::class, 'DeliveryHIstory'])->name('user.to-delivery-history');
+    Route::get('/received-history', [UserController::class, 'receivedHistory'])->name('user.received-history');
+    //End of Purchase History Route
+
+});
+
+
+
+//Admin Side Middleware
+Route::middleware(['auth:admin'])->group( function () {
+    
+    Route::get('/dashboard', function(){
+        $products = DB::table('products')->get();
+        return view('AdminSide.Layouts.Dashboard', compact('products'));
+    })->name('dashboard')->middleware(PreventBackHistory::class);
+
+    Route::get('/UserManagement', function () {
+        $users = User::all();
+        return view('AdminSide.Pages.UserManagement', compact('users'));
+    })->name('UserManagement');
+    
+    Route::get('/Archive', function () {
+        $ArchiveProducts = DB::table('archive_products')->get();
+        return view('AdminSide.Pages.ArchiveProducts', compact('ArchiveProducts'));
+    })->name('ArchiveProducts');
+    
+    Route::get('/OrderHistory', function () {
+        $UserOrders = DB::table('orders')
+            ->join('users', 'orders.userId', '=', 'users.userId')
+            ->join('order_details', 'orders.orderId', '=', 'order_details.orderId')
+            ->join('products', 'order_details.productId', '=', 'products.productId')
+            ->select(
+                'orders.orderId',
+                'orders.userId',
+                'users.firstName',
+                'users.lastName',
+                'users.phoneNumber',
+                'users.address',
+                'orders.totalAmount',
+                'orders.paymentMethod',
+                'orders.orderStatus',
+                'orders.created_at',
+                'order_details.quantity',
+                'products.productName',
+                'products.price',
+                'products.category'
+            )
+            ->get();
+        return view('AdminSide.Pages.OrderPage', compact('UserOrders'));
+    })->name('OrderHistory');
+
+});
 
 
 
@@ -107,8 +156,7 @@ Route::get('/pending-orders', [AdminController::class, 'viewPendingOrders'])->na
 Route::get('/order/{orderId}', [AdminController::class, 'viewOrderDetails'])->name('admin.order-details');
 Route::post('/order/{orderId}/update-status', [AdminController::class, 'updateOrderStatus'])->name('admin.update-order-status');
 Route::post('/cancel.order/{orderId}', [UserController::class, 'cancelOrder'])->name('cancel.order');
-Route::post('/reorder-cancelled/{orderId}', [UserController::class, 'reorderCancelled'])
-    ->name('reorder.cancelled');
+Route::post('/reorder-cancelled/{orderId}', [UserController::class, 'reorderCancelled'])->name('reorder.cancelled');
 Route::get('/checkout/preview', [UserController::class, 'checkoutPreview'])->name('checkout.preview');
 Route::post('/checkout/process', [UserController::class, 'checkoutProcess'])->name('checkout.process');
 Route::post('deliveredItems/{id}',[UserController::class , 'MoveToRecieved'])->name('deliveredItems.process');

@@ -131,7 +131,7 @@ class UserController extends Controller
         if (Auth::attempt($request->only(['username', 'password']))) 
         {
             $request->session()->regenerate();
-            return redirect('/')->with('success', 'Login successful');
+            return redirect()->route('HomePage')->with('success', 'Login successful');
         }
 
         return redirect('/')
@@ -143,8 +143,8 @@ class UserController extends Controller
     {
         Auth::logout();
         $request->session()->invalidate();
-        $request->session()->regenerateToken();
-        return redirect('/');
+        $request->session()->regenerate();
+        return redirect()->route('login');
     }
 
     public function UpdateInformationUser(Request $request, string $userId): \Illuminate\Http\RedirectResponse

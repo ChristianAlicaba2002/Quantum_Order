@@ -22,7 +22,7 @@ class AdminController extends Controller
     
         if (Auth::guard('admin')->attempt($credentials)) {
             $request->session()->regenerate();
-            return redirect()->route('AdminLogin');
+            return redirect()->route('dashboard');
         }
     
         return back()->with('error', 'Account not found.');
@@ -33,7 +33,7 @@ class AdminController extends Controller
         Auth::guard('admin')->logout();
         
         $request->session()->invalidate();
-        $request->session()->regenerateToken();
+        $request->session()->regenerate();
         
         return redirect('/AdminLogin');
     }

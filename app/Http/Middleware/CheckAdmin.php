@@ -13,6 +13,9 @@ class CheckAdmin
         if (!Auth::guard('admin')->check()) {
             return redirect('/AdminLogin')->with('error', 'Please login as admin first');
         }
+        else{
+            return redirect('/dashboard');
+        }
 
         return $next($request);
     }
