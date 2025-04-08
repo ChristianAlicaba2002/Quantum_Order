@@ -38,6 +38,20 @@ class AdminController extends Controller
         return redirect('/AdminLogin');
     }
 
+        public function SalesProduct()
+        {
+            $sales = DB::table('orders')
+            ->join('order_details', 'orders.orderId', '=', 'order_details.orderId')
+            ->join('products', 'order_details.productId', '=', 'products.productId')
+            ->select('products.productId','products.productName', 'products.category', 'products.stock', 'products.price', DB::raw('SUM(order_details.quantity) as total_quantity'))
+            ->groupBy('products.productId','products.productName', 'products.category', 'products.stock', 'products.price')
+            ->orderBy('total_quantity', 'desc')
+            ->get();
+
+            return view('AdminSide.Pages.SalesProduct', compact('sales'));
+            
+        }
+
     public function viewPendingOrders()
     {
         $pendingOrders = DB::table('orders')

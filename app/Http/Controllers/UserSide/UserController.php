@@ -392,6 +392,7 @@ class UserController extends Controller
                         'updated_at' => Carbon::now()->toDateTimeLocalString()
                     ]);
 
+
                     DB::table('products')
                         ->where('productId', $item['productId'])
                         ->decrement('stock', $item['quantity']);
