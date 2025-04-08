@@ -250,9 +250,6 @@ class UserController extends Controller
 
 
 
-
-
-
     public function UserAddToCart(Request $request, string $productId)
     {
         $product = DB::table('products')->where('productId', $productId)->first();
@@ -306,6 +303,124 @@ class UserController extends Controller
         return redirect('/MainPage')->with('success', 'Added to cart successfully');
     }
 
+    public function checkoutPreview(Request $request)
+    {
+        try {
+            // Validate the request
+            $validated = $request->validate([
+                'selectedItems' => 'required|string',
+                'totalPrice' => 'required|numeric|min:0'
+            ]);
+
+            // Decode the JSON string back to array
+            $items = json_decode($request->selectedItems, true);
+            
+            if (empty($items)) {
+                return redirect()->back()
+                    ->with('error', 'Please select items to checkout');
+            }
+
+            // Store in session for the checkout view
+            session([
+                'items' => $items,
+                'totalPrice' => $request->totalPrice
+            ]);
+
+            return view('UserSide.Pages.CheckOut')
+                ->with('items', $items)
+                ->with('totalPrice', $request->totalPrice);
+            
+        } catch (\Exception $e) {
+            Log::error('Checkout preview error: ' . $e->getMessage());
+            return redirect()->back()
+                ->with('error', 'Error processing checkout: ' . $e->getMessage());
+        }
+    }
+
+    public function checkoutProcess(Request $request)
+    {
+        try {
+            // Validate the request
+            $validated = $request->validate([
+                'items' => 'required|string',
+                'totalPrice' => 'required|numeric|min:0',
+                'address' => 'required|string',
+                'paymentMethod' => 'required|string',
+                'phoneNumber' => 'required|string'
+            ]);
+
+            $items = json_decode($request->items, true);
+
+            if (empty($items)) {
+                return redirect()->back()->with('error', 'No items found for checkout.');
+            }
+
+            $userId = Auth::user()->userId;
+            $firstName = Auth::user()->firstName;
+            $address = $request->address;
+            $paymentMethod = $request->paymentMethod;
+            $phoneNumber = $request->phoneNumber;
+
+            $orderId = 'ORD-' . $this->GetTheGenerateOrderId();
+
+            DB::beginTransaction();
+
+            try {
+                DB::table('orders')->insert([
+                    'orderId' => $orderId,
+                    'userId' => $userId,
+                    'firstName' => $firstName,
+                    'address' => $address,
+                    'paymentMethod'=> $paymentMethod,
+                    'phoneNumber' => $phoneNumber,
+                    'totalAmount' => $request->totalPrice,
+                    'orderStatus' => 'Pending',
+                    'created_at' => Carbon::now()->toDateTimeLocalString(),
+                    'updated_at' => Carbon::now()->toDateTimeLocalString(),
+                ]);
+
+                foreach ($items as $item) {
+                    DB::table('order_details')->insert([
+                        'orderId' => $orderId,
+                        'productId' => $item['productId'],
+                        'productName' => $item['productName'],
+                        'category' => $item['category'],
+                        'quantity' => $item['quantity'],
+                        'price' => $item['price'],
+                        'image' => $item['image'],
+                        'created_at' => Carbon::now()->toDateTimeLocalString(),
+                        'updated_at' => Carbon::now()->toDateTimeLocalString()
+                    ]);
+
+                    DB::table('products')
+                        ->where('productId', $item['productId'])
+                        ->decrement('stock', $item['quantity']);
+                }
+
+                foreach ($items as $item) {
+                    DB::table('add_to_cart')
+                        ->where('userId', $userId)
+                        ->where('productId', $item['productId'])
+                        ->delete();
+                }
+
+                DB::commit();
+
+                return redirect()->route('user.order.receipt', ['orderId' => $orderId])
+                    ->with('success', 'Order placed successfully! Your order ID is: ' . $orderId);
+
+            } catch (\Exception $e) {
+                DB::rollBack();
+                Log::error('Error processing order: ' . $e->getMessage());
+                return redirect()->back()->with('error', 'Error processing your order: ' . $e->getMessage());
+            }
+
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Error validating your order: ' . $e->getMessage());
+        }
+    }
+
+    
     public function UserRemoveItemFromAddtoCart(string $productId)
     {
         $product = DB::table('add_to_cart')->where('productId', $productId)->first();
@@ -322,32 +437,6 @@ class UserController extends Controller
         }
     }
 
-    // public function checkoutItems(Request $request)
-    // {
-    //     // Validate the request
-    //     $request->validate([
-    //         'items' => 'required|array',
-    //         'totalPrice' => 'required|numeric'
-    //     ]);
-
-    //     $items = $request->input('items');
-    //     $totalPrice = $request->input('totalPrice');
-
-    //     // Get the cart items that were selected
-    //     $cartItems = DB::table('add_to_cart')
-    //         ->whereIn('productId', $items)
-    //         ->where('userId', Auth::user()->userId)
-    //         ->get();
-
-    //     if ($cartItems->isEmpty()) {
-    //         return redirect()->back()->with('error', 'No items selected for checkout');
-    //     }
-
-    //     return view('UserSide.Pages.CheckOut', [
-    //         'items' => $items,
-    //         'totalPrice' => $totalPrice
-    //     ]);
-    // }
 
     public function toPayHistory()
     {
@@ -477,122 +566,6 @@ class UserController extends Controller
         }
     }
 
-    public function checkoutPreview(Request $request)
-    {
-        try {
-            // Validate the request
-            $validated = $request->validate([
-                'selectedItems' => 'required|string',
-                'totalPrice' => 'required|numeric|min:0'
-            ]);
-
-            // Decode the JSON string back to array
-            $items = json_decode($request->selectedItems, true);
-            
-            if (empty($items)) {
-                return redirect()->back()
-                    ->with('error', 'Please select items to checkout');
-            }
-
-            // Store in session for the checkout view
-            session([
-                'items' => $items,
-                'totalPrice' => $request->totalPrice
-            ]);
-
-            return view('UserSide.Pages.CheckOut')
-                ->with('items', $items)
-                ->with('totalPrice', $request->totalPrice);
-            
-        } catch (\Exception $e) {
-            Log::error('Checkout preview error: ' . $e->getMessage());
-            return redirect()->back()
-                ->with('error', 'Error processing checkout: ' . $e->getMessage());
-        }
-    }
-
-    public function checkoutProcess(Request $request)
-    {
-        try {
-            // Validate the request
-            $validated = $request->validate([
-                'items' => 'required|string',
-                'totalPrice' => 'required|numeric|min:0',
-                'address' => 'required|string',
-                'paymentMethod' => 'required|string',
-                'phoneNumber' => 'required|string'
-            ]);
-
-            $items = json_decode($request->items, true);
-
-            if (empty($items)) {
-                return redirect()->back()->with('error', 'No items found for checkout.');
-            }
-
-            $userId = Auth::user()->userId;
-            $firstName = Auth::user()->firstName;
-            $address = $request->address;
-            $paymentMethod = $request->paymentMethod;
-            $phoneNumber = $request->phoneNumber;
-
-            $orderId = 'ORD-' . $this->GetTheGenerateOrderId();
-
-            DB::beginTransaction();
-
-            try {
-                DB::table('orders')->insert([
-                    'orderId' => $orderId,
-                    'userId' => $userId,
-                    'firstName' => $firstName,
-                    'address' => $address,
-                    'paymentMethod'=> $paymentMethod,
-                    'phoneNumber' => $phoneNumber,
-                    'totalAmount' => $request->totalPrice,
-                    'orderStatus' => 'Pending',
-                    'created_at' => Carbon::now()->toDateTimeLocalString(),
-                    'updated_at' => Carbon::now()->toDateTimeLocalString(),
-                ]);
-
-                foreach ($items as $item) {
-                    DB::table('order_details')->insert([
-                        'orderId' => $orderId,
-                        'productId' => $item['productId'],
-                        'productName' => $item['productName'],
-                        'category' => $item['category'],
-                        'quantity' => $item['quantity'],
-                        'price' => $item['price'],
-                        'image' => $item['image'],
-                        'created_at' => Carbon::now()->toDateTimeLocalString(),
-                        'updated_at' => Carbon::now()->toDateTimeLocalString()
-                    ]);
-
-                    DB::table('products')
-                        ->where('productId', $item['productId'])
-                        ->decrement('stock', $item['quantity']);
-                }
-
-                foreach ($items as $item) {
-                    DB::table('add_to_cart')
-                        ->where('userId', $userId)
-                        ->where('productId', $item['productId'])
-                        ->delete();
-                }
-
-                DB::commit();
-
-                return redirect()->route('user.order.receipt', ['orderId' => $orderId])
-                    ->with('success', 'Order placed successfully! Your order ID is: ' . $orderId);
-
-            } catch (\Exception $e) {
-                DB::rollBack();
-                Log::error('Error processing order: ' . $e->getMessage());
-                return redirect()->back()->with('error', 'Error processing your order: ' . $e->getMessage());
-            }
-
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Error validating your order: ' . $e->getMessage());
-        }
-    }
 
     public function GetTheGenerateOrderId(): string
     {

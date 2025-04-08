@@ -147,6 +147,7 @@ Route::post('/product', [ProductController::class, 'addProduct'])->name('create.
 Route::put('/updateProduct/{id}', [ProductController::class, 'updateProduct'])->name('update.product');
 Route::delete('/archive/{id}', [ProductController::class, 'archiveEachProduct'])->name('archive.product');
 Route::delete('/retore/{id}', [ProductController::class, 'RestoringSpecialProduct'])->name('restore.product');
+Route::delete('/delete/{id}', [ProductController::class , 'DeleteEachProduct'])->name('delete.product');
 Route::post('/addtocart/{id}',[UserController::class, 'UserAddToCart'])->name('addtocart');
 Route::post('/removefromcart/{id}',[UserController::class, 'UserRemoveItemFromAddtoCart'])->name('removefromcart'); 
 Route::put('/UpdateInformationUser/{id}',[UserController::class,'UpdateInformationUser'])->name('UpdateInformationUser');

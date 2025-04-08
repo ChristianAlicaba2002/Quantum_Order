@@ -14,6 +14,7 @@
 
 
 <body>
+    
     <div class="login-container">
         <div class="login-left">
             <div class="login-box">
@@ -32,11 +33,11 @@
                 <form action="{{ route('auth.adminlogin') }}" method="post" class="log">
                     @csrf
                     <div class="input-group">
-                        <input type="email" name="email" placeholder="Email address" required>
+                        <input type="email" name="email" placeholder="Admin" required>
                         <i class="fas fa-envelope"></i>
                     </div>
                     <div class="input-group">
-                        <input type="password" name="password" id="password" placeholder="Enter password" required>
+                        <input type="password" name="password" id="password" placeholder="Password" required>
                         <i class="fas fa-eye-slash toggle-password" onclick="togglePassword()"></i>
                     </div>
                     <button type="submit">

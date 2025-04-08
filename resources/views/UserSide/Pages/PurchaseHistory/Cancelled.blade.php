@@ -371,12 +371,12 @@
                                 <p><strong>Status:</strong> <span class="status-declined">{{ $order->orderStatus }}</span></p>
                                 <p><strong>Order Date:</strong> {{ date('M d, Y h:i A', strtotime($order->created_at)) }}</p>
                             </div>
-                            <form action="/reorder-cancelled/{{$order->orderId}}" method="POST" class="reorder-form">
+                            <!-- <form action="/reorder-cancelled/{{$order->orderId}}" method="POST" class="reorder-form">
                                 @csrf
                                 <button type="submit" class="reorder-btn">
                                     Re-Attempt Order
                                 </button>
-                            </form>
+                            </form> -->
                         </div>
                     </div>
                 @endforeach

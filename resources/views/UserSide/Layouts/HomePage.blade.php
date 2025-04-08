@@ -51,7 +51,7 @@
                     @php
                         $featuredProducts = DB::table('products')
                             ->orderBy('created_at', 'desc')
-                            ->take(4)
+                            ->take(10)
                             ->get();
                     @endphp
                     @foreach ($featuredProducts as $product)

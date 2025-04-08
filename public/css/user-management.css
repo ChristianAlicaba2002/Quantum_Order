@@ -11,6 +11,7 @@
     --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
     --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
     --transition: all 0.3s ease;
+    --primary-btn:  #4338ca;
 }
 
 * {
@@ -27,19 +28,14 @@ body {
     padding: 2rem;
 }
 
-a[href="{{ route('AdminLogin') }}"] {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    color: var(--primary-color);
+.back-btn{
+    color: var(--primary-btn);
     text-decoration: none;
-    font-weight: 500;
-    margin-bottom: 2rem;
     transition: var(--transition);
 }
 
-a[href="{{ route('AdminLogin') }}"]:hover {
-    color: var(--secondary-color);
+.back-btn a:hover{
+    transform: translateX(-4px);
 }
 
 .container {
@@ -79,6 +75,7 @@ h1 {
     margin-bottom: 1.5rem;
 }
 
+
 table {
     width: 100%;
     background-color: var(--card-bg);
@@ -88,6 +85,7 @@ table {
     border-spacing: 0;
     overflow: hidden;
 }
+
 
 th {
     background-color: var(--background);

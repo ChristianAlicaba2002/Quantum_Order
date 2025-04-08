@@ -24,17 +24,17 @@
                 <p style="text-align: center;">Log in your account to continue</p>
 
                 @if (session('error'))
-                    <div class="alert">
-                        <i class="fas fa-exclamation-circle"></i>
-                        <span>{{ session('error') }}</span>
-                    </div>
+                <div class="alert">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span style="color: red;">{{ session('error') }}</span>
+                </div>
                 @endif
 
                 @if(session('isEmpty'))
-                    <div class="alert">
-                        <i class="fas fa-exclamation-circle"></i>
-                        <span>{{ session('isEmpty') }}</span>
-                    </div>
+                <div class="alert">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span>{{ session('isEmpty') }}</span>
+                </div>
                 @endif
 
                 <form action="{{ route('auth.login') }}" method="post">
@@ -51,7 +51,7 @@
                         <input type="password" name="password" id="password" placeholder="Enter password" required>
                         <i class="fas fa-eye-slash toggle-password" onclick="togglePassword()"></i>
                         @if (session('isPasswordEmpty'))
-                            <span class="error-message">{{ session('isPasswordEmpty') }}</span>
+                        <span class="error-message">{{ session('isPasswordEmpty') }}</span>
                         @endif
                     </div>
 
@@ -97,7 +97,7 @@
             alerts.forEach(alert => {
                 setTimeout(() => {
                     alert.style.opacity = '0';
-                    setTimeout(() => alert.remove(), 300);
+                    setTimeout(() => alert.remove(), 500);
                 }, 5000);
             });
         });

@@ -124,7 +124,7 @@ class ProductController extends Controller
         // Update the product in the database
         DB::table('products')->where('productId', $product_id)->update($data);
 
-        return redirect('/AdminLogin')->with('success', 'Product updated successfully');
+        return redirect()->route('dashboard')->with('success', 'Product updated successfully');
     }
 
     public function archiveEachProduct($id)
@@ -172,6 +172,19 @@ class ProductController extends Controller
             'created_at' => $product->created_at,
             'updated_at' => Carbon::now()->toDateTimeLocalString(),
         ]);
+
+        return redirect('/Archive')->with('success', 'Product restore successfully');
+    }
+
+    public function DeleteEachProduct($id)
+    {
+        $product = DB::table('archive_products')->where('id', $id)->first();
+
+        if (! $product) {
+            return redirect('/Archive')->with('error', 'Product not found');
+        }
+
+        DB::table('archive_products')->where('id', $id)->delete();
 
         return redirect('/Archive')->with('success', 'Product restore successfully');
     }

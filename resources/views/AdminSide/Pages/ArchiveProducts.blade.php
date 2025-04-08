@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="shortcut icon" href="{{asset('assets/logo.jpg')}}" type="image/x-icon">
     <link rel="stylesheet" href="{{ asset('css/archive-products.css') }}">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <title>Archive Products</title>
@@ -22,8 +23,11 @@
             <p>These are all products you temporarily removed</p>
         </div>
 
+        <!-- Table Container -->
         <div class="table-container">
             <table>
+                
+                <!-- Table Head -->
                 <thead>
                     <tr>
                         <th>ID</th>
@@ -37,6 +41,8 @@
                         <th>Action</th>
                     </tr>
                 </thead>
+
+                <!-- Table Body -->
                 <tbody>
                     @if (count($ArchiveProducts) == 0)
                         <tr>
@@ -70,8 +76,9 @@
                                             Restore
                                         </button>
                                     </form>
-                                    <form action="" method="post">
+                                    <form action="/delete/{{$ArchiveProduct->id}}" method="post">
                                         @csrf
+                                        @method('DELETE')
                                         <button type="submit" class="delete-btn">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                                 <polyline points="3 6 5 6 21 6"/>
@@ -89,7 +96,7 @@
 
             <div class="table-footer">
                 <span>Total Archived Products: {{ count($ArchiveProducts) }}</span>
-                <span>Last Updated: {{ now()->format('M d, Y H:i') }}</span>
+                <span>Last Updated: {{ now()->format('M d, Y') }}</span>
             </div>
         </div>
     </div>

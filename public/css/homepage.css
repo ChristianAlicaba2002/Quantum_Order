@@ -180,6 +180,7 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
+    margin-bottom: .90rem;
     padding: 1rem 1rem 1rem .90rem;
     background: white;
     border-radius: var(--radius-md);
@@ -200,7 +201,7 @@ body {
     height: 80px;
     object-fit: cover;
     border-radius: var(--radius-sm);
-    margin-right: 1rem;
+    margin-right: .40rem;
     margin-bottom: 0.50rem;
     transition: var(--transition);
 }

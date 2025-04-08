@@ -12,6 +12,7 @@
 </head>
 
 <body>
+    <!-- Header -->
     <header class="dashboard-header">
         <div class="header-content">
             <h1>Dashboard</h1>
@@ -39,81 +40,125 @@
         </div>
     </header>
 
-    <nav class="MenuHamburger">
-        <ul>
-            <li>
-                <a href="{{ route('ArchiveProducts') }}">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <polyline points="21 8 21 21 3 21 3 8"></polyline>
-                        <rect x="1" y="3" width="22" height="5"></rect>
-                        <line x1="10" y1="12" x2="14" y2="12"></line>
-                    </svg>
-                    Archive
-                </a>
-            </li>
-            <li>
-                <a href="{{ route('OrderHistory') }}">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                        <polyline points="14 2 14 8 20 8"></polyline>
-                        <line x1="16" y1="13" x2="8" y2="13"></line>
-                        <line x1="16" y1="17" x2="8" y2="17"></line>
-                        <polyline points="10 9 9 9 8 9"></polyline>
-                    </svg>
-                    Orders
-                </a>
-            </li>
-            <li>
-                <a href="/pending-orders" class="pending-orders-link">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="12" cy="12" r="10"></circle>
-                        <polyline points="12 6 12 12 16 14"></polyline>
-                    </svg>
-                    Pending Orders
-                    <span class="order-counter" id="orderCounter"></span>
-                </a>
-            </li>
-        </ul>
-    </nav>
+    <!-- Badges Attention -->
+    <section>
+        <nav class="MenuHamburger">
+            @include('AdminSide.Pages.Badges')
+            <ul>
+                <!-- <li>
+                    <a href="{{ route('ArchiveProducts') }}">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="21 8 21 21 3 21 3 8"></polyline>
+                            <rect x="1" y="3" width="22" height="5"></rect>
+                            <line x1="10" y1="12" x2="14" y2="12"></line>
+                        </svg>
+                        Archive
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ route('OrderHistory') }}">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                            <line x1="16" y1="13" x2="8" y2="13"></line>
+                            <line x1="16" y1="17" x2="8" y2="17"></line>
+                            <polyline points="10 9 9 9 8 9"></polyline>
+                        </svg>
+                        Orders
+                    </a>
+                </li>
+                <li>
+                    <a href="/pending-orders" class="pending-orders-link">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polyline points="12 6 12 12 16 14"></polyline>
+                        </svg>
+                        Pending Orders
+                        <span class="order-counter" id="orderCounter"></span>
+                    </a>
+                </li> -->
 
-    @if (session('failedToExport'))
+            </ul>
+        </nav>
+    </section>
+
+    <!-- Alert Error -->
+    <section>
+        @if (session('failedToExport'))
         <div class="alert alert-danger">
             {{ session('failedToExport') }}
         </div>
-    @endif
+        @endif
+    </section>
 
-    <div class="container downloads">
-        <a href="{{ route('UserManagement') }}" class="action-link">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                <circle cx="9" cy="7" r="4"></circle>
-                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-            </svg>
-            User Management
-        </a>
-        <a href="{{ route('products.excel') }}" class="export-button">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                <polyline points="14 2 14 8 20 8"></polyline>
-                <line x1="12" y1="18" x2="12" y2="12"></line>
-                <line x1="9" y1="15" x2="15" y2="15"></line>
-            </svg>
-            Export to Excel
-        </a>
-        <a href="{{ route('products.pdf') }}" class="export-button">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                <polyline points="14 2 14 8 20 8"></polyline>
-                <line x1="16" y1="13" x2="8" y2="13"></line>
-                <line x1="16" y1="17" x2="8" y2="17"></line>
-                <polyline points="10 9 9 9 8 9"></polyline>
-            </svg>
-            Export to PDF
-        </a>
-    </div>
+    <!-- Container Badges -->
+    <section>
+        <div class="container downloads">
+            <a href="{{ route('UserManagement') }}" class="export-button">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                </svg>
+                User Management
+            </a>
 
-    @if (!$products->isEmpty())
+            <a href="{{ route('ArchiveProducts') }}" class="export-button">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="21 8 21 21 3 21 3 8"></polyline>
+                    <rect x="1" y="3" width="22" height="5"></rect>
+                    <line x1="10" y1="12" x2="14" y2="12"></line>
+                </svg>
+                Archive
+            </a>
+
+            <a href="{{ route('OrderHistory') }}" class="export-button">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                    <polyline points="10 9 9 9 8 9"></polyline>
+                </svg>
+                Orders
+            </a>
+
+            <a href="/pending-orders" class="export-button">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="12 6 12 12 16 14"></polyline>
+                </svg>
+                Pending Orders
+                <span class="order-counter" id="orderCounter"></span>
+            </a>
+
+            <a href="{{ route('products.excel') }}" class="export-button">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                    <line x1="12" y1="18" x2="12" y2="12"></line>
+                    <line x1="9" y1="15" x2="15" y2="15"></line>
+                </svg>
+                Export to Excel
+            </a>
+            <a href="{{ route('products.pdf') }}" class="export-button">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                    <polyline points="10 9 9 9 8 9"></polyline>
+                </svg>
+                Export to PDF
+            </a>
+        </div>
+
+    </section>
+
+    <!-- Category Navigation -->
+    <section>
+        @if (!$products->isEmpty())
         <nav class="category-nav-container">
             <ul class="category-nav">
                 <li>
@@ -122,25 +167,28 @@
                     </button>
                 </li>
                 @php
-                    $categories = $products->pluck('category')->unique();
+                $categories = $products->pluck('category')->unique();
                 @endphp
                 @foreach ($categories as $category)
-                    <li>
-                        <button class="filter-btn" onclick="filterProducts('{{ $category }}', event)">
-                            {{ $category }}'s
-                        </button>
-                    </li>
+                <li>
+                    <button class="filter-btn" onclick="filterProducts('{{ $category }}', event)">
+                        {{ $category }}'s
+                    </button>
+                </li>
                 @endforeach
             </ul>
         </nav>
-    @endif
+        @endif
+    </section>
 
-    <div class="products-container">
-        <h1 id="categoryTitle" class="section-title">All Products</h1>
-        
-        @if ($products->isEmpty())
+    <!-- Product Table -->
+    <main>
+        <div class="products-container">
+            <h1 id="categoryTitle" class="section-title">All Products</h1>
+
+            @if ($products->isEmpty())
             <p class="no-products">Don't have any products added</p>
-        @else
+            @else
             <div class="table-responsive">
                 <table id="productTable" class="products-table">
                     <thead>
@@ -158,137 +206,153 @@
                     </thead>
                     <tbody>
                         @foreach ($products->sortBy('price') as $product)
-                            <tr>
-                                <td>{{ $product->productId }}</td>
-                                <td>
-                                    <img class="product-image" src="{{ asset('/images/' . $product->image) }}" alt="{{ $product->productName }}">
-                                </td>
-                                <td>{{ $product->productName }}</td>
-                                <td>{{ $product->category }}</td>
-                                <td>&#8369;{{ number_format($product->price) }}</td>
-                                <td class="{{ $product->stock <= 20 ? 'low-stock' : '' }}">{{ $product->stock }}</td>
-                                <td>{{ $product->description }}</td>
-                                <td>{{ $product->created_at }}</td>
-                                <td class="action-cell">
-                                    <button class="edit-btn" type="button" onclick="EditProducts('{{ $product->productId}}','{{ $product->productName }}','{{ $product->category }}','{{ $product->price }}','{{ $product->stock }}','{{ $product->description }}','{{ $product->image }}')">
+                        <tr>
+                            <td>{{ $product->productId }}</td>
+                            <td>
+                                <img class="product-image" src="{{ asset('/images/' . $product->image) }}" alt="{{ $product->productName }}">
+                            </td>
+                            <td>{{ $product->productName }}</td>
+                            <td>{{ $product->category }}</td>
+                            <td>&#8369;{{ number_format($product->price) }}</td>
+                            <td class="{{ $product->stock <= 20 ? 'low-stock' : '' }}">{{ $product->stock }}</td>
+                            <td>{{ $product->description }}</td>
+                            <td>{{ $product->created_at }}</td>
+                            <td class="action-cell">
+                                <button class="edit-btn" type="button" onclick="EditProducts('{{ $product->productId}}','{{ $product->productName }}','{{ $product->category }}','{{ $product->price }}','{{ $product->stock }}','{{ $product->description }}','{{ $product->image }}')">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                                    </svg>
+                                    Edit
+                                </button>
+                                <form action="/archive/{{ $product->id }}" method="post">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button class="archive-btn" type="submit">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                                            <polyline points="3 6 5 6 21 6"></polyline>
+                                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
                                         </svg>
-                                        Edit
+                                        Archive
                                     </button>
-                                    <form action="/archive/{{ $product->id }}" method="post">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button class="archive-btn" type="submit">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                                <polyline points="3 6 5 6 21 6"></polyline>
-                                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                                            </svg>
-                                            Archive
-                                        </button>
-                                    </form>
-                                </td>
-                            </tr>
+                                </form>
+                            </td>
+                        </tr>
                         @endforeach
                     </tbody>
                 </table>
             </div>
-        @endif
-    </div>
+            @endif
+        </div>
+    </main>
 
     <!-- Add Product Modal -->
-    <div id="addProductModal" class="modal">
-        <div>
+    <section>
+        <div id="addProductModal" class="modal">
             <div>
                 <div>
-                    <h5>Add New Product</h5>
-                </div>
-                <form action="{{ route('create.product') }}" method="POST" enctype="multipart/form-data">
                     <div>
+                        <h5>Add New Product</h5>
+                    </div>
+                    <form action="{{ route('create.product') }}" method="POST" enctype="multipart/form-data">
+                        <div>
+                            @csrf
+                            <div>
+                                <label for="productName">Product Name</label>
+                                <input type="text" id="productName" name="productName" required>
+                            </div>
+                            <div>
+                                <label for="category">Category</label>
+                                <input type="text" id="category" name="category" required>
+                            </div>
+                            <div>
+                                <label for="price">Price</label>
+                                <input type="number" id="price" name="price" step="0.01" required>
+                            </div>
+                            <div>
+                                <label for="stock">Stock</label>
+                                <input type="number" id="stock" name="stock" required>
+                            </div>
+                            <div>
+                                <label for="description">Description</label>
+                                <textarea id="description" name="description" rows="3" required></textarea>
+                            </div>
+                            <div>
+                                <label for="image">Product Image</label>
+                                <input type="file" id="image" name="image" accept="image/*" required>
+                                <img id="previewImage" src="" alt="No product image" class="previewImage">
+                            </div>
+                        </div>
+                        <div>
+                            <div style="display: flex; justify-content:space-between;margin-top:1rem;">
+                                <button type="button" data-bs-dismiss="modal">Close</button>
+                                <button type="submit">Add Product</button>
+                            </div>
+
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+
+    </section>
+
+    <!-- Edit Product Modal -->
+    <section>
+        <div id="editProductModal" class="modal">
+            <div>
+                <div>
+                    <div>
+                        <h5>Edit Product</h5>
+                    </div>
+                    <form id="EditForm" action="" method="POST" enctype="multipart/form-data">
                         @csrf
+                        @method('PUT')
+                        <input type="hidden" id="EditProductId" name="productId">
                         <div>
-                            <label for="productName">Product Name</label>
-                            <input type="text" id="productName" name="productName" required>
+                            <div>
+                                <label for="EditProductName">Product Name</label>
+                                <input type="text" id="EditProductName" name="productName" required>
+                            </div>
+                            <div>
+                                <label for="EditCategory">Category</label>
+                                <input type="text" id="EditCategory" name="category" required>
+                            </div>
+                            <div>
+                                <label for="EditPrice">Price</label>
+                                <input type="number" id="EditPrice" name="price" step="0.01" required>
+                            </div>
+                            <div>
+                                <label for="EditStock">Stock</label>
+                                <input type="number" id="EditStock" name="stock" required>
+                            </div>
+                            <div>
+                                <label for="EditDescription">Description</label>
+                                <textarea id="EditDescription" name="description" rows="3" required></textarea>
+                            </div>
+                            <div>
+                                <label for="EditImage">Product Image</label>
+                                <input type="file" id="EditImage" name="image" accept="image/*">
+                                <img id="EditPreviewImage" src="" alt="" class="previewImage">
+                            </div>
                         </div>
                         <div>
-                            <label for="category">Category</label>
-                            <input type="text" id="category" name="category" required>
-                        </div>
-                        <div>
-                            <label for="price">Price</label>
-                            <input type="number" id="price" name="price" step="0.01" required>
-                        </div>
-                        <div>
-                            <label for="stock">Stock</label>
-                            <input type="number" id="stock" name="stock" required>
-                        </div>
-                        <div>
-                            <label for="description">Description</label>
-                            <textarea id="description" name="description" rows="3" required></textarea>
-                        </div>
-                        <div>
-                            <label for="image">Product Image</label>
-                            <input type="file" id="image" name="image" accept="image/*" required>
-                            <img id="previewImage" src="" alt="" srcset="">
-                        </div>
-                    </div>
-                    <div>
-                        <button type="button" data-bs-dismiss="modal">Close</button>
-                        <button type="submit">Add Product</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
+                            <div style="display: flex; justify-content:space-between;margin-top:1rem;">
+                                <button type="button" data-bs-dismiss="modal">Close</button>
+                                <button type="submit">Save Changes</button>
+                            </div>
 
-    <div id="editProductModal" class="modal">
-        <div>
-            <div>
-                <div>
-                    <h5>Edit Product</h5>
+                        </div>
+                    </form>
                 </div>
-                <form id="EditForm" action="" method="POST" enctype="multipart/form-data">
-                    @csrf
-                    @method('PUT')
-                    <input type="hidden" id="EditProductId" name="productId">
-                    <div>
-                        <div>
-                            <label for="EditProductName">Product Name</label>
-                            <input type="text" id="EditProductName" name="productName" required>
-                        </div>
-                        <div>
-                            <label for="EditCategory">Category</label>
-                            <input type="text" id="EditCategory" name="category" required>
-                        </div>
-                        <div>
-                            <label for="EditPrice">Price</label>
-                            <input type="number" id="EditPrice" name="price" step="0.01" required>
-                        </div>
-                        <div>
-                            <label for="EditStock">Stock</label>
-                            <input type="number" id="EditStock" name="stock" required>
-                        </div>
-                        <div>
-                            <label for="EditDescription">Description</label>
-                            <textarea id="EditDescription" name="description" rows="3" required></textarea>
-                        </div>
-                        <div>
-                            <label for="EditImage">Product Image</label>
-                            <input type="file" id="EditImage" name="image" accept="image/*">
-                            <img id="EditPreviewImage" src="" alt="" class="preview-image">
-                        </div>
-                    </div>
-                    <div>
-                        <button type="button" data-bs-dismiss="modal">Close</button>
-                        <button type="submit">Save Changes</button>
-                    </div>
-                </form>
             </div>
         </div>
-    </div>
+    </section>
 
-    @if (session('success'))
+    <!-- Success Alert -->
+    <section>
+        @if (session('success'))
         <div class="toast success-toast">
             <div class="toast-content">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -298,9 +362,13 @@
                 <span>{{ session('success') }}</span>
             </div>
         </div>
-    @endif
+        @endif
 
-    @if (session('error'))
+    </section>
+
+    <!-- Error Alert -->
+    <section>
+        @if (session('error'))
         <div class="toast error-toast">
             <div class="toast-content">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -311,165 +379,12 @@
                 <span>{{ session('error') }}</span>
             </div>
         </div>
-    @endif
+        @endif
+    </section>
 
-    <script>
-        // Show and auto-hide toast notifications
-        document.addEventListener('DOMContentLoaded', function() {
-            const toasts = document.querySelectorAll('.toast');
-            toasts.forEach(toast => {
-                toast.classList.add('show');
-                setTimeout(() => {
-                    toast.classList.remove('show');
-                }, 5000);
-            });
-        });
-
-        //Open modal for adding products
-        document.addEventListener('DOMContentLoaded', function() {
-            const modal = document.getElementById('addProductModal');
-            const openModalBtn = document.querySelector('[data-bs-target="#addProductModal"]');
-            const closeModalBtn = document.querySelector('[data-bs-dismiss="modal"]');
-
-            openModalBtn.addEventListener('click', function() {
-                modal.classList.add('show');
-            });
-
-            closeModalBtn.addEventListener('click', function() {
-                modal.classList.remove('show');
-            });
-
-            // Close modal when clicking outside
-            modal.addEventListener('click', function(e) {
-                if (e.target === modal) {
-                    modal.classList.remove('show');
-                }
-            });
-            
-            // Image preview
-            const imageInput = document.getElementById('image');
-            const previewImage = document.getElementById('previewImage');
-            
-            imageInput.addEventListener('change', function() {
-                const file = this.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        previewImage.src = e.target.result;
-                        previewImage.style.display = 'block';
-                    };
-                    reader.readAsDataURL(file);
-                }
-            });
-        });
-
-        //Open modal Update Products
-        function EditProducts(id, productName, category, price, stock, description, image) {
-            const modal = document.getElementById('editProductModal');
-            document.getElementById('EditForm').action = `/updateProduct/${id}`;
-            document.getElementById('EditProductId').value = id;
-            document.getElementById('EditProductName').value = productName;
-            document.getElementById('EditCategory').value = category;
-            document.getElementById('EditPrice').value = price;
-            document.getElementById('EditStock').value = stock;
-            document.getElementById('EditDescription').value = description;
-            document.getElementById('EditPreviewImage').src = '/images/' + image;
-
-            modal.classList.add('show');
-            
-            // Image preview for edit form
-            const editImageInput = document.getElementById('EditImage');
-            const editPreviewImage = document.getElementById('EditPreviewImage');
-            
-            editImageInput.addEventListener('change', function() {
-                const file = this.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        editPreviewImage.src = e.target.result;
-                    };
-                    reader.readAsDataURL(file);
-                }
-            });
-        }
-
-        // Close modal when clicking outside
-        document.getElementById('editProductModal').addEventListener('click', function(e) {
-            if (e.target === this) {
-                this.classList.remove('show');
-            }
-        });
-
-        //Filtered Products in navigation Bar
-        function filterProducts(category, event) {
-            document.querySelectorAll('nav .filter-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-
-            event.target.classList.add('active');
-
-            // Update the heading
-            const categoryTitle = document.getElementById('categoryTitle');
-            categoryTitle.textContent = category === 'all' ? 'All Products' : category;
-
-            let table = document.getElementById('productTable');
-            let tr = table.getElementsByTagName('tr');
-
-            for (let i = 1; i < tr.length; i++) {
-                let categoryCell = tr[i].getElementsByTagName('td')[3];
-                if (categoryCell) {
-                    let categoryValue = categoryCell.textContent || categoryCell.innerText;
-
-                    if (category === 'all' || categoryValue.trim() === category) {
-                        tr[i].style.display = '';
-                    } else {
-                        tr[i].style.display = 'none';
-                    }
-                }
-            }
-        }
-    </script>
 
     <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
-    <script>
-        // Function to update the counter
-        function updateOrderCounter() {
-            fetch('/api/pending-orders-count')
-                .then(response => response.json())
-                .then(data => {
-                    const counter = document.getElementById('orderCounter');
-                    if (data.count > 0) {
-                        counter.textContent = data.count;
-                        counter.classList.add('has-notifications');
-                    } else {
-                        counter.textContent = '';
-                        counter.classList.remove('has-notifications');
-                    }
-                });
-        }
-
-        // Update counter on page load
-        document.addEventListener('DOMContentLoaded', function() {
-            updateOrderCounter();
-        });
-
-        // Set up real-time updates
-        const pusher = new Pusher('your-pusher-key', {
-            cluster: 'ap1'
-        });
-
-        const channel = pusher.subscribe('orders');
-        channel.bind('new-order', function(data) {
-            updateOrderCounter();
-            // Optional: Show notification
-            if (Notification.permission === "granted") {
-                new Notification("New Order!", {
-                    body: "You have a new pending order.",
-                    icon: "/path/to/your/icon.png"
-                });
-            }
-        });
-    </script>
+    <script src="{{asset('js/dashboard.js')}}"></script>
 </body>
 
 </html>
