@@ -366,6 +366,66 @@ nav button.active {
 
     to {
         transform: translateY(-100%);
-        opacity: 0;
+        opacity: 0; 
     }
+}
+
+@media (max-width: 768px) {
+    body{
+        width: 100%;
+    }
+    .active {
+        color: rgb(0, 0, 0);
+    }
+    
+    .alert-container{
+        position: fixed;
+        top: 5%;
+        transform: translateX(-50%);
+        z-index: 1000;
+        max-width: 350px;
+    }
+    .alert{
+        font-size: 10px;
+    }
+    .skeleton-card{
+        flex: 0 0 calc(50% - 15px);
+    }
+    .product-card {
+        flex: 0 0 calc(50% - 15px);
+    }
+    .product-card .add-to-cart-btn{
+        font-size: .50rem;
+        margin-left: .50rem;
+    }
+    .product-card .product-info{
+        background-color: white;
+    }
+
+    .category-title {
+        font-size: 30px;
+    }
+
+    nav ul {
+        flex-direction: row;
+        align-items: center;
+        width: 100%;
+        overflow-y: scroll;
+        height: auto;
+    }
+
+    nav ul li button{
+        font-size: small;
+    }
+
+
+    nav button {
+        margin-bottom: 10px;
+        font-size: 12px;
+    }
+
+    .view-more{
+        font-size: .50rem;
+    }
+    
 }

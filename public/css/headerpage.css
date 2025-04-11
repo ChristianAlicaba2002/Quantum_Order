@@ -328,3 +328,155 @@ a {
 .RemoveButton button{
     color: red;
 }
+
+.mobile-menu-btn {
+    display: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+    margin-right: 1rem;
+}
+
+.mobile-menu-btn span {
+    display: block;
+    width: 25px;
+    height: 3px;
+    background-color: black;
+    margin: 5px 0;
+    transition: var(--transition);
+}
+
+.mobile-menu {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background: #ffe6c5;
+    z-index: 1000;
+    padding: 1rem;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+}
+
+.mobile-menu.active {
+    transform: translateX(0);
+}
+
+.mobile-menu-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.mobile-menu-content {
+    padding: 1rem;
+}
+
+.mobile-menu-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    color: var(--text);
+    text-decoration: none;
+    border-bottom: 1px solid var(--border);
+}
+
+.mobile-menu-item img {
+    width: 24px;
+    height: 24px;
+}
+
+.mobile-menu-item.active {
+    color: var(--primary);
+}
+
+.mobile-cart-count {
+    background: var(--primary);
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 1rem;
+    font-size: 0.75rem;
+    margin-left: auto;
+}
+
+@media (max-width: 768px) {
+    .mobile-menu-btn {
+        display: block;
+    }
+
+    .Icons, .mainHeader h1, .userinformation {
+        display: none;
+    }
+
+    .SearchItemsInput{
+        margin-left: .20rem;
+    }
+    .SearchItemsInput input{
+        font-size: .80rem;
+    }
+
+    .cartNumber {
+        position: absolute;
+        z-index: 1001;
+        margin-left: 62%;
+        margin-top: 1%;
+    }
+
+    .cartNumber .cartGroup{
+        margin-left: 52%;
+        margin-top: -2.6rem;
+    }
+ 
+    .mainHeader {
+        padding: 1rem;
+    }
+
+    .mobile-menu {
+        max-width: 50%;
+        display: block;
+    }
+    .AddToCartDivision{
+        width: 100%;
+        margin-left: -5%;
+        height: 80vh;
+    }
+   .NoItemsMessage{
+    font-size: small;
+    color: red;
+   }
+
+}
+
+@media (max-width: 430px) {
+    .mainHeader h1 {
+        font-size: 1rem;
+        min-width: 30%;
+        margin-top: .70rem;
+    }
+
+    .SearchItemsInput {
+        width: 70%;
+    }
+
+    .cartNumber {
+        width: 50%;
+    }
+
+    .cartGroup {
+        margin-top: 1.5rem;
+        margin-left: 3rem;
+    }
+
+    .AddToCartDivision {
+        width: 90%;
+        margin-left: 5%;
+        height: 80vh;
+    }
+    
+}

@@ -118,16 +118,34 @@
                             <div class="product-details">
                                 <h3 class="product-name">{{ $product->productName }}</h3>
                                 <p class="product-category">{{ $product->category }}</p>
-                                <div class="product-price">₱{{ number_format($product->price, 2) }}</div>
-                                <button class="add-to-cart-btn">
-                                    <i class="bi bi-cart-plus"></i>
-                                    Add to Cart
-                                </button>
+                                <div class="product-price" style="color: red;">₱{{ number_format($product->price, 2) }}</div>
                             </div>
                         </div>
                     @endforeach
                 </div>
             </div>
+
+            <!-- <div class="products-section">
+                <div class="products-grid">
+                    @php
+                        $products = DB::table('products')->take(12)->get();
+                    @endphp
+                    @foreach ($products as $product)
+                        <div class="product-card">
+                            <img src="{{ asset('/images/' . $product->image) }}" 
+                                alt="{{ $product->productName }}"
+                                class="product-image" 
+                                onerror="this.src='{{ asset('assets/default-product.png') }}'">
+                            <div class="product-details">
+                                <h3 class="product-name">{{ $product->productName }}</h3>
+                                <p class="product-category">{{ $product->category }}</p>
+                                <div class="product-price">₱{{ number_format($product->price, 2) }}</div>
+                                <div class="product-actions">
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            </div> -->
         </div>
     </div>
 

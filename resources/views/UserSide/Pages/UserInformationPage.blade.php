@@ -200,13 +200,6 @@
             justify-content: flex-end;
         }
 
-        /* Responsive design */
-        @media (max-width: 768px) {
-            .info-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
         .btn-cancel {
             background-color: white;
             color: black;
@@ -298,137 +291,149 @@
         .edit-icon:hover {
             color: var(--dark-orange);
         }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .info-grid {
+                grid-template-columns: repeat(1, 1fr);
+            }
+
+            .info-layout {
+                display: flex;
+                flex-direction: column;
+            }
+        }
     </style>
 </head>
 
 <body>
 
     @foreach ($users as $user)
+    <div>
         <div>
-            <div>
-                <a href="{{ route('login') }}" class="back-link">Back to Home</a>
-            </div>
-            <div class="user-info-container">
-                <h2>User Information</h2>
+            <a href="{{ route('login') }}" class="back-link">Back to Home</a>
+        </div>
+        <div class="user-info-container">
+            <h2>User Information</h2>
 
 
-                <div class="info-layout">
-                    <div class="profile-side">
-                        <div class="profile-section">
-                            <div class="profile-image">
-                                <img src="{{ asset('/images/' . $user->image) }}"
-                                    alt="{{ $user->firstName }}'s profile picture"
-                                    style="width: 120px; height: 100px; object-fit: cover; border-radius: 50%;">
-                            </div>
-                            <div class="profile-names">
-                                <div class="info-group">
-                                    <label>Full Name</label>
-                                    <p>{{ $user->firstName }} {{ $user->lastName }}</p>
-                                    <span class="info-message">Your complete name as it appears on official
-                                        documents</span>
-                                </div>
+            <div class="info-layout">
+                <div class="profile-side">
+                    <div class="profile-section">
+                        <div class="profile-image">
+                            <img src="{{ asset('/images/' . $user->image) }}"
+                                alt="{{ $user->firstName }}'s profile picture"
+                                style="width: 120px; height: 100px; object-fit: cover; border-radius: 50%;">
+                        </div>
+                        <div class="profile-names">
+                            <div class="info-group">
+                                <label>Full Name</label>
+                                <p>{{ $user->firstName }} {{ $user->lastName }}</p>
+                                <span class="info-message">Your complete name as it appears on official
+                                    documents</span>
                             </div>
                         </div>
+                    </div>
 
-                        <?php
-                        $UserOrders = DB::table('orders')
-                            ->where('userId', Auth::user()->userId)
-                            ->get();
-                        
-                        $CancelledOrder = DB::table('orders')
-                            ->where('userId', Auth::user()->userId)
-                            ->where('orderStatus', 'Declined')
-                            ->get();
-                        
-                        $DeliveredOrder = DB::table('orders')
-                            ->where('userId', Auth::user()->userId)
-                            ->where('orderStatus', 'Delivered')
-                            ->get();
-                        
-                        ?>
-                        <div class="OrderSummary">
+                    <?php
+                    $UserOrders = DB::table('orders')
+                        ->where('userId', Auth::user()->userId)
+                        ->get();
 
-                            <label style="font-weight: bolder; font-size:1.2rem;">Order Summary</label>
-                            @if ($UserOrders->count() > 0)
-                                <label for="">Total Orders: {{ $UserOrders->count() }}</label>
-                            @else
-                                <label for="">Total Orders: 0</label>
-                            @endif
-                            @if ($CancelledOrder->count() > 0)
-                                <label for="">Cancelled: {{ $CancelledOrder->count() }}</label>
-                            @else
-                                <label for="">Cancelled: 0</label>
-                            @endif
-                            @if ($DeliveredOrder->count() > 0)
-                                <label for="">Delivered: {{ $DeliveredOrder->count() }}</label>
-                            @else
-                                <label for="">Delivered: 0</label>
-                            @endif
-                        </div>
+                    $CancelledOrder = DB::table('orders')
+                        ->where('userId', Auth::user()->userId)
+                        ->where('orderStatus', 'Declined')
+                        ->get();
 
+                    $DeliveredOrder = DB::table('orders')
+                        ->where('userId', Auth::user()->userId)
+                        ->where('orderStatus', 'Delivered')
+                        ->get();
 
+                    ?>
+                    <div class="OrderSummary">
+
+                        <label style="font-weight: bolder; font-size:1.2rem;">Order Summary</label>
+                        @if ($UserOrders->count() > 0)
+                        <label for="">Total Orders: {{ $UserOrders->count() }}</label>
+                        @else
+                        <label for="">Total Orders: 0</label>
+                        @endif
+                        @if ($CancelledOrder->count() > 0)
+                        <label for="">Cancelled: {{ $CancelledOrder->count() }}</label>
+                        @else
+                        <label for="">Cancelled: 0</label>
+                        @endif
+                        @if ($DeliveredOrder->count() > 0)
+                        <label for="">Delivered: {{ $DeliveredOrder->count() }}</label>
+                        @else
+                        <label for="">Delivered: 0</label>
+                        @endif
                     </div>
 
 
+                </div>
 
-                    <div class="details-side">
-                        <div class="info-grid">
-                            <div class="info-group">
-                                <label>Gender</label>
-                                <p>{{ $user->gender }}</p>
-                                <span class="info-message">Your identified gender for demographic purposes</span>
-                            </div>
 
-                            <div class="info-group">
-                                <label>Phone number</label>
-                                <p>{{ $user->PhoneNumber }}</p>
-                                <span class="info-message">Primary contact number for account verification and
-                                    updates</span>
-                            </div>
 
-                            <div class="info-group">
-                                <label>Username</label>
-                                <p>{{ $user->username }}</p>
-                                <span class="info-message">Your unique identifier for logging into the system</span>
-                            </div>
+                <div class="details-side">
+                    <div class="info-grid">
+                        <div class="info-group">
+                            <label>Gender</label>
+                            <p>{{ $user->gender }}</p>
+                            <span class="info-message">Your identified gender for demographic purposes</span>
+                        </div>
 
-                            <div class="info-group">
-                                <label>Password</label>
-                                <p>********</p>
-                                <span class="info-message">Your secret key for accessing your account</span>
-                            </div>
+                        <div class="info-group">
+                            <label>Phone number</label>
+                            <p>{{ $user->PhoneNumber }}</p>
+                            <span class="info-message">Primary contact number for account verification and
+                                updates</span>
+                        </div>
 
-                            <div class="info-group">
-                                <label>Address</label>
-                                <p>{{ $user->address }}</p>
-                                <span class="info-message">Your current residential address for delivery and
-                                    contact</span>
-                            </div>
+                        <div class="info-group">
+                            <label>Username</label>
+                            <p>{{ $user->username }}</p>
+                            <span class="info-message">Your unique identifier for logging into the system</span>
+                        </div>
 
+                        <div class="info-group">
+                            <label>Password</label>
+                            <p>********</p>
+                            <span class="info-message">Your secret key for accessing your account</span>
+                        </div>
+
+                        <div class="info-group">
+                            <label>Address</label>
+                            <p>{{ $user->address }}</p>
+                            <span class="info-message">Your current residential address for delivery and
+                                contact</span>
                         </div>
 
                     </div>
-                    <div class="full-width">
-                        <i class="fas fa-edit edit-icon"
-                            onclick="EditInformation('{{ $user->userId }}','{{ $user->firstName }}','{{ $user->lastName }}','{{ $user->gender }}','{{ $user->address }}','{{ $user->PhoneNumber }}','{{ $user->username }}','{{ $user->image }}')"></i>
-                    </div>
+
+                </div>
+                <div class="full-width">
+                    <i class="fas fa-edit edit-icon"
+                        onclick="EditInformation('{{ $user->userId }}','{{ $user->firstName }}','{{ $user->lastName }}','{{ $user->gender }}','{{ $user->address }}','{{ $user->PhoneNumber }}','{{ $user->username }}','{{ $user->image }}')"></i>
                 </div>
             </div>
         </div>
+    </div>
     @endforeach
 
 
 
     @if (session('error'))
-        <script>
-            alert("{{ session('error') }}")
-        </script>
+    <script>
+        alert("{{ session('error') }}")
+    </script>
     @endif
 
     @if (session('success'))
-        <script>
-            alert("{{ session('success') }}")
-        </script>
+    <script>
+        alert("{{ session('success') }}")
+    </script>
     @endif
 
 

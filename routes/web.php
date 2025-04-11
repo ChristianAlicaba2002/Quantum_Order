@@ -156,6 +156,8 @@ Route::post('/checkout', [UserController::class, 'checkoutItems'])->name('checko
 Route::get('/pending-orders', [AdminController::class, 'viewPendingOrders'])->name('admin.pending-orders');
 Route::get('/order/{orderId}', [AdminController::class, 'viewOrderDetails'])->name('admin.order-details');
 Route::post('/order/{orderId}/update-status', [AdminController::class, 'updateOrderStatus'])->name('admin.update-order-status');
+Route::get('/sales', [AdminController::class , 'SalesProduct'])->name('admin.sales-product');
+
 Route::post('/cancel.order/{orderId}', [UserController::class, 'cancelOrder'])->name('cancel.order');
 Route::post('/reorder-cancelled/{orderId}', [UserController::class, 'reorderCancelled'])->name('reorder.cancelled');
 Route::get('/checkout/preview', [UserController::class, 'checkoutPreview'])->name('checkout.preview');

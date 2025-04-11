@@ -21,6 +21,11 @@
 <body>
 
     <header class="mainHeader">
+        <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
         <h1>Quantum Order</h1>
         <div class="Icons">
             <a href="/" class="{{ request()->is('/') ? 'active' : '' }}">
@@ -55,8 +60,6 @@
 
 
         <div class="AddToCartDivision" id="AddToCartDivision">
-
-
             <?php
             $product = DB::table('add_to_cart')
                 ->where('userId', Auth::user()->userId)
@@ -147,6 +150,51 @@
             </div>
         </div>
     </header>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu" id="mobileMenu">
+        <div class="mobile-menu-header">
+            <h2>Menu</h2>
+            <button onclick="toggleMobileMenu()" style="background: none; border: none; font-size: 1.5rem;">×</button>
+        </div>
+        <div class="mobile-menu-content">
+            <a href="/" class="mobile-menu-item {{ request()->is('/') ? 'active' : '' }}">
+                <img src="{{ asset('assets/house-door.svg') }}" alt="Home">
+                Home
+            </a>
+            <a href="/MainPage" class="mobile-menu-item {{ request()->is('MainPage') ? 'active' : '' }}">
+                <img src="{{ asset('assets/box-seam.svg') }}" alt="Products">
+                Products
+            </a>
+            <a href="{{ route('UserInformationPage') }}" class="mobile-menu-item">
+                <img src="{{ asset('/images/' . Auth::user()->image) }}" alt="Profile" style="border-radius: 50%;">
+                {{ Auth::user()->firstName }}
+            </a>
+            <a href="{{ route('user.to-pay-history') }}" class="mobile-menu-item">
+                <i class="bi bi-credit-card"></i>
+                To pay
+            </a>
+            <a href="{{ route('user.to-delivery-history') }}" class="mobile-menu-item">
+                <i class="bi bi-truck"></i>
+                Delivery
+            </a>
+            <a href="{{ route('user.received-history') }}" class="mobile-menu-item">
+                <i class="bi bi-check-circle"></i>
+                Received
+            </a>
+            <a href="{{ route('user.cancelled-history') }}" class="mobile-menu-item">
+                <i class="bi bi-x-circle"></i>
+                Cancelled
+            </a>
+            <form action="{{ route('auth.logout') }}" method="post" class="mobile-menu-item">
+                @csrf
+                <button type="submit" style="background: none; border: none; color: red; font-size: 1.05rem;">
+                    <i class="bi bi-box-arrow-right" style="margin-right: .70rem;"></i>
+                    Logout
+                </button>
+            </form>
+        </div>
+    </div>
 
     <script>
         function searchProducts(searchText) {
@@ -388,6 +436,21 @@
             document.body.appendChild(form);
             form.submit();
         }
+
+        function toggleMobileMenu() {
+            const mobileMenu = document.getElementById('mobileMenu');
+            mobileMenu.classList.toggle('active');
+        }
+
+        // Close mobile menu when clicking outside
+        document.addEventListener('click', function(event) {
+            const mobileMenu = document.getElementById('mobileMenu');
+            const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+            
+            if (!mobileMenu.contains(event.target) && !mobileMenuBtn.contains(event.target)) {
+                mobileMenu.classList.remove('active');
+            }
+        });
     </script>
 </body>
 
