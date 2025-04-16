@@ -22,21 +22,6 @@ class EloquentUserRepository implements UserRepository
         $UserModel->save();
     }
 
-    // public function update(User $user): void
-    // {
-    //     $UserModel = ModelsUser::find($user->getUserId()) ?? new ModelsUser();
-    //     $UserModel->userId = $user->getUserId();
-    //     $UserModel->firstName = $user->getFirstName();
-    //     $UserModel->lastName = $user->getLastName();
-    //     $UserModel->gender = $user->getGender();
-    //     $UserModel->address = $user->getAddress();
-    //     $UserModel->PhoneNumber = $user->getPhoneNumber();
-    //     $UserModel->username = $user->getUsername();
-    //     $UserModel->password = $user->getPassword();
-    //     $UserModel->image = $user->getImage();
-    //     $UserModel->save();
-    // }
-
     public function update(User $user): void
     {
         $userModel = ModelsUser::where('userId', $user->getUserId())->first();
@@ -57,7 +42,7 @@ class EloquentUserRepository implements UserRepository
 
     public function findById(string $userId): ?User
     {
-        $UserModel = ModelsUser::find($userId);
+        $UserModel = ModelsUser::where('userId', $userId)->first();
         if ($UserModel === null) {
             return null;
         }

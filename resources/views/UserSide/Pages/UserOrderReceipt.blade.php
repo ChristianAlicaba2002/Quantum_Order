@@ -240,7 +240,7 @@
         <div class="receipt-header">
             <h1>Order Receipt</h1>
             <p>Thank you for your purchase!</p>
-            <p>{{ date('F d, Y h:i A', strtotime($order->updated_at)) }}</p>
+            <p>{{ date('F d, Y') }}</p>
         </div>
 
         <div class="order-info">

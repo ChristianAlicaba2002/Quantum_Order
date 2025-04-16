@@ -370,7 +370,15 @@ nav button.active {
     }
 }
 
+@media (max-width: 4) {
+    
+}
+
 @media (max-width: 768px) {
+
+    .alert{
+        display: none;
+    }
     body{
         width: 100%;
     }

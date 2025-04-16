@@ -221,15 +221,6 @@
     </div>
     <h1>To Pay History</h1>
 
-    <!-- @if (session('success'))
-        <div class="alertContainer">
-            <div class="alert alert-success fade-in" role="alert">
-                <i class="fas fa-check-circle me-2"></i>
-                {{ session('success') }}
-            </div>
-        </div>
-    @endif -->
-
     @if (session('success'))
         <div class="alertContainer">
             <div class="alert alert-success" id="successAlert">
@@ -259,7 +250,7 @@
                             <p><strong>Total Amount:</strong> ₱{{ number_format($order->totalAmount, 2) }}</p>
                             <p><strong>Status:</strong> <span class="status-pending">{{ $order->orderStatus }}</span></p>
                             <p><strong>Address:</strong> {{ $order->address }}</p>
-                            <p><strong>Order Date:</strong> {{ date('M d, Y h:i A', strtotime($order->created_at)) }}</p>
+                            <p><strong>Order Date:</strong> {{ date('M d, Y') }}</p>
                         </div>
                         <form action="{{ route('cancel.order', $order->orderId) }}" method="post" class="cancel-form">
                             @csrf

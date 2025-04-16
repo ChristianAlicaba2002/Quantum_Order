@@ -67,8 +67,8 @@ class ProductController extends Controller
             'stock' => intval($request->stock),
             'description' => trim($request->description),
             'image' => $data['image'],
-            'created_at' => Carbon::now(),
-            'updated_at' => Carbon::now(),
+            'created_at' => Carbon::now()->toDateTimeString(),
+            'updated_at' => Carbon::now()->toDateTimeString(),
         ]);
 
         return redirect()->back()->with('success', 'Product added successfully!');
@@ -145,10 +145,10 @@ class ProductController extends Controller
             'description' => $product->description,
             'image' => $product->image,
             'created_at' => $product->created_at,
-            'updated_at' => Carbon::now()->toDateTimeLocalString(),
+            'updated_at' => Carbon::now()->toDateString(),
         ]);
 
-        return redirect('/AdminLogin')->with('success', 'Product archive successfully');
+        return redirect('/dashboard')->with('success', 'Product archive successfully');
     }
 
     public function RestoringSpecialProduct($id)
@@ -170,7 +170,7 @@ class ProductController extends Controller
             'description' => $product->description,
             'image' => $product->image,
             'created_at' => $product->created_at,
-            'updated_at' => Carbon::now()->toDateTimeLocalString(),
+            'updated_at' => Carbon::now()->toDateString(),
         ]);
 
         return redirect('/Archive')->with('success', 'Product restore successfully');

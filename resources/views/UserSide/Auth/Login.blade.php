@@ -14,7 +14,6 @@
 <body>
     <div class="login-container">
         <div class="login-left">
-            <!-- Background image will be applied via CSS -->
         </div>
         <div class="login-right">
             <div class="login-box">
@@ -23,35 +22,30 @@
                 </div>
                 <p style="text-align: center;">Log in your account to continue</p>
 
-                @if (session('error'))
-                <div class="alert">
-                    <i class="fas fa-exclamation-circle"></i>
-                    <span style="color: red;">{{ session('error') }}</span>
-                </div>
-                @endif
-
-                @if(session('isEmpty'))
-                <div class="alert">
-                    <i class="fas fa-exclamation-circle"></i>
-                    <span>{{ session('isEmpty') }}</span>
-                </div>
-                @endif
-
                 <form action="{{ route('auth.login') }}" method="post">
                     @csrf
                     <div class="input-group">
-                        <input type="text" name="username" placeholder="Username or Phone number" required>
+                        <input type="text" name="username" id="username" placeholder="Username or Phone number">
                         <i class="fas fa-user"></i>
                         @if (session('isUsernameEmpty'))
-                            <span class="error-message">{{ session('isUsernameEmpty') }}</span>
+                        <span style="color: red; font-size: .80rem">{{ session('isUsernameEmpty') }}</span>
+                        @endif
+                        @if (session('error'))
+                        <span style="color: red; font-size: .80rem">{{ session('error') }}</span>
+                        @endif
+                        @if(session('isEmpty'))
+                        <span style="color: red; font-size: .80rem">{{ session('isEmpty') }}</span>
                         @endif
                     </div>
 
                     <div class="input-group">
-                        <input type="password" name="password" id="password" placeholder="Enter password" required>
+                        <input type="password" name="password" id="password" placeholder="Enter password">
                         <i class="fas fa-eye-slash toggle-password" onclick="togglePassword()"></i>
                         @if (session('isPasswordEmpty'))
-                        <span class="error-message">{{ session('isPasswordEmpty') }}</span>
+                        <span style="color: red; font-size: .80rem">{{ session('isPasswordEmpty') }}</span>
+                        @endif
+                        @if(session('isEmpty'))
+                        <span style="color: red; font-size: .80rem">{{ session('isEmpty') }}</span>
                         @endif
                     </div>
 
@@ -76,6 +70,7 @@
     </div>
 
     <script>
+        
         function togglePassword() {
             const passwordInput = document.getElementById('password');
             const toggleIcon = document.querySelector('.toggle-password');

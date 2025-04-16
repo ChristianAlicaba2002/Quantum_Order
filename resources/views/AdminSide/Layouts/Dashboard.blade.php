@@ -216,7 +216,8 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($products->sortBy('price') as $product)
+                    <!-- ->sortBy('created_at') -->
+                        @foreach ($products as $product)
                         <tr>
                             <td>{{ $product->productId }}</td>
                             <td>
@@ -227,7 +228,7 @@
                             <td>&#8369;{{ number_format($product->price) }}</td>
                             <td class="{{ $product->stock <= 10 ? 'low-stock' : '' }}">{{ $product->stock }}</td>
                             <td>{{ $product->description }}</td>
-                            <td>{{ $product->created_at }}</td>
+                            <td>{{$product->created_at}}</td>
                             <td class="action-cell">
                                 <button class="edit-btn" type="button" onclick="EditProducts('{{ $product->productId}}','{{ $product->productName }}','{{ $product->category }}','{{ $product->price }}','{{ $product->stock }}','{{ $product->description }}','{{ $product->image }}')">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">

@@ -26,12 +26,7 @@
 
         <div class="sales-table-container">
             <div class="table-header">
-                <h2>Product Details</h2>
-                <div class="table-actions">
-                    <button class="export-btn">
-                        <i class="bi bi-download"></i> Export
-                    </button>
-                </div>
+                <h2>Sales Product Details</h2>
             </div>
 
             <div class="table-responsive">

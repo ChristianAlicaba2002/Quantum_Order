@@ -24,27 +24,21 @@
                 <p style="text-align:center">Please fill in this form to create an account</p>
 
                 @if(session('error'))
-                    <div class="alert">
-                        <i class="fas fa-exclamation-circle"></i>
-                        <span>{{ session('error') }}</span>
-                    </div>
+                <div class="alert">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span>{{ session('error') }}</span>
+                </div>
                 @endif
 
                 @if(session('lengthError'))
-                    <div class="alert">
-                        <i class="fas fa-exclamation-circle"></i>
-                        <span>{{ session('lengthError') }}</span>
-                    </div>
+                <div class="alert">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span>{{ session('lengthError') }}</span>
+                </div>
                 @endif
 
-                @if(session('passwordError'))
-                    <div class="alert">
-                        <i class="fas fa-exclamation-circle"></i>
-                        <span>{{ session('passwordError') }}</span>
-                    </div>
-                @endif
 
-                <form action="{{ route('auth.register') }}" method="post" enctype="multipart/form-data">
+                <form  action="{{ route('auth.register') }}" method="post" enctype="multipart/form-data">
                     @csrf
                     <div class="form-group">
                         <label for="firstName">First Name</label>
@@ -168,6 +162,13 @@
                         <div class="input-group">
                             <input type="password" name="password" id="password" placeholder="Enter password" required>
                             <i class="fas fa-eye-slash toggle-password" onclick="togglePassword('password')"></i>
+                            @if(session('PassNotMatch'))
+                            <div class="alert">
+                                <!-- <i class="fas fa-exclamation-circle"></i> -->
+                                <span>{{ session('PassNotMatch') }}</span>
+                                <script>alert("{{session('PassNotMatch')}}")</script>
+                            </div>
+                            @endif
                         </div>
                     </div>
 
@@ -198,6 +199,10 @@
     </div>
 
     <script>
+
+       
+
+
         function togglePassword(inputId) {
             const passwordInput = document.getElementById(inputId);
             const toggleIcon = passwordInput.nextElementSibling;

@@ -94,15 +94,15 @@
                                     <label for="" style="font-size: .80rem;">
 
                                         @if (floatval($product->stock) >= 50)
-                                            ⭐⭐⭐⭐⭐
+                                            ⭐
                                         @elseif (floatval($product->stock) > 40)
-                                            ⭐⭐⭐⭐
+                                            ⭐⭐
                                         @elseif (floatval($product->stock) > 30)
                                             ⭐⭐⭐
                                         @elseif(floatval($product->stock) > 20)
-                                            ⭐⭐
+                                            ⭐⭐⭐⭐
                                         @else
-                                            ⭐
+                                            ⭐⭐⭐⭐⭐
                                         @endif
                                     </label>
                                 </div>

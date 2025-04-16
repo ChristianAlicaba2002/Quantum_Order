@@ -369,14 +369,9 @@
                                 <p><strong>Price:</strong> ₱{{ number_format($order->price, 2) }}</p>
                                 <p><strong>Total Amount:</strong> ₱{{ number_format($order->totalAmount, 2) }}</p>
                                 <p><strong>Status:</strong> <span class="status-declined">{{ $order->orderStatus }}</span></p>
-                                <p><strong>Order Date:</strong> {{ date('M d, Y h:i A', strtotime($order->created_at)) }}</p>
+                                <p><strong>Order Date:</strong> {{ date('M d, Y') }}</p>
                             </div>
-                            <!-- <form action="/reorder-cancelled/{{$order->orderId}}" method="POST" class="reorder-form">
-                                @csrf
-                                <button type="submit" class="reorder-btn">
-                                    Re-Attempt Order
-                                </button>
-                            </form> -->
+                    
                         </div>
                     </div>
                 @endforeach

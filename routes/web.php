@@ -87,7 +87,7 @@ Route::middleware(['auth:web'])->group( function (){
 Route::middleware(['auth:admin'])->group( function () {
     
     Route::get('/dashboard', function(){
-        $products = DB::table('products')->get();
+        $products = DB::table('products')->orderBy('created_at' , 'desc')->get();
         return view('AdminSide.Layouts.Dashboard', compact('products'));
     })->name('dashboard')->middleware(PreventBackHistory::class);
 
@@ -118,6 +118,7 @@ Route::middleware(['auth:admin'])->group( function () {
                 'orders.orderStatus',
                 'orders.created_at',
                 'order_details.quantity',
+                'order_details.image',
                 'products.productName',
                 'products.price',
                 'products.category'

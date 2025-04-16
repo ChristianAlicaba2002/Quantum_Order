@@ -31,6 +31,7 @@
                         <tr>
                             <th>Order ID</th>
                             <th>Customer</th>
+                            <th>Image</th>
                             <th>Product</th>
                             <th>Quantity</th>
                             <th>Price</th>
@@ -52,6 +53,11 @@
                                             <span>{{ $order->phoneNumber }}</span>
                                             <span>{{ $order->address }}</span>
                                         </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="product-info">
+                                        <img src="{{ asset('/images/' . $order->image) }}" alt="{{$order->productName}}" width="50" height="50" srcset="">
                                     </div>
                                 </td>
                                 <td>
