@@ -614,7 +614,7 @@
                             <p><strong>Payment Method:</strong> {{ $order->paymentMethod }}</p>
                             <p><strong>Status:</strong> <span class="status-accepted">{{ $order->orderStatus }}</span></p>
                             <p><strong>Address:</strong> {{ $order->address }}</p>
-                            <p><strong>Order Date:</strong> {{ date('M d, Y) }}</p>
+                            <p><strong>Order Date:</strong> {{ date('M d, Y') }}</p>
                         </div>
                         <div class="action-buttons">
                             <button onclick="showTracking('{{ $order->orderStatus }}', '{{ $order->orderId }}')"
