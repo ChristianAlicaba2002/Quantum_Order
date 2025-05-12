@@ -6,6 +6,7 @@ install:
 	@echo "Installing dependencies..."
 	composer install
 	npm install
+	cp .env-example .env
 	php artisan key:generate
 
 //This will run the application
