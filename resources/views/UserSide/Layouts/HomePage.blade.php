@@ -74,8 +74,7 @@
                 <video 
                     id="myVideo" 
                     controls 
-                    autoplay 
-                    muted 
+                    autoplay  
                     loop
                 >
                     <source src="{{ asset('assets/Video/EcommerceVideo.mp4') }}" type="video/mp4">
@@ -124,28 +123,6 @@
                     @endforeach
                 </div>
             </div>
-
-            <!-- <div class="products-section">
-                <div class="products-grid">
-                    @php
-                        $products = DB::table('products')->take(12)->get();
-                    @endphp
-                    @foreach ($products as $product)
-                        <div class="product-card">
-                            <img src="{{ asset('/images/' . $product->image) }}" 
-                                alt="{{ $product->productName }}"
-                                class="product-image" 
-                                onerror="this.src='{{ asset('assets/default-product.png') }}'">
-                            <div class="product-details">
-                                <h3 class="product-name">{{ $product->productName }}</h3>
-                                <p class="product-category">{{ $product->category }}</p>
-                                <div class="product-price">₱{{ number_format($product->price, 2) }}</div>
-                                <div class="product-actions">
-                            </div>
-                        </div>
-                    @endforeach
-                </div>
-            </div> -->
         </div>
     </div>
 

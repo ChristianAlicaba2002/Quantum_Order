@@ -11,7 +11,6 @@ use App\Http\Controllers\ProductSide\ProductController;
 use App\Http\Controllers\ProductSide\ExportToPDFProducts;
 use App\Http\Middleware\PreventBackHistory;
 
-
 // Client routes
 Route::get('/', function () {
     if(Auth::guard('web')->check())
@@ -41,7 +40,6 @@ Route::get('/AdminLogin', function () {
     }
 
 })->name('AdminLogin')->middleware(PreventBackHistory::class);
-
 
 //Client Side Middleware
 Route::middleware(['auth:web'])->group( function (){
@@ -80,8 +78,6 @@ Route::middleware(['auth:web'])->group( function (){
     //End of Purchase History Route
 
 });
-
-
 
 //Admin Side Middleware
 Route::middleware(['auth:admin'])->group( function () {
@@ -128,8 +124,6 @@ Route::middleware(['auth:admin'])->group( function () {
     })->name('OrderHistory');
 
 });
-
-
 
 // Export routes
 Route::get('/products-pdf', [ExportToPDFProducts::class, 'exportPDF'])->name('products.pdf');

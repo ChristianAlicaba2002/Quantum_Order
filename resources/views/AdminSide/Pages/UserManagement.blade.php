@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{ asset('css/user-management.css') }}">
+    <link rel="shortcut icon" href="assets/logo.jpg" type="image/x-icon">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <title>User Management</title>
 </head>
@@ -21,7 +22,7 @@
         <div class="table-container">
             <div class="table-header">
                 <h1>User Management</h1>
-                <div class="downloads">
+                <!-- <div class="downloads">
                     <button type="submit" class="export-button">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
@@ -41,7 +42,7 @@
                         </svg>
                         Export to PDF
                     </button>
-                </div>
+                </div> -->
             </div>
 
             <table>

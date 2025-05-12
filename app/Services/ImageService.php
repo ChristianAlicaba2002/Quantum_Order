@@ -11,11 +11,11 @@ class ImageService
     {
         Storage::disk('public')->makeDirectory('images', 0755, true, true);
 
-        if (!Storage::disk('public')->exists('images/default.jpg')) {
-            $defaultSource = resource_path('images/default.jpg');
+        if (!Storage::disk('public')->exists('images/person.jpg')) {
+            $defaultSource = resource_path('images/person.jpg');
             if (file_exists($defaultSource)) {
                 Storage::disk('public')->put(
-                    'images/default.jpg', 
+                    'images/person.jpg', 
                     file_get_contents($defaultSource)
                 );
             }
@@ -25,7 +25,7 @@ class ImageService
     public function storeUserImage(?UploadedFile $image): string
     {
         if (!$image) {
-            return 'default.jpg';
+            return 'person.jpg';
         }
 
         $imageName = time() . '.' . $image->getClientOriginalExtension();

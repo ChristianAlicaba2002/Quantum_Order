@@ -148,9 +148,8 @@ class UserController extends Controller
         return redirect()->route('login');
     }
 
-    public function UpdateInformationUser(Request $request, string $userId): \Illuminate\Http\RedirectResponse
+    public function UpdateInformationUser(Request $request, string $userId)
     {
-        // $user = DB::table('users')->where('userId', $userId)->first();
         $user = DB::table('users')->where('userId', $userId)->first();
         
         
@@ -173,6 +172,8 @@ class UserController extends Controller
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
+        $data = [];
+
         try {
 
             if ($request->file(key: 'image')) {
@@ -181,9 +182,9 @@ class UserController extends Controller
     
                 $imageName = time() . '.' . $image->getClientOriginalExtension();
                 $image->move($destinationPath, $imageName);
-                $data['image'] = $imageName;
+                $imageName = $imageName;
             } else {
-                $data['image'] = 'default.jpg';
+                $imageName = $user->image;
             }
     
 
@@ -245,7 +246,6 @@ class UserController extends Controller
             return null;
         }
     }
-
 
 
     public function UserAddToCart(Request $request, string $productId)

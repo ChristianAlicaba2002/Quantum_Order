@@ -14,7 +14,11 @@
 
 
 <body>
-    
+
+    <div id="loader" style="display: none;">
+        <div class="spinner"></div>
+    </div>
+
     <div class="login-container">
         <div class="login-left">
             <div class="login-box">
@@ -24,13 +28,13 @@
                 <p style="text-align: center;">Please enter your credentials to access the <br> admin dashboard.</p>
 
                 @if (session('error'))
-                    <div class="alert">
-                        <i class="fas fa-exclamation-circle"></i>
-                        <span>{{ session('error') }}</span>
-                    </div>
+                <div class="alert">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span>{{ session('error') }}</span>
+                </div>
                 @endif
 
-                <form action="{{ route('auth.adminlogin') }}" method="post" class="log">
+                <form class="form-controller" action="{{ route('auth.adminlogin') }}" method="post" class="log">
                     @csrf
                     <div class="input-group">
                         <input type="email" name="email" placeholder="Admin" required>
@@ -84,6 +88,10 @@
                     setTimeout(() => alert.remove(), 300);
                 }, 5000);
             }
+        });
+
+        document.querySelector('.form-controller').addEventListener('submit', function() {
+            document.getElementById('loader').style.display = 'flex';
         });
     </script>
 </body>

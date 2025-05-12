@@ -331,8 +331,8 @@
         ->get();
     ?>
     <h4>Cancelled: {{ $UserOrders->count() }}</h4>
-    <input type="search" id="SearchItem" placeholder="Search cancelled orders..."
-        oninput="searchCancelledItems(this.value)" class="search-input">
+    <!-- <input type="search" id="SearchItem" placeholder="Search cancelled orders..."
+        oninput="searchCancelledItems(this.value)" class="search-input"> -->
 
     <div class="alert-container">
         @if (session('success'))
@@ -369,7 +369,7 @@
                                 <p><strong>Price:</strong> ₱{{ number_format($order->price, 2) }}</p>
                                 <p><strong>Total Amount:</strong> ₱{{ number_format($order->totalAmount, 2) }}</p>
                                 <p><strong>Status:</strong> <span class="status-declined">{{ $order->orderStatus }}</span></p>
-                                <p><strong>Order Date:</strong> {{ date('M d, Y') }}</p>
+                                <p><strong>Order Date:</strong> {{ $order->updated_at }}</p>
                             </div>
                     
                         </div>
@@ -384,62 +384,60 @@
     </div>
 
     <script>
-        function searchCancelledItems(searchText) {
-            const table = document.getElementById('TableCancelledOrders');
-            const rows = table.getElementsByTagName('tr');
-            const searchTerm = searchText.toLowerCase().trim();
+        // function searchCancelledItems(searchText) {
+        //     const table = document.getElementById('TableCancelledOrders');
+        //     const rows = table.getElementsByTagName('tr');
+        //     const searchTerm = searchText.toLowerCase().trim();
 
-            // Start from index 1 to skip the header row
-            for (let i = 1; i < rows.length; i++) {
-                const row = rows[i];
-                const orderId = row.cells[0].textContent.toLowerCase();
-                const productName = row.cells[2].textContent.toLowerCase();
-                const category = row.cells[3].textContent.toLowerCase();
-                const price = row.cells[5].textContent.toLowerCase();
-                const status = row.cells[7].textContent.toLowerCase();
-                const date = row.cells[8].textContent.toLowerCase();
+        //     for (let i = 1; i < rows.length; i++) {
+        //         const row = rows[i];
+        //         const orderId = row.cells[0].textContent.toLowerCase();
+        //         const productName = row.cells[2].textContent.toLowerCase();
+        //         const category = row.cells[3].textContent.toLowerCase();
+        //         const price = row.cells[5].textContent.toLowerCase();
+        //         const status = row.cells[7].textContent.toLowerCase();
+        //         const date = row.cells[8].textContent.toLowerCase();
 
-                const isMatch = orderId.includes(searchTerm) ||
-                    productName.includes(searchTerm) ||
-                    category.includes(searchTerm) ||
-                    price.includes(searchTerm) ||
-                    status.includes(searchTerm) ||
-                    date.includes(searchTerm);
+        //         const isMatch = orderId.includes(searchTerm) ||
+        //             productName.includes(searchTerm) ||
+        //             category.includes(searchTerm) ||
+        //             price.includes(searchTerm) ||
+        //             status.includes(searchTerm) ||
+        //             date.includes(searchTerm);
 
-                if (isMatch) {
-                    row.style.display = '';
-                    // Highlight the matching row
-                    row.style.backgroundColor = '#fff8f3';
-                    setTimeout(() => {
-                        row.style.backgroundColor = '';
-                    }, 2000);
-                } else {
-                    row.style.display = 'none';
-                }
-            }
+        //         if (isMatch) {
+        //             row.style.display = '';
+        //             // Highlight the matching row
+        //             row.style.backgroundColor = '#fff8f3';
+        //             setTimeout(() => {
+        //                 row.style.backgroundColor = '';
+        //             }, 2000);
+        //         } else {
+        //             row.style.display = 'none';
+        //         }
+        //     }
 
-            // Show "No results" message if no matches found
-            const visibleRows = Array.from(rows).slice(1).some(row => row.style.display !== 'none');
-            const existingMessage = document.getElementById('noResults');
+        //     // Show "No results" message if no matches found
+        //     const visibleRows = Array.from(rows).slice(1).some(row => row.style.display !== 'none');
+        //     const existingMessage = document.getElementById('noResults');
 
-            if (!visibleRows) {
-                if (!existingMessage) {
-                    const noResults = document.createElement('tr');
-                    noResults.id = 'noResults';
-                    const messageCell = document.createElement('td');
-                    messageCell.colSpan = '9'; // Span all columns
-                    messageCell.style.textAlign = 'center';
-                    messageCell.style.padding = '20px';
-                    messageCell.innerHTML = `No cancelled orders found for "${searchText}"`;
-                    noResults.appendChild(messageCell);
-                    table.getElementsByTagName('tbody')[0].appendChild(noResults);
-                }
-            } else if (existingMessage) {
-                existingMessage.remove();
-            }
-        }
+        //     if (!visibleRows) {
+        //         if (!existingMessage) {
+        //             const noResults = document.createElement('tr');
+        //             noResults.id = 'noResults';
+        //             const messageCell = document.createElement('td');
+        //             messageCell.colSpan = '9'; // Span all columns
+        //             messageCell.style.textAlign = 'center';
+        //             messageCell.style.padding = '20px';
+        //             messageCell.innerHTML = `No cancelled orders found for "${searchText}"`;
+        //             noResults.appendChild(messageCell);
+        //             table.getElementsByTagName('tbody')[0].appendChild(noResults);
+        //         }
+        //     } else if (existingMessage) {
+        //         existingMessage.remove();
+        //     }
+        // }
 
-        // Auto-hide alerts after 5 seconds
         setTimeout(() => {
             const alerts = document.querySelectorAll('.alert');
             alerts.forEach(alert => {

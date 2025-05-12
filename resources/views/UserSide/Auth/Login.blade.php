@@ -12,6 +12,9 @@
 </head>
 
 <body>
+    <div id="loader" style="display: none;">
+        <div class="spinner"></div>
+    </div>
     <div class="login-container">
         <div class="login-left">
         </div>
@@ -22,7 +25,7 @@
                 </div>
                 <p style="text-align: center;">Log in your account to continue</p>
 
-                <form action="{{ route('auth.login') }}" method="post">
+                <form class="form-controller" action="{{ route('auth.login') }}" method="post">
                     @csrf
                     <div class="input-group">
                         <input type="text" name="username" id="username" placeholder="Username or Phone number">
@@ -70,7 +73,6 @@
     </div>
 
     <script>
-        
         function togglePassword() {
             const passwordInput = document.getElementById('password');
             const toggleIcon = document.querySelector('.toggle-password');
@@ -95,6 +97,10 @@
                     setTimeout(() => alert.remove(), 500);
                 }, 5000);
             });
+        });
+
+        document.querySelector('.form-controller').addEventListener('submit', function() {
+            document.getElementById('loader').style.display = 'flex';
         });
     </script>
 </body>

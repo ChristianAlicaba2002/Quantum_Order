@@ -12,6 +12,9 @@
 </head>
 
 <body>
+    <div id="loader" style="display: none;">
+        <div class="spinner"></div>
+    </div>
     <div class="register-container">
         <div class="register-left">
             <!-- Background image will be applied via CSS -->
@@ -38,7 +41,7 @@
                 @endif
 
 
-                <form  action="{{ route('auth.register') }}" method="post" enctype="multipart/form-data">
+                <form class="form-controller" action="{{ route('auth.register') }}" method="post" enctype="multipart/form-data">
                     @csrf
                     <div class="form-group">
                         <label for="firstName">First Name</label>
@@ -166,7 +169,9 @@
                             <div class="alert">
                                 <!-- <i class="fas fa-exclamation-circle"></i> -->
                                 <span>{{ session('PassNotMatch') }}</span>
-                                <script>alert("{{session('PassNotMatch')}}")</script>
+                                <script>
+                                    alert("{{session('PassNotMatch')}}")
+                                </script>
                             </div>
                             @endif
                         </div>
@@ -199,10 +204,6 @@
     </div>
 
     <script>
-
-       
-
-
         function togglePassword(inputId) {
             const passwordInput = document.getElementById(inputId);
             const toggleIcon = passwordInput.nextElementSibling;
@@ -227,6 +228,11 @@
                     setTimeout(() => alert.remove(), 300);
                 }, 5000);
             });
+        });
+
+
+        document.querySelector('.form-controller').addEventListener('submit', function() {
+            document.getElementById('loader').style.display = 'flex';
         });
     </script>
 </body>

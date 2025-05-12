@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <link rel="stylesheet" href="{{asset('css/exporttopdf.css')}}">
+    <meta charset="UTF-8">
     <title>Product List Report</title>
 </head>
 
