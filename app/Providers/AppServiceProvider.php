@@ -2,7 +2,11 @@
 
 namespace App\Providers;
 
+use App\Domain\User\UserRepository;
 use Illuminate\Support\ServiceProvider;
+use App\Domain\Product\ProductRepository;
+use App\Infrastructure\Persistence\Eloquent\User\EloquentUserRepository;
+use App\Infrastructure\Persistence\Eloquent\Product\EloquentProductRepository;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -11,7 +15,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->bind(UserRepository::class,EloquentUserRepository::class);
+        $this->app->bind(ProductRepository::class,EloquentProductRepository::class);
     }
 
     /**
@@ -19,6 +24,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+       
     }
 }
