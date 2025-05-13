@@ -76,6 +76,7 @@
                     controls 
                     autoplay  
                     loop
+                    muted
                 >
                     <source src="{{ asset('assets/Video/EcommerceVideo.mp4') }}" type="video/mp4">
                     Your browser does not support the video tag.

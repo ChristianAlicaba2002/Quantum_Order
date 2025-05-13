@@ -294,6 +294,9 @@
 
         /* Responsive design */
         @media (max-width: 768px) {
+            /* .edit-icon{
+                background-color: red;
+            } */
             .info-grid {
                 grid-template-columns: repeat(1, 1fr);
             }
@@ -336,6 +339,7 @@
                     </div>
 
                     <?php
+    
                     $UserOrders = DB::table('orders')
                         ->where('userId', Auth::user()->userId)
                         ->get();
@@ -370,11 +374,7 @@
                         <label for="">Delivered: 0</label>
                         @endif
                     </div>
-
-
                 </div>
-
-
 
                 <div class="details-side">
                     <div class="info-grid">

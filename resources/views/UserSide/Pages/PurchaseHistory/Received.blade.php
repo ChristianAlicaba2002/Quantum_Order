@@ -172,7 +172,7 @@
                             <p><strong>Quantity:</strong> {{ $order->quantity }}</p>
                             <p><strong>Price:</strong> ₱{{ number_format($order->price, 2) }}</p>
                             <p><strong>Status:</strong> <span class="status-delivered">{{ $order->orderStatus }}</span></p>
-                            <p><strong>Order Date:</strong> {{ date('M d, Y h:i A', strtotime($order->created_at)) }}</p>
+                            <p><strong>Order Date:</strong> {{ date('M d, Y', strtotime($order->created_at)) }}</p>
                         </div>
                     </div>
                 </div>

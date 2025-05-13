@@ -489,7 +489,7 @@
                 });
 
                 yPos += 7;
-                const date = '{{ date('F d, Y h:i A', strtotime($order->updated_at)) }}';
+                const date = "{{ date('F d, Y h:i A', strtotime($order->updated_at)) }}";
                 pdf.text(date, pageWidth / 2, yPos, {
                     align: 'center'
                 });
