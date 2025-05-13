@@ -75,6 +75,8 @@ Route::middleware(['auth:web'])->group( function (){
     Route::get('/to-pay-history', [UserController::class, 'toPayHistory'])->name('user.to-pay-history');
     Route::get('/to-delivery', [UserController::class, 'DeliveryHIstory'])->name('user.to-delivery-history');
     Route::get('/received-history', [UserController::class, 'receivedHistory'])->name('user.received-history');
+    Route::get('/checkout/preview', [UserController::class, 'checkoutPreview'])->name('checkout.preview');
+
     //End of Purchase History Route
 
 });
@@ -118,7 +120,7 @@ Route::middleware(['auth:admin'])->group( function () {
                 'products.productName',
                 'products.price',
                 'products.category'
-            )
+            )->orderBy('orders.created_at', 'desc')
             ->get();
         return view('AdminSide.Pages.OrderPage', compact('UserOrders'));
     })->name('OrderHistory');
@@ -155,7 +157,6 @@ Route::get('/sales', [AdminController::class , 'SalesProduct'])->name('admin.sal
 
 Route::post('/cancel.order/{orderId}', [UserController::class, 'cancelOrder'])->name('cancel.order');
 Route::post('/reorder-cancelled/{orderId}', [UserController::class, 'reorderCancelled'])->name('reorder.cancelled');
-Route::get('/checkout/preview', [UserController::class, 'checkoutPreview'])->name('checkout.preview');
 Route::post('/checkout/process', [UserController::class, 'checkoutProcess'])->name('checkout.process');
 Route::post('deliveredItems/{id}',[UserController::class , 'MoveToRecieved'])->name('deliveredItems.process');
 Route::get('/order/receipt/{orderId}', [UserController::class, 'showOrderReceipt'])->name('user.order.receipt');
