@@ -17,7 +17,7 @@ run:
 	//This will run the application on a different port
 subrun:
 	@echo "Running your application..."
-	php artisan serve --port=8001
+	php artisan serve --port=8002
 
 	//This will migrate the new migrations
 migrate:
